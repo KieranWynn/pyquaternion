@@ -6,47 +6,129 @@ from math import sqrt, pi, sin, cos, tan
 
 class Quaternion:
 
-    # Initialise with 'none' (default)
-    def __init__(self, w = 1., x = 0., y = 0., z = 0.):
-        # q is a 1D vector of the elements of the quaternion
-        try:
-            a = np.array([float(w), float(x), float(y), float(z)])
-        except TypeError:
-            # w is the lone parameter
-            if isinstance(w, dict):
-                a = np.array([w[k] for k in sorted(w.keys())])
-            else:
-                a = np.array(w) 
-        self.q = a 
+    def __init__(self, *args, **kwargs):
+        s = len(args)
+        if s is 0:
+            # No positional arguments supplied
+            if len(kwargs) > 0:
+                # Keyword arguments provided
+                if ("scalar" in kwargs) or ("vector" in kwargs):
+                    scalar = kwargs.get("scalar", 0.0)
+                    if scalar is None:
+                        scalar = 0.0
+                    else:
+                        scalar = float(scalar)
 
-    # Initialise with array
-    @classmethod
-    def from_array(cls, array):
-        """ accept input as array, list, tuple, dict
-        """
-        try:
-            if (array.size is not 4):
-                raise RuntimeError("Incorrect array size: Input to initialiser must be a 1D array of length 4")
-        except AttributeError:
-            raise TypeError("Incorrect input type: Input to initialiser must be a 1D array of length 4")
+                    vector = kwargs.get("vector", [])   
+                    vector = self._validate_number_sequence(vector, 3)
+
+                    self.q = np.hstack((scalar, vector)) 
+                elif ("real" in kwargs) or ("imaginary" in kwargs):
+                    real = kwargs.get("real", 0.0)
+                    if real is None:
+                        real = 0.0
+                    else:
+                        real = float(real)
+
+                    imaginary = kwargs.get("imaginary", [])   
+                    imaginary = self._validate_number_sequence(imaginary, 3)
+
+                    self.q = np.hstack((real, imaginary))
+                elif ("axis" in kwargs) or ("angle" in kwargs):
+                    try:
+                        axis = self._validate_number_sequence(kwargs["axis"], 3)
+                        angle = float(kwargs["angle"])
+                    except KeyError:
+                        raise ValueError("Both 'axis' and 'angle' must be provided to describe a meaningful rotation.")
+                    else:
+                        self.q = Quaternion._from_axis_angle(axis, angle).q
+                elif "array" in kwargs:
+                    self.q = self._validate_number_sequence(kwargs["array"], 4)
+                elif "matrix" in kwargs:
+                    self.q = Quaternion._from_matrix(kwargs["matrix"]).q
+                else:
+                    keys = sorted(kwargs.keys())
+                    elements = [kwargs[kw] for kw in keys]
+                    if len(elements) is 1:
+                        r = float(elements[0])
+                        self.q = np.array([r, 0.0, 0.0, 0.0])
+                    else:
+                        self.q = self._validate_number_sequence(elements, 4)
+
+            else: 
+                # Default initialisation
+                self.q = np.array([1.0, 0.0, 0.0, 0.0])
+        elif s is 1:
+            # Single positional argument supplied
+            if isinstance(args[0], self.__class__):
+                self.q = args[0].q
+                return
+            if args[0] is None:
+                raise TypeError("Object cannot be initialised from " + str(type(args[0])))
+            try:
+                r = float(args[0])
+                self.q = np.array([r, 0.0, 0.0, 0.0])
+                return
+            except(TypeError):
+                pass # If the single argument is not scalar, it should be a sequence
+
+            self.q = self._validate_number_sequence(args[0], 4)
+            return
         
-        instance = cls()
-        instance.q = array
-        return instance
+        else: 
+            # More than one positional argument supplied
+            self.q = self._validate_number_sequence(args, 4)
 
-    # Initialise from elements
+    def _validate_number_sequence(self, seq, n):
+        if seq is None:
+            return np.zeros(n)
+        if len(seq) is n:
+            try:
+                l = [float(e) for e in seq]
+            except ValueError:
+                raise ValueError("One or more elements in sequence <" + str(seq) + "> cannot be interpreted as a real number")
+            else:
+                return np.array(l)
+        elif len(seq) is 0:
+            return np.zeros(n)
+        else:
+            raise ValueError("Unexpected number of elements in sequence.")
+
+    # Initialise from matrix
     @classmethod
-    def from_elements(cls, a, b, c, d):
-        return cls(a, b, c, d)
+    def _from_matrix(cls, matrix):
+        """ Create a Quaternion by specifying the 3x3 rotation or 4x4 transformation matrix 
+        (as a numpy array) from which the quaternion's rotation should be created.
+
+        """
+        return cls()
 
     # Initialise from axis-angle
+    @classmethod
+    def _from_axis_angle(cls, axis, angle):
+        """
+        Precondition: axis is a valid numpy 3-vector, angle is a real valued angle in radians
+        """
+        mag_sq = np.dot(axis, axis)
+        if mag_sq == 0.0:
+            raise ZeroDivisionError("Provided rotation axis has no length")
+        # Ensure axis is in unit vector form
+        if (abs(1.0 - mag_sq) > 1e-14):
+            axis = axis / sqrt(mag_sq)
+        theta = angle / 2.0
+        r = cos(theta)
+        i = axis * sin(theta)
 
-    # Initialise from rotation matrix
+        return cls(r, i[0], i[1], i[2])
+
+
+    
 
     @classmethod
     def random(cls):
-        """ Generate a random unit quaternion.
+        """ Generate a random unit quaternion. 
 
+        Uniformly distributed across the rotation space
         As per: http://planning.cs.uiuc.edu/node198.html
         """
         r1 = random.random()
@@ -60,6 +142,7 @@ class Quaternion:
 
         return cls(q1, q2, q3, q4)
 
+    # Representation
     def __str__(self):
         string = "{:.2f} {:+.2f}i {:+.2f}j {:+.2f}k".format(self.q[0], self.q[1], self.q[2], self.q[3])
         string += " (Axis: {} | Angle: {})".format(self.axis(), self.angle())
@@ -68,61 +151,113 @@ class Quaternion:
     def __repr__(self):
         return "{:.3f} {:+.3f}i {:+.3f}j {:+.3f}k".format(self.q[0], self.q[1], self.q[2], self.q[3])
 
-    def __eq__(self, other):
-        #self.normalise()
-        #other.normalise()
-        tolerance = 1.0e-7
-        try:
-            isEqual = (abs(self.q - other.q) <= tolerance).all()
-        except AttributeError:
-            raise AttributeError("Internal quaternion representattion is not a numpy array and cannot be compared like one.")
+    def __format__(self, formatstr):
+        string = \
+            "{:" + formatstr +"} "  + \
+            "{:" + formatstr +"}i " + \
+            "{:" + formatstr +"}j " + \
+            "{:" + formatstr +"}k "
+        return string.format(self.q[0], self.q[1], self.q[2], self.q[3])
         
-        return isEqual
+    def __bool__(self):
+        return not (self == Quaternion(0.0))
 
+    def __nonzero__(self):
+        return bool(self)
+
+    # Comparison
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            tolerance = 1.0e-14
+            try:
+                isEqual = (abs(self.q - other.q) <= tolerance).all()
+            except AttributeError:
+                raise AttributeError("Error in internal quaternion representation means it cannot be compared like a numpy array.")
+            return isEqual
+        return self.__eq__(self.__class__(other))
+
+    # Negation
     def __neg__(self):
-        return self.__class__.from_array(-self.q)
+        return self.__class__(array= -self.q)
 
+    def __invert__(self):
+        return self.inverse()
+
+    # Addition
     def __add__(self, other):
-        return self.__class__.from_array(self.q + other.q)
+        if isinstance(other, self.__class__):
+            return self.__class__(array=self.q + other.q)
+        return self + self.__class__(other)
+
+    def __iadd__(self, other):
+        return self + other
 
     def __radd__(self, other):
-        return self.__add__(other)
+        return self + other
 
+    # Subtraction
     def __sub__(self, other):
-        return self.__class__.from_array(self.q - other.q)
+        return self + (-other)
+
+    def __isub__(self, other):
+        return self + (-other)
 
     def __rsub__(self, other):
-        return self.__sub__(other)
+        return -(self - other)
 
+    # Multiplication
     def __mul__(self, other):
-        if (type(self) is type(other)): # TODO This is wrong
-            return self.__class__.from_array(np.dot(self.q_matrix(), other.q))
-        else:
-            copy = self.clone()
-            copy._scale(other)
-            return copy
+        """ Product of either:
+        a) this quaternion, right-multiplied with another quaternion object, or
+        b) this quaternion, scaled by a real-valued scalar.
+        
+        Returns a new quaternion object storing the result of the multiplication.
+        Raises TypeError for incompatible operand types.
+        """
+
+        if isinstance(other, self.__class__):
+            return self.__class__(array=np.dot(self.q_matrix(), other.q))
+        return self * self.__class__(other)
+    
+    def __imul__(self, other):
+        return self * other
 
     def __rmul__(self, other):
-        return self.__mul__(other)
+        return self.__class__(other) * self
+
+    # Division
+    def __div__(self, other):
+        # Only implemented for scalar i.e. q / 2.3 (due to non-commutativity of quaternion multiplication) 
+        try:
+            scalar = 1.0 / float(other)
+        except TypeError:
+            raise TypeError("Quaternion division only defined for a scalar divisor")
+        return self * self.__class__(scalar)
+
+    def __idiv__(self, other):
+        return self.__div__(other)
+
+    def __rdiv__(self, other):
+        return other * self.inverse()
 
     def __truediv__(self, other):
-        # Only implemented for scalar (i.e. q / 2.3)
-        try:
-            scale = 1.0 / other
-        except TypeError:
-            raise
-        else:
-            copy = self.clone()
-            copy._scale(scale)
-            return copy
+        return self.__div__(other)
 
+    def __itruediv__(self, other):
+        return self.__idiv__(other)
+
+    def __rtruediv__(self, other):
+        return self.__rdiv__(other)
+
+    # Exponentiation
     def __pow__(self, exponent):
+        exponent = int(exponent)
         if (exponent is 0):
             return Quaternion() # Unit quaternion
         elif (exponent >= 1): 
-            q = self.clone()
+            q = Quaternion(self) # clone
             while (exponent > 1):
-                q = q * self
+                q *= self
                 exponent -= 1
             return q
         else:
@@ -137,7 +272,7 @@ class Quaternion:
 
     def conjugate(self):
         # Return vector conjugate encapsulated in a new instance
-        return self.__class__.from_array(self._vector_conjugate())
+        return self.__class__(scalar=self.scalar(), vector= -self.vector())
 
     def norm(self): # -> scalar double
         """ Return L2 norm of the quaternion 4-vector 
@@ -152,8 +287,11 @@ class Quaternion:
         else:
             return sqrt(mag_squared) # Error is too big, take the performance hit to calculate the square root properly
 
+    def magnitude(self):
+        return self.norm()
+
     def inverse(self):
-        return self.__class__.from_array(self._vector_conjugate() / self._sum_of_squares())
+        return self.conjugate() / self._sum_of_squares()
 
     def q_matrix(self):
         return np.array([
@@ -169,51 +307,82 @@ class Quaternion:
             [self.q[2], -self.q[3],  self.q[0],  self.q[1]],
             [self.q[3],  self.q[2], -self.q[1],  self.q[0]]])
 
-    def real(self):
+    def _rotate_quaternion(self, q):
+        """ Rotate a quaternion vector using the stored rotation.
+
+        The input q is the vector to be rotated, in quaternion form (0 + xi + yj + kz)
+        """
+        self._normalise()
+        return self * q * self.conjugate()
+
+    def rotate(self, vector):
+        """ Rotate a vector using the quaternion's stored rotation (similarity transform)
+
+        Input vector can be specified as another (pure imaginary) quaternion 
+        or a 3-vector described by a tuple, list or numpy array of length 3.
+
+        Output is returned in the type of the provided input vector
+        """
+        if isinstance(vector, self.__class__):
+            return self._rotate_quaternion(vector)
+        q = Quaternion(vector=vector)
+        a = self._rotate_quaternion(q).vector()
+        l = [x for x in a]
+        if isinstance(vector, list):
+            return l
+        elif isinstance(vector, tuple):
+            return tuple(l)
+        else:
+            return a
+
+    # def rotate_array(self, a):
+    #     """ Rotate a 3-element numpy array using the stored rotation.
+    #     """
+    #     qv = Quaternion(vector=a)
+    #     return self.rotate(qv).vector()
+
+    # def rotate_vector(self, v):
+    #     """ Rotate a 3 element vector (input as a tuple) using the stored rotation.
+    #     """
+    #     try:
+    #         a = np.array(v)
+    #     except TypeError:
+    #         raise TypeError("Unable to interpret vector {} as a 3-vector for rotation".format(v))
+    #     return tuple([x for x in self.rotate_array(a)])
+
+    def scalar(self):
         return self.q[0]
 
-    def imaginary(self):
+    def vector(self):
         return self.q[1:4]
 
+    def real(self):
+        return self.scalar()
+
+    def imaginary(self):
+        return self.vector()
+
+    def _normalise(self):
+        self.q = self.q / self.norm()
+
     def normalised(self):
-        q = self.clone()
+        q = Quaternion(self) #Clone
         q._normalise()
         return q
 
-    def magnitude(self):
-        return self.norm()
+    def versor(self):
+        return self.normalised()
 
     def axis(self):
         #TODO
-        return np.array([0.0, 0.0, 0.0])
+        return (0.0, 0.0, 0.0)
+
+    def axis_as_array(self):
+        return np.array(self.axis())
 
     def angle(self):
         #TODO
         return 0.0
 
-    def versor(self):
-        return self.normalise()
-
     def __deepcopy__(self):
-        return self.__class__.from_array(self.q)
-
-    def clone(self):
-        return self.__deepcopy__()
-
-    def _normalise(self):
-        self.q = self.q / self.norm()
-
-    def _scale(self, scalar):
-        """ Apply a scalar multiple to the internal quaternion 4-vector.
-        """
-        try:
-            s = float(scalar)
-        except:
-            raise
-        else:
-            self.q = self.q * s
-        
-
-
-    
-
+        return self.__class__(self)

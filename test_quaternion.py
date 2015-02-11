@@ -437,10 +437,10 @@ class TestQuaternionFeatures(unittest.TestCase):
         self.assertEqual(q1.norm(), np.linalg.norm(np.array(r)))
         self.assertEqual(q1.magnitude(), np.linalg.norm(np.array(r)))
         # Multiplicative norm
-        self.assertAlmostEqual((q1 * q2).norm(), q1.norm() * q2.norm(), 14)
+        self.assertAlmostEqual((q1 * q2).norm(), q1.norm() * q2.norm(), 13)
         # Scaled norm
         for s in [30.0, 0.3, -2, -4.7]:
-            self.assertAlmostEqual((q1 * s).norm(), q1.norm() * abs(s), 14)
+            self.assertAlmostEqual((q1 * s).norm(), q1.norm() * abs(s), 13)
 
     def test_inverse(self):
         q1 = Quaternion(randomElements())
@@ -457,8 +457,8 @@ class TestQuaternionFeatures(unittest.TestCase):
         self.assertTrue((n.q == q1.q / q1.norm()).all())
         self.assertAlmostEqual(v.norm(), 1.0, 14)
         self.assertAlmostEqual(n.norm(), 1.0, 14)
-        self.assertTrue((q1.axis_as_array() == v.axis_as_array()).all())
-        self.assertTrue((q1.axis_as_array() == n.axis_as_array()).all())
+        self.assertTrue((q1.axis() == v.axis()).all())
+        self.assertTrue((q1.axis() == n.axis()).all())
         self.assertEqual(q1.angle(), v.angle())
         self.assertEqual(q1.angle(), n.angle())
 
@@ -470,7 +470,7 @@ class TestQuaternionFeatures(unittest.TestCase):
             [b,  a, -d,  c],
             [c,  d,  a, -b],
             [d, -c,  b,  a]])
-        self.assertTrue((q.q_matrix() == M).all())
+        self.assertTrue((q._q_matrix() == M).all())
 
     def test_q_bar_matrix(self):
         a, b, c, d = randomElements()
@@ -480,7 +480,24 @@ class TestQuaternionFeatures(unittest.TestCase):
             [b,  a,  d, -c],
             [c, -d,  a,  b],
             [d,  c, -b,  a]])
-        self.assertTrue((q.q_bar_matrix() == M).all())
+        self.assertTrue((q._q_bar_matrix() == M).all())
+
+    def test_output_of_components(self):
+        a, b, c, d = randomElements()
+        q = Quaternion(a, b, c, d)
+        # Test scalar
+        self.assertEqual(q.scalar(), a)
+        self.assertEqual(q.real(), a)
+        # Test vector
+        self.assertTrue((q.vector() == np.array([b, c, d])).all())
+        self.assertTrue((q.imaginary() == np.array([b, c, d])).all())
+        self.assertEqual(tuple(q.vector()), (b, c, d))
+        self.assertEqual(list(q.imaginary()), [b, c, d])
+
+    def test_output_of_elements(self):
+        r = randomElements()
+        q = Quaternion(*r)
+        self.assertEqual(tuple(q.elements()), r)
 
     def test_rotate(self):
         x = Quaternion(0.0, 1.0, 0.0, 0.0)
@@ -525,8 +542,28 @@ class TestQuaternionFeatures(unittest.TestCase):
         self.assertEqual(q3.rotate(x), z)
         self.assertEqual(q3.rotate(y), y)
 
-
- # See https://github.com/erossignon/pyquaternion/blob/master/test_quaternion.py
+    def test_matrix_output(self):
+        q = Quaternion.random()
+        a, b, c, d = tuple(q.elements())
+        R = np.array([
+            [a**2 + b**2 - c**2 - d**2, 2 * (b * c - a * d), 2 * (a * c + b * d)],
+            [2 * (b * c + a * d), a**2 - b**2 + c**2 - d**2, 2 * (c * d - a * b)],
+            [2 * (b * d - a * c), 2 * (a * b + c * d), a**2 - b**2 - c**2 + d**2]])
+        t = np.array([[0],[0],[0]])
+        T = np.vstack([np.hstack([R,t]), np.array([0,0,0,1])])
+        tolerance = 1e-14
+        self.assertTrue((abs(R - q.rotation_matrix()) < tolerance).all())
+        self.assertTrue((abs(T - q.transformation_matrix()) < tolerance).all())
+        # Test no scaling of rotated vectors
+        v1 = np.array([1, 0, 0])
+        v2 = np.array(randomElements()) * 10.0
+        v1_ = np.dot(q.rotation_matrix(), v1)
+        v2_ = np.dot(q.transformation_matrix(), v2)
+        self.assertAlmostEqual(np.linalg.norm(v1_), 1.0, 6)
+        self.assertAlmostEqual(np.linalg.norm(v2_), np.linalg.norm(v2), 6)
+        # Test transformation of vectors is equivalent for quaternion & matrix
+        self.assertTrue((abs(v1_ - q.rotate(v1)) < tolerance).all())
+        self.assertTrue((abs(v2_[0:3] - q.rotate(v2[0:3])) < tolerance).all())
  
 if __name__ == '__main__':
     unittest.main()

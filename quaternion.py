@@ -145,7 +145,7 @@ class Quaternion:
     # Representation
     def __str__(self):
         string = "{:.2f} {:+.2f}i {:+.2f}j {:+.2f}k".format(self.q[0], self.q[1], self.q[2], self.q[3])
-        string += " (Axis: {} | Angle: {})".format(self.axis(), self.angle())
+        string += " (Axis: {} | Angle: {})".format(list(self.axis()), self.angle())
         return string
 
     def __repr__(self):
@@ -216,7 +216,7 @@ class Quaternion:
         """
 
         if isinstance(other, self.__class__):
-            return self.__class__(array=np.dot(self.q_matrix(), other.q))
+            return self.__class__(array=np.dot(self._q_matrix(), other.q))
         return self * self.__class__(other)
     
     def __imul__(self, other):
@@ -274,6 +274,9 @@ class Quaternion:
         # Return vector conjugate encapsulated in a new instance
         return self.__class__(scalar=self.scalar(), vector= -self.vector())
 
+    def inverse(self):
+        return self.conjugate() / self._sum_of_squares()
+
     def norm(self): # -> scalar double
         """ Return L2 norm of the quaternion 4-vector 
 
@@ -290,17 +293,36 @@ class Quaternion:
     def magnitude(self):
         return self.norm()
 
-    def inverse(self):
-        return self.conjugate() / self._sum_of_squares()
+    def _normalise(self):
+        self.q = self.q / self.norm()
 
-    def q_matrix(self):
+    def _fast_normalise(self):
+        pass
+
+    def normalised(self):
+        """ Return a unit quaternion object (versor) representing the same rotation as this
+
+        Result is guaranteed to be a unit quaternion
+        """
+        q = Quaternion(self)
+        q._normalise()
+        return q
+
+    def versor(self):
+        """ Return a unit quaternion object (versor) representing the same rotation as this
+
+        Result is guaranteed to be a unit quaternion
+        """
+        return self.normalised()
+
+    def _q_matrix(self):
         return np.array([
             [self.q[0], -self.q[1], -self.q[2], -self.q[3]],
             [self.q[1],  self.q[0], -self.q[3],  self.q[2]],
             [self.q[2],  self.q[3],  self.q[0], -self.q[1]],
             [self.q[3], -self.q[2],  self.q[1],  self.q[0]]])
 
-    def q_bar_matrix(self):
+    def _q_bar_matrix(self):
         return np.array([
             [self.q[0], -self.q[1], -self.q[2], -self.q[3]],
             [self.q[1],  self.q[0],  self.q[3], -self.q[2]],
@@ -335,54 +357,61 @@ class Quaternion:
         else:
             return a
 
-    # def rotate_array(self, a):
-    #     """ Rotate a 3-element numpy array using the stored rotation.
-    #     """
-    #     qv = Quaternion(vector=a)
-    #     return self.rotate(qv).vector()
+    def rotation_matrix(self):
+        self._normalise()
+        product_matrix = np.dot(self._q_matrix(), self._q_bar_matrix().conj().transpose())
+        return product_matrix[1:][:,1:]
 
-    # def rotate_vector(self, v):
-    #     """ Rotate a 3 element vector (input as a tuple) using the stored rotation.
-    #     """
-    #     try:
-    #         a = np.array(v)
-    #     except TypeError:
-    #         raise TypeError("Unable to interpret vector {} as a 3-vector for rotation".format(v))
-    #     return tuple([x for x in self.rotate_array(a)])
-
-    def scalar(self):
-        return self.q[0]
-
-    def vector(self):
-        return self.q[1:4]
-
-    def real(self):
-        return self.scalar()
-
-    def imaginary(self):
-        return self.vector()
-
-    def _normalise(self):
-        self.q = self.q / self.norm()
-
-    def normalised(self):
-        q = Quaternion(self) #Clone
-        q._normalise()
-        return q
-
-    def versor(self):
-        return self.normalised()
+    def transformation_matrix(self):
+        t = np.array([[0.0], [0.0], [0.0]])
+        Rt = np.hstack([self.rotation_matrix(), t])
+        return np.vstack([Rt, np.array([0.0, 0.0, 0.0, 1.0])])
 
     def axis(self):
         #TODO
-        return (0.0, 0.0, 0.0)
-
-    def axis_as_array(self):
-        return np.array(self.axis())
+        return np.array([0.0, 0.0, 0.0])
 
     def angle(self):
         #TODO
         return 0.0
+
+    def scalar(self):
+        """ Return the real or scalar component of the quaternion object
+
+        Result is a real number i.e. float
+        """
+        return self.q[0]
+
+    def vector(self):
+        """ Return the imaginary or vector component of the quaternion object
+
+        Result is a numpy 3-array of floats
+        Result is not guaranteed to be a unit vector
+        """
+        return self.q[1:4]
+
+    def real(self):
+        """ Return the real or scalar component of the quaternion object
+
+        Result is a real number i.e. float
+        """
+        return self.scalar()
+
+    def imaginary(self):
+        """ Return the imaginary or vector component of the quaternion object
+
+        Result is a numpy 3-array of floats
+        Result is not guaranteed to be a unit vector
+        """
+        return self.vector()
+
+    def elements(self):
+        """ Return all the elements of the quaternion object
+
+        Result is a numpy 4-array of floats
+        Result is not guaranteed to be a unit vector
+        """
+        return self.q
 
     def __deepcopy__(self):
         return self.__class__(self)

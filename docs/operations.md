@@ -155,7 +155,7 @@ If the dividend and divisor are unit quaternions, the quotient is guaranteed to 
 
 `q ** p` is the quaternion formed by raising the Quaternion `q1` to the power of `p` for any real `p`. [Source](http://en.wikipedia.org/wiki/Quaternion#Exponential.2C_logarithm.2C_and_power)
 
-> Raises `TypeError` if the `other` cannot be interpreted as a real number.
+> Raises `TypeError` if `other` cannot be interpreted as a real number.
 
 **Returns:** a new Quaternion object representing the the object raised to the power of the input.
 If the base object is a unit quaternion, the result is guaranteed to be a unit quaternion.

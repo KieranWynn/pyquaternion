@@ -124,9 +124,6 @@ class Quaternion:
 
         return cls(r, i[0], i[1], i[2])
 
-
-    
-
     @classmethod
     def random(cls):
         """ Generate a random unit quaternion. 
@@ -162,15 +159,6 @@ class Quaternion:
             "{:" + formatstr +"}j " + \
             "{:" + formatstr +"}k"
         return string.format(self.q[0], self.q[1], self.q[2], self.q[3])
-        
-    def __bool__(self):
-        return not (self == Quaternion(0.0))
-
-    def __nonzero__(self):
-        return not (self == Quaternion(0.0))
-
-    def __invert__(self):
-        return (self == Quaternion(0.0))
 
     # Type Conversion
     def __int__(self):
@@ -200,12 +188,27 @@ class Quaternion:
         """
         return complex(self.q[0], self.q[1])
 
+    def __bool__(self):
+        return not (self == Quaternion(0.0))
+
+    def __nonzero__(self):
+        return not (self == Quaternion(0.0))
+
+    def __invert__(self):
+        return (self == Quaternion(0.0))
+
     # Comparison
     def __eq__(self, other):
+        """
+        Returns true if the following is true for each element:
+        `absolute(a - b) <= (atol + rtol * absolute(b))`
+        """
         if isinstance(other, self.__class__):
             tolerance = 1.0e-14
+            r_tol = 1.0e-13
+            a_tol = 1.0e-14
             try:
-                isEqual = (abs(self.q - other.q) <= tolerance).all()
+                isEqual = np.allclose(self.q, other.q, rtol=r_tol, atol=a_tol)#(abs(self.q - other.q) <= tolerance).all()
             except AttributeError:
                 raise AttributeError("Error in internal quaternion representation means it cannot be compared like a numpy array.")
             return isEqual
@@ -239,14 +242,6 @@ class Quaternion:
 
     # Multiplication
     def __mul__(self, other):
-        """ Product of either:
-        a) this quaternion, right-multiplied with another quaternion object (Hamilton Product), or
-        b) this quaternion, scaled by a real-valued scalar.
-        
-        Returns a new quaternion object storing the result of the multiplication.
-        Raises TypeError for incompatible operand types.
-        """
-
         if isinstance(other, self.__class__):
             return self.__class__(array=np.dot(self._q_matrix(), other.q))
         return self * self.__class__(other)
@@ -259,18 +254,17 @@ class Quaternion:
 
     # Division
     def __div__(self, other):
-        # Only implemented for scalar i.e. q / 2.3 (due to non-commutativity of quaternion multiplication) 
-        try:
-            scalar = 1.0 / float(other)
-        except TypeError:
-            raise TypeError("Quaternion division only defined for a scalar divisor")
-        return self * self.__class__(scalar)
+        if isinstance(other, self.__class__):
+            if other == self.__class__(0.0):
+                raise ZeroDivisionError("Quaternion divisor must be non-zero")
+            return self * other.inverse()
+        return self.__div__(self.__class__(other))
 
     def __idiv__(self, other):
         return self.__div__(other)
 
     def __rdiv__(self, other):
-        return other * self.inverse()
+        return self.__class__(other) * self.inverse()
 
     def __truediv__(self, other):
         return self.__div__(other)
@@ -288,6 +282,11 @@ class Quaternion:
         n = self.vector() / np.linalg.norm(self.vector())
         return (self.norm() ** exponent) * Quaternion(scalar=cos(exponent * theta), vector=(n * sin(exponent * theta)))
 
+    def __ipow__(self, other):
+        return self ** other
+
+    def __rpow__(self, other):
+        return other ** float(self)
 
     # Quaternion Features
     def _vector_conjugate(self):
@@ -301,7 +300,7 @@ class Quaternion:
         return self.__class__(scalar=self.scalar(), vector= -self.vector())
 
     def inverse(self):
-        return self.conjugate() / self._sum_of_squares()
+        return self.__class__(array=(self._vector_conjugate() / self._sum_of_squares()))
 
     def norm(self): # -> scalar double
         """ Return L2 norm of the quaternion 4-vector 
@@ -384,16 +383,52 @@ class Quaternion:
             return self._rotate_quaternion(vector)
         q = Quaternion(vector=vector)
         a = self._rotate_quaternion(q).vector()
-        l = [x for x in a]
         if isinstance(vector, list):
+            l = [x for x in a]
             return l
         elif isinstance(vector, tuple):
+            l = [x for x in a]
             return tuple(l)
         else:
             return a
-    def interpolate(self, other, amount):
+
+    @classmethod
+    def slerp(cls, q0, q1, amount):
+        # Ensure quaternion inputs are unit quaternions and 0 <= amount <=1
+        q0._normalise()
+        q1._normalise()
+        amount = np.clip(0, 1, amount)
+
         # http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
-        pass
+
+        # Compute the cosine of the angle between the two vectors.
+        dot = np.dot(q0.elements(), q1.elements())
+
+        dot_threshold = 0.9995;
+        if dot > dot_threshold:
+            # Inputs are too close for comfort, linearly interpolate and normalize the result.
+            result = q0 + ((q1 - q0) * amount);
+            return result.normalised()
+
+        return ((q1 * q0.inverse()) ** amount) * q0
+        
+        # np.clip(-1, 1, dot) # clamp dot to range of acos
+        # theta_0 = acos(dot)
+        # theta = theta_0 * amount
+        # q2 = q1 - (q0 * dot)
+        # q2._normalise()
+        # return q0*cos(theta) + q2*sin(theta)
+
+    @classmethod
+    def interpolate(cls, q0, q1, intermediates, inclusive=False):
+        step = 1.0 / (intermediates + 1)
+        if inclusive:
+            steps = [i*step for i in range(0, intermediates + 2)]
+        else:
+            steps = [i*step for i in range(1, intermediates + 1)]
+        for s in steps:
+            yield cls.slerp(q0, q1, s)
+        
 
     def rotation_matrix(self):
         self._normalise()
@@ -452,6 +487,15 @@ class Quaternion:
         Result is not guaranteed to be a unit vector
         """
         return self.q
+
+    def __getitem__(self, index):
+        index = int(index)
+        return self.q[index]
+
+    def __setitem__(self, index, value):
+        index = int(index)
+        self.q[index] = float(value)
+
 
     def __deepcopy__(self):
         return self.__class__(self)

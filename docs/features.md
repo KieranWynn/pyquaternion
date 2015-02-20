@@ -56,7 +56,7 @@ Rotate a 3D vector by the rotation stored in the Quaternion object
 
 **Params:**
 	
-* **vector** - a 3-vector specified as any ordered sequence of 3 real numbers corresponding to x, y, and z values. Some types that are recognised are: numpy arrays, lists and tuples. A 3-vector can also be represented by a Quaternion object who's scalar part is 0 and vector part is the required 3-vector. Thus it is possible to call `Quaternion.rotate(q)` with another quaternion object as an input.
+* `vector` - a 3-vector specified as any ordered sequence of 3 real numbers corresponding to x, y, and z values. Some types that are recognised are: numpy arrays, lists and tuples. A 3-vector can also be represented by a Quaternion object who's scalar part is 0 and vector part is the required 3-vector. Thus it is possible to call `Quaternion.rotate(q)` with another quaternion object as an input.
 
 **Returns:** the rotated vector returned as the same type it was specified at input.
 
@@ -67,7 +67,7 @@ Rotate a 3D vector by the rotation stored in the Quaternion object
 
 > Raises `TypeError` if any of the vector elements cannot be converted to a real number.
 >
-> Raises `ValueError` if **vector** cannot be interpreted as a 3-vector or a Quaternion object.
+> Raises `ValueError` if `vector` cannot be interpreted as a 3-vector or a Quaternion object.
 
 
 # Interpolation
@@ -157,3 +157,42 @@ Return all four elements of the quaternion object. Result is not guaranteed to b
 
 	a = my_quaternion.elements()
 	print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
+
+`Quaternion.__getitem__(index)`
+
+**Params:**
+
+* `index` - integer in the range [-4:3] inclusive
+
+**Returns:** the real numbered element at the specified index in the quaternion 4-array
+
+> Raises `IndexError` if the index provided is invalid
+> 
+> Raises `TypeError` or `ValueError` if the index cannot be interpreted as an integer
+
+	print("{} + {}i + {}j + {}k".format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
+	print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
+	
+# Modifying individual elements
+`Quaternion.__setitem__(index, value)`
+
+Set the element at the specified index in the quaternion 4-array to the specified value.
+
+**Params:**
+
+* `index` - integer in the range [-4:3] inclusive
+* `value` - real value to be inserted into the quaternion array at `index`
+
+> Raises `IndexError` if the index provided is invalid
+> 
+> Raises `TypeError` or `ValueError` if the value cannot be interpreted as a real number
+
+	>>> str(my_quaternion)
+	'-0.653 -0.127i -0.220j +0.714k'
+	>>> my_quaternion[2] = 9
+	>>> str(my_quaternion)
+	'-0.653 -0.127i +9.000j +0.714k'
+	>>>
+
+
+

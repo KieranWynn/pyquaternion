@@ -206,6 +206,12 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertEqual(q3, truth)
         self.assertEqual(q4, truth)
 
+        # Result should be a versor (Unit Quaternion)
+        self.assertAlmostEqual(q1.norm(), 1.0, 14)
+        self.assertAlmostEqual(q2.norm(), 1.0, 14)
+        self.assertAlmostEqual(q3.norm(), 1.0, 14)
+        self.assertAlmostEqual(q4.norm(), 1.0, 14)
+
         with self.assertRaises(ValueError):
             q = Quaternion(angle=theta)
             q = Quaternion(axis=v1)
@@ -242,9 +248,25 @@ class TestQuaternionInitialisation(unittest.TestCase):
 
 class TestQuaternionRepresentation(unittest.TestCase):
 
+    def test_str(self):
+        a, b, c, d = randomElements()
+        q = Quaternion(a, b, c, d)
+        string = "{:.3f} {:+.3f}i {:+.3f}j {:+.3f}k".format(a, b, c, d)
+        self.assertEqual(string, str(q))
+
+    def test_format(self):
+        a, b, c, d = randomElements()
+        q = Quaternion(a, b, c, d)
+        for s in ['.3f', '+.14f', '.6e', 'g']:
+            individual_fmt = '{:' + s + '} {:' + s + '}i {:' + s + '}j {:' + s + '}k'
+            quaternion_fmt = '{:' + s + '}'
+            self.assertEqual(individual_fmt.format(a, b, c, d), quaternion_fmt.format(q))
+
     def test_repr(self):
-        q = Quaternion(2.13, -4.15, 3.2, 9.02)
-        self.assertEqual(repr(q), "2.130 -4.150i +3.200j +9.020k")
+        a, b, c, d = np.array(randomElements()) # Numpy seems to increase precision of floats (C magic?)
+        q = Quaternion(a, b, c, d)
+        string = "Quaternion(" + repr(a) + ", " + repr(b) + ", " + repr(c) + ", " + repr(d) + ")"
+        self.assertEqual(string, repr(q))
 
 class TestQuaternionArithmetic(unittest.TestCase): 
 
@@ -281,8 +303,10 @@ class TestQuaternionArithmetic(unittest.TestCase):
         self.assertEqual(-q, Quaternion(-a, -b, -c, -d))
 
     def test_bool(self):
-        self.assertTrue(bool(Quaternion()))
-        self.assertFalse(bool(Quaternion(scalar=0.0)))
+        self.assertTrue(Quaternion())
+        self.assertFalse(Quaternion(scalar=0.0))
+        self.assertTrue(~Quaternion(scalar=0.0))
+        self.assertFalse(~Quaternion())
 
     def test_add(self):
         r1 = randomElements()
@@ -401,6 +425,10 @@ class TestQuaternionArithmetic(unittest.TestCase):
         self.assertEqual(q1 ** 0, Quaternion())
         self.assertEqual(q1 ** 1, q1)
         self.assertEqual(q1 ** 4, q1 * q1 * q1 * q1)
+        self.assertEqual((q1 ** 0.5) * (q1 ** 0.5), q1)
+        self.assertEqual(q1 ** -1, q1.inverse())
+        with self.assertRaises(TypeError):
+            q1 ** q1
 
     def test_distributive(self):
         q1 = Quaternion.random()
@@ -446,21 +474,21 @@ class TestQuaternionFeatures(unittest.TestCase):
         q1 = Quaternion(randomElements())
         q2 = Quaternion.random()
         self.assertEqual(q1 * q1.inverse(), Quaternion(1.0, 0.0, 0.0, 0.0))
-        self.assertEqual(q2 * ~q2, Quaternion(1.0, 0.0, 0.0, 0.0))
 
     def test_normalisation(self): # normalise to unit quaternion
         r = randomElements()
         q1 = Quaternion(*r) 
         v = q1.versor()
         n = q1.normalised()
-        self.assertTrue((v.q == q1.q / q1.norm()).all())
-        self.assertTrue((n.q == q1.q / q1.norm()).all())
+        self.assertTrue((v.q == q1.elements() / q1.norm()).all())
+        self.assertTrue((n.q == q1.elements() / q1.norm()).all())
         self.assertAlmostEqual(v.norm(), 1.0, 14)
         self.assertAlmostEqual(n.norm(), 1.0, 14)
-        self.assertTrue((q1.axis() == v.axis()).all())
-        self.assertTrue((q1.axis() == n.axis()).all())
-        self.assertEqual(q1.angle(), v.angle())
-        self.assertEqual(q1.angle(), n.angle())
+        tol = 1e-14
+        self.assertTrue((abs(q1.axis() - v.axis()) < tol).all())
+        self.assertTrue((abs(q1.axis() - n.axis()) < tol).all())
+        self.assertAlmostEqual(q1.angle() , v.angle(), 14)
+        self.assertAlmostEqual(q1.angle() , n.angle(), 14)
 
     def test_q_matrix(self):
         a, b, c, d = randomElements()
@@ -542,7 +570,7 @@ class TestQuaternionFeatures(unittest.TestCase):
         self.assertEqual(q3.rotate(x), z)
         self.assertEqual(q3.rotate(y), y)
 
-    def test_matrix_output(self):
+    def test_conversion_to_matrix(self):
         q = Quaternion.random()
         a, b, c, d = tuple(q.elements())
         R = np.array([
@@ -564,6 +592,27 @@ class TestQuaternionFeatures(unittest.TestCase):
         # Test transformation of vectors is equivalent for quaternion & matrix
         self.assertTrue((abs(v1_ - q.rotate(v1)) < tolerance).all())
         self.assertTrue((abs(v2_[0:3] - q.rotate(v2[0:3])) < tolerance).all())
+
+    def test_conversion_to_axis_angle(self):
+        axes = [np.array([1, 0, 0]), np.array([-1, 0, 0]), np.array([uniform(-1, 1), uniform(-1, 1), uniform(-1, 1)])]
+        angles = [pi / 2., 3*pi*random(), -pi*random()]
+        for i in range(0,3):
+            ax = axes[i]
+            an = angles[i]
+            q = Quaternion(axis=ax, angle=an)
+            ax = ax / np.linalg.norm(ax)
+            print()
+            print("Axis. In:", ax, "Out:", q.axis())
+            print("Angle. In:", an, "Out:", q.angle())
+            tolerance = 1e-14
+            # self.assertTrue((abs(ax - q.axis()) < tolerance).all())
+            # self.assertAlmostEqual(an % (2*pi) , q.angle(), 14)
+            self.assertTrue(
+                # (q.axis() == ax and q.angle() == an) or (q.axis() == -ax and q.angle() == -an)
+                (abs(ax - q.axis()) < tolerance).all() and abs(q.angle() - an) < tolerance 
+                or
+                (abs(ax + q.axis()) < tolerance).all() and abs(q.angle() + an) < tolerance)
+
  
 if __name__ == '__main__':
     unittest.main()

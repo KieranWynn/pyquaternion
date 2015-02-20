@@ -1,8 +1,11 @@
 # A python module for basic quaternion math
 
+# Add compatibility for Python 2x
+from __future__ import absolute_import, division, print_function
+
 import numpy as np
 import random
-from math import sqrt, pi, sin, cos, tan
+from math import sqrt, pi, sin, cos, asin, acos
 
 class Quaternion:
 
@@ -113,7 +116,7 @@ class Quaternion:
         if mag_sq == 0.0:
             raise ZeroDivisionError("Provided rotation axis has no length")
         # Ensure axis is in unit vector form
-        if (abs(1.0 - mag_sq) > 1e-14):
+        if (abs(1.0 - mag_sq) > 1e-12):
             axis = axis / sqrt(mag_sq)
         theta = angle / 2.0
         r = cos(theta)
@@ -144,26 +147,58 @@ class Quaternion:
 
     # Representation
     def __str__(self):
-        string = "{:.2f} {:+.2f}i {:+.2f}j {:+.2f}k".format(self.q[0], self.q[1], self.q[2], self.q[3])
-        string += " (Axis: {} | Angle: {})".format(list(self.axis()), self.angle())
-        return string
-
-    def __repr__(self):
         return "{:.3f} {:+.3f}i {:+.3f}j {:+.3f}k".format(self.q[0], self.q[1], self.q[2], self.q[3])
 
+    def __repr__(self):
+        return "Quaternion({}, {}, {}, {})".format(repr(self.q[0]), repr(self.q[1]), repr(self.q[2]), repr(self.q[3]))
+
     def __format__(self, formatstr):
+        if formatstr.strip() == '': # Defualt behaviour mirrors self.__str__()
+            formatstr = '+.3f'
+
         string = \
             "{:" + formatstr +"} "  + \
             "{:" + formatstr +"}i " + \
             "{:" + formatstr +"}j " + \
-            "{:" + formatstr +"}k "
+            "{:" + formatstr +"}k"
         return string.format(self.q[0], self.q[1], self.q[2], self.q[3])
         
     def __bool__(self):
         return not (self == Quaternion(0.0))
 
     def __nonzero__(self):
-        return bool(self)
+        return not (self == Quaternion(0.0))
+
+    def __invert__(self):
+        return (self == Quaternion(0.0))
+
+    # Type Conversion
+    def __int__(self):
+        """ Implements type conversion to int.
+
+        Truncates the Quaternion object by only considering the real 
+        component and rounding to the next integer value towards zero.
+        Note: to round to the closest integer, use int(round(float(q)))
+        """
+        return int(self.q[0])
+
+    def __float__(self):
+        """ Implements type conversion to float.
+
+        Truncates the Quaternion object by only considering the real 
+        component.
+        """
+        return self.q[0]
+
+    def __complex__(self):
+        """ Implements type conversion to complex.
+
+        Truncates the Quaternion object by only considering the real 
+        component and the first imaginary component. 
+        This is equivalent to a projection from the 4-dimensional hypersphere 
+        to the 2-dimensional complex plane.
+        """
+        return complex(self.q[0], self.q[1])
 
     # Comparison
     def __eq__(self, other):
@@ -179,9 +214,6 @@ class Quaternion:
     # Negation
     def __neg__(self):
         return self.__class__(array= -self.q)
-
-    def __invert__(self):
-        return self.inverse()
 
     # Addition
     def __add__(self, other):
@@ -208,7 +240,7 @@ class Quaternion:
     # Multiplication
     def __mul__(self, other):
         """ Product of either:
-        a) this quaternion, right-multiplied with another quaternion object, or
+        a) this quaternion, right-multiplied with another quaternion object (Hamilton Product), or
         b) this quaternion, scaled by a real-valued scalar.
         
         Returns a new quaternion object storing the result of the multiplication.
@@ -251,19 +283,13 @@ class Quaternion:
 
     # Exponentiation
     def __pow__(self, exponent):
-        exponent = int(exponent)
-        if (exponent is 0):
-            return Quaternion() # Unit quaternion
-        elif (exponent >= 1): 
-            q = Quaternion(self) # clone
-            while (exponent > 1):
-                q *= self
-                exponent -= 1
-            return q
-        else:
-            # TODO: implement root behaviour (exponent < 1)
-            pass
+        exponent = float(exponent) # Explicitly reject non-real exponents
+        theta = acos(self.scalar() / self.norm())
+        n = self.vector() / np.linalg.norm(self.vector())
+        return (self.norm() ** exponent) * Quaternion(scalar=cos(exponent * theta), vector=(n * sin(exponent * theta)))
 
+
+    # Quaternion Features
     def _vector_conjugate(self):
         return np.hstack((self.q[0], -self.q[1:4]))
 
@@ -281,23 +307,32 @@ class Quaternion:
         """ Return L2 norm of the quaternion 4-vector 
 
         Returns the square root of the sum of the squares of the elements of q
+        Slow but accurate. If speed is a concern, consider using _fast_normalise() instead
         """
-        # Optimised by using the magic number method described here: http://stackoverflow.com/a/12934750
-
         mag_squared = self._sum_of_squares()
-        if (abs(1.0 - mag_squared) < 2.107342e-08):
-            return ((1.0 + mag_squared) / 2.0) # More efficient. Padé approximation valid if error is small 
-        else:
-            return sqrt(mag_squared) # Error is too big, take the performance hit to calculate the square root properly
+        return sqrt(mag_squared)
 
     def magnitude(self):
         return self.norm()
 
     def _normalise(self):
+        """
+        Object is guaranteed to be a unit quaternion after calling this operation
+        """
         self.q = self.q / self.norm()
 
     def _fast_normalise(self):
-        pass
+        """ Normalise the object to a unit quaternion using a fast approximation method if appropriate
+
+        Object is guaranteed to be a quaternion of approximately unit length after calling this operation
+        """
+        mag_squared = np.dot(self.q, self.q)
+        if (abs(1.0 - mag_squared) < 2.107342e-08):
+            mag =  ((1.0 + mag_squared) / 2.0) # More efficient. Pade approximation valid if error is small 
+        else:
+            mag =  sqrt(mag_squared) # Error is too big, take the performance hit to calculate the square root properly
+
+        self.q = self.q / mag
 
     def normalised(self):
         """ Return a unit quaternion object (versor) representing the same rotation as this
@@ -356,6 +391,9 @@ class Quaternion:
             return tuple(l)
         else:
             return a
+    def interpolate(self, other, amount):
+        # http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
+        pass
 
     def rotation_matrix(self):
         self._normalise()
@@ -368,12 +406,14 @@ class Quaternion:
         return np.vstack([Rt, np.array([0.0, 0.0, 0.0, 1.0])])
 
     def axis(self):
-        #TODO
-        return np.array([0.0, 0.0, 0.0])
+        self._normalise()
+        partial_angle = acos(self.q[0])
+        axis = np.array([self.q[1] / sin(partial_angle), self.q[2] / sin(partial_angle), self.q[3] / sin(partial_angle)])
+        return axis
 
     def angle(self):
-        #TODO
-        return 0.0
+        self._normalise()
+        return 2. * acos(self.q[0])
 
     def scalar(self):
         """ Return the real or scalar component of the quaternion object

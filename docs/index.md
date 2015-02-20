@@ -42,7 +42,7 @@ Now you can do a bunch of useful things with your new quaternion object. Let's t
 	
 	>>> import numpy
 	>>> numpy.set_printoptions(suppress=True) # Suppress insignificant values for clarity
-	>>> v = numpy.array([0., 0., 1.]) # Unit vector in the +z drection
+	>>> v = numpy.array([0., 0., 1.]) # Unit vector in the +z direction
 	>>> v_prime = my_quaternion.rotate(q)
 	>>> v_prime
 		array([ 0., 0., -1.])
@@ -59,7 +59,7 @@ A cool feature of quaternions is that they can be intuitively chained together t
 	>>>
 
 
-[quaternion basics]: ./intro_to_quaternions.md
+[quaternion basics]: ./quaternion_basics.md
 [initialisation]: ./initialisation.md
-[features]: ./pyquaternion_features.md
-[operations]: ./pyquaternion_operations.md
+[features]: ./features.md
+[operations]: ./operations.md

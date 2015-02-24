@@ -17,5 +17,10 @@ python3 test_quaternion.py -v
 
 ---
 
+![demo](./demo.gif)
+
+> The above image shows smooth interpolation between random orientations using the pyquaternion module.
+
 ## Documentation
 You will find complete documentation for working with the pyquaternion module [here](./docs/index.md).
+

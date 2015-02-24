@@ -91,7 +91,7 @@ class Quaternion:
             except ValueError:
                 raise ValueError("One or more elements in sequence <" + str(seq) + "> cannot be interpreted as a real number")
             else:
-                return np.array(l)
+                return np.asarray(l)
         elif len(seq) is 0:
             return np.zeros(n)
         else:
@@ -393,42 +393,23 @@ class Quaternion:
             return a
 
     @classmethod
-    def slerp(cls, q0, q1, amount):
+    def slerp(cls, q0, q1, amount=0.5):
         # Ensure quaternion inputs are unit quaternions and 0 <= amount <=1
-        q0._normalise()
-        q1._normalise()
-        amount = np.clip(0, 1, amount)
-
-        # http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
-
-        # Compute the cosine of the angle between the two vectors.
-        dot = np.dot(q0.elements(), q1.elements())
-
-        dot_threshold = 0.9995;
-        if dot > dot_threshold:
-            # Inputs are too close for comfort, linearly interpolate and normalize the result.
-            result = q0 + ((q1 - q0) * amount);
-            return result.normalised()
+        q0._fast_normalise()
+        q1._fast_normalise()
+        amount = np.clip(amount, 0, 1)
 
         return ((q1 * q0.inverse()) ** amount) * q0
         
-        # np.clip(-1, 1, dot) # clamp dot to range of acos
-        # theta_0 = acos(dot)
-        # theta = theta_0 * amount
-        # q2 = q1 - (q0 * dot)
-        # q2._normalise()
-        # return q0*cos(theta) + q2*sin(theta)
-
     @classmethod
-    def interpolate(cls, q0, q1, intermediates, inclusive=False):
-        step = 1.0 / (intermediates + 1)
-        if inclusive:
-            steps = [i*step for i in range(0, intermediates + 2)]
+    def intermediates(cls, q0, q1, n, include_endpoints=False):
+        step_size = 1.0 / (n + 1)
+        if include_endpoints:
+            steps = [i * step_size for i in range(0, n + 2)]
         else:
-            steps = [i*step for i in range(1, intermediates + 1)]
-        for s in steps:
-            yield cls.slerp(q0, q1, s)
-        
+            steps = [i * step_size for i in range(1, n + 1)]
+        for step in steps:
+            yield cls.slerp(q0, q1, step)
 
     def rotation_matrix(self):
         self._normalise()

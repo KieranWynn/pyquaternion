@@ -57,6 +57,33 @@ A cool feature of quaternions is that they can be intuitively chained together t
 	>>> v_prime
 		array([ 1., 0., 0.])
 	>>>
+	
+Quaternions are used extensively in animation to describe smooth transitions between known orientations. This is known as interpolation. This is an example of an area where quaternions are preferred to rotation matrices as smooth interpolation is not possible with the latter. Here's quaternion interpolation in action:
+	
+	>>> import numpy
+	>>> numpy.set_printoptions(suppress=True) # Suppress insignificant values for clarity
+	>>> v = numpy.array([0., 0., 1.]) # Unit vector in the +z direction
+	>>> q0 = Quaternion(axis=[1, 1, 1], angle=0.0) # Rotate 0 about x=y=z
+	>>> q1 = Quaternion(axis=[1, 1, 1], angle=2 * 3.14159265 / 3) # Rotate 120 about x=y=z
+	>>> for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
+	...		v_prime = q.rotate(v)
+	...		print(v_prime)
+	... 
+	[ 0.  0.  1.]
+	[ 0.14213118 -0.12416109  0.98202991]
+	[ 0.29457011 -0.22365854  0.92908843]
+	[ 0.44909878 -0.29312841  0.84402963]
+	[ 0.59738651 -0.32882557  0.73143906]
+	[ 0.73143906 -0.32882557  0.59738651]
+	[ 0.84402963 -0.29312841  0.44909879]
+	[ 0.92908843 -0.22365854  0.29457012]
+	[ 0.98202991 -0.12416109  0.14213118]
+	[ 1. 0.  0.]
+	
+In the code above, the expression `Quaternion.intermediates(q0, q1, 8, include_endpoints=True)` returns an iterator over a sequence of Quaternion objects describing a set of 10 (8 + 2) rotations between `q0` and `q1`. The printed output is then the path of the point originally at [0, 0, 1] as it is rotated through 120 degrees about x=y=z to end up at [1, 0, 0].
+This could easily be plugged into a visualisation framework to show smooth animated rotation sequences. Read the full documentation on interpolation features [here](./features.md#Interpolation).
+
+For a full demonstration of 3D interpolation and animation, run the `demo.py` script included in the pyquaternion package. This will require some elements of the full [SciPy](http://www.scipy.org/about.html) package that are not required for pyquaternion itself.
 
 
 [quaternion basics]: ./quaternion_basics.md

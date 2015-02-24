@@ -18,8 +18,10 @@ Clone another quaternion object
 
 # Random 
 Create a random quaternion that describes a rotation randomly chosen from a uniform distribution across the rotation space. [Source](http://planning.cs.uiuc.edu/node198.html).
+
+This is a class method and is called as a method of the class itself rather than on a particular instance.
 		
-		q3 = Quaternion.random()
+		q3 = Quaternion.random() # called as a class method
 	
 # From scalar
 Create the quaternion representation of a scalar (single real number) value.

@@ -620,6 +620,8 @@ class TestQuaternionFeatures(unittest.TestCase):
 
     def test_rotate(self):
         q = Quaternion(axis=[1,1,1], angle=2*pi/3)
+        q2 = Quaternion(axis=[1, 0, 0], angle=-pi)
+        q3 = Quaternion(axis=[1, 0, 0], angle=pi)
         precision = 12
         for r in [1, 3.8976, -69.7, -0.000001]:
             # use np.testing.assert_almost_equal() to compare float sequences
@@ -629,6 +631,10 @@ class TestQuaternionFeatures(unittest.TestCase):
             self.assertEqual(q.rotate(Quaternion(vector=[-r, 0, 0])), Quaternion(vector=[0, -r, 0]))
             np.testing.assert_almost_equal(q.rotate([0, -r, 0]), [0, 0, -r], decimal=precision)
             self.assertEqual(q.rotate(Quaternion(vector=[0, 0, -r])), Quaternion(vector=[-r, 0, 0]))
+
+            np.testing.assert_almost_equal(q2.rotate((r, 0, 0)), q3.rotate((r, 0, 0)), decimal=precision)
+            np.testing.assert_almost_equal(q2.rotate((0, r, 0)), q3.rotate((0, r, 0)), decimal=precision)
+            np.testing.assert_almost_equal(q2.rotate((0, 0, r)), q3.rotate((0, 0, r)), decimal=precision)
 
     def test_conversion_to_matrix(self):
         q = Quaternion.random()
@@ -682,12 +688,12 @@ class TestQuaternionFeatures(unittest.TestCase):
     def test_interpolate(self):
         q1 = Quaternion(axis=[1, 0, 0], angle=0.0)
         q2 = Quaternion(axis=[1, 0, 0], angle=2*pi/3)
-        intermediates = 3
+        num_intermediates = 3
         base = pi/6
-        list1 = list(Quaternion.interpolate(q1, q2, intermediates, inclusive=False))
-        list2 = list(Quaternion.interpolate(q1, q2, intermediates, inclusive=True))
-        self.assertEqual(len(list1), intermediates)
-        self.assertEqual(len(list2), intermediates+2)
+        list1 = list(Quaternion.intermediates(q1, q2, num_intermediates, include_endpoints=False))
+        list2 = list(Quaternion.intermediates(q1, q2, num_intermediates, include_endpoints=True))
+        self.assertEqual(len(list1), num_intermediates)
+        self.assertEqual(len(list2), num_intermediates+2)
         self.assertEqual(list1[0], list2[1])
         self.assertEqual(list1[1], list2[2])
         self.assertEqual(list1[2], list2[3])

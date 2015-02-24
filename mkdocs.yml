@@ -1,8 +1,8 @@
 site_name: pyquaternion 
 pages:
 - [index.md, Home]
-- [intro_to_quaternions.md, Quaternion Basics]
+- [quaternion_basics.md, Quaternion Basics]
 - [initialisation.md, Object Initialisation]
-- [pyquaternion_features.md, Quaternion Features]
-- [pyquaternion_operations.md, Quaternion Operations]
+- [features.md, Quaternion Features]
+- [operations.md, Quaternion Operations]
 theme: mkdocs

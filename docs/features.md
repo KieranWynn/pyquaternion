@@ -71,7 +71,51 @@ Rotate a 3D vector by the rotation stored in the Quaternion object
 
 
 # Interpolation
-...coming soon [Source](http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/)
+
+`Quaternion.slerp(q0, q1, amount=0.5)` - *class method*
+
+Find a valid quaternion rotation at a specified distance along the minor arc of a great circle passing through any two existing quaternion endpoints lying on the unit radius hypersphere. [Source](http://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp)
+
+This is a class method and is called as a method of the class itself rather than on a particular instance.
+
+**Params:**
+
+* `q0` - first endpoint rotation as a Quaternion object
+* `q1` - second endpoint rotation as a Quaternion object
+* `amount` - interpolation parameter between 0 and 1. This describes the linear placement position of the result along the arc between endpoints; 0 being at `q0` and 1 being at `q1`. Defaults to the midpoint (0.5).
+
+**Returns:**
+a new Quaternion object representing the interpolated rotation. This is guaranteed to be a unit quaternion.
+
+> **Note:** This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
+
+	q0 = Quaternion(axis=[1, 1, 1], angle=0.0)
+	q1 = Quaternion(axis=[1, 1, 1], angle=3.141592)
+	q  = Quaternion.slerp(q0, q1, 2.0/3.0) # Rotate 120 degrees (2 * pi / 3)
+
+`Quaternion.intermediates(q_start, q_end, n, include_endpoints=False)` - *class method*
+
+Generator method to get an iterable sequence of `n` evenly spaced quaternion rotations between any two existing quaternion endpoints lying on the unit radius hypersphere. This is a convenience function that is based on `Quaternion.slerp()` as defined above.
+
+This is a class method and is called as a method of the class itself rather than on a particular instance.
+
+**Params:**
+
+* `q_start` - initial endpoint rotation as a Quaternion object
+* `q_end` - final endpoint rotation as a Quaternion object
+* `n` - number of intermediate quaternion objects to include within the interval
+* `include_endpoints` - If set to `True`, the sequence of intermediates will be 'bookended' by `q_start` and `q_end`, resulting in a sequence length of `n + 2`. If set to `False`, endpoints are not included. Defaults to `False`.
+
+**Returns:** 
+a generator object iterating over a sequence of intermediate quaternion objects.
+
+> **Note:** This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
+	
+	q0 = Quaternion(axis=[1, 1, 1], angle=0.0)
+	q1 = Quaternion(axis=[1, 1, 1], angle=2 * 3.141592 / 3)
+	for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
+		v = q.rotate([1, 0, 0])
+		print(v)
 
 # Conversion to matrix form
 `Quaternion.rotation_matrix()` & `Quaternion.transformation_matrix()`

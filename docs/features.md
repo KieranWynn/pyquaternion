@@ -15,6 +15,14 @@ This should be 1.0 for a unit quaternion (versor)
 
 	my_quaternion.norm()
 	my_quaternion.magnitude()
+
+`Quaternion.is_unit(tolerance=1e-14)`
+
+**Returns:** `True` if the Quaternion object is of unit length to within the specified tolerance value. `False` otherwise.
+
+**Params:** 
+	
+* `tolerance` - maximum absolute value by which the norm can differ from 1.0 for the object to be considered a unit quaternion. Defaults to `1e-14`.
 	
 # Inversion
 `Quaternion.inverse()`
@@ -39,15 +47,15 @@ For a unit quaternion, this is the same as the inverse.
 	conj_quaternion = my_quaternion.conjugate()
 	
 # Normalisation
-`Quaternion.normalised()` & `Quaternion.versor()`
+`Quaternion.normalised()` & `Quaternion.unit()`
 Get a unit quaternion (versor) version of this Quaternion object.
 
-A unit quaternion (versor) has a norm() of 1.0
+A unit quaternion has a norm() of 1.0
 
 **Returns:** a new Quaternion object clone that is guaranteed to be a unit quaternion
 	
 	unit_quaternion = my_quaternion.normalise()
-	unit_quaternion = my_quaternion.versor()
+	unit_quaternion = my_quaternion.unit()
 	
 
 # Rotation

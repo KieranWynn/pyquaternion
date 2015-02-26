@@ -610,7 +610,7 @@ class TestQuaternionFeatures(unittest.TestCase):
     def test_normalisation(self): # normalise to unit quaternion
         r = randomElements()
         q1 = Quaternion(*r) 
-        v = q1.versor()
+        v = q1.unit()
         n = q1.normalised()
         self.assertTrue((v.q == q1.elements() / q1.norm()).all())
         self.assertTrue((n.q == q1.elements() / q1.norm()).all())
@@ -621,6 +621,13 @@ class TestQuaternionFeatures(unittest.TestCase):
         self.assertTrue((abs(q1.axis() - n.axis()) < tol).all())
         self.assertAlmostEqual(q1.angle() , v.angle(), 14)
         self.assertAlmostEqual(q1.angle() , n.angle(), 14)
+
+    def test_is_unit(self):
+        q1 = Quaternion()
+        q2 = Quaternion(1.0, 0, 0, 0.0001)
+        self.assertTrue(q1.is_unit())
+        self.assertFalse(q2.is_unit())
+        self.assertTrue(q2.is_unit(0.001))
 
     def test_q_matrix(self):
         a, b, c, d = randomElements()

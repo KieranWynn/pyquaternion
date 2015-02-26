@@ -104,13 +104,17 @@ class Quaternion:
         (as a numpy array) from which the quaternion's rotation should be created.
 
         """
-        shape = matrix.shape
+        try:
+            shape = matrix.shape
+        except AttributeError:
+            raise TypeError("Invalid matrix type: Input must be a 3x3 or 4x4 numpy array or matrix")
+        
         if shape == (3, 3):
             R = matrix
         elif shape == (4,4):
             R = matrix[:-1][:,:-1] # Upper left 3x3 sub-matrix
         else:
-            raise ValueError("Invalid matrix shape: Input must be a 3x3 or 4x4 numpy array")
+            raise ValueError("Invalid matrix shape: Input must be a 3x3 or 4x4 numpy array or matrix")
         
         # Check matrix properties
         if not np.allclose(np.dot(R, R.conj().transpose()), np.eye(3)):
@@ -393,12 +397,17 @@ class Quaternion:
         q._normalise()
         return q
 
-    def versor(self):
+    def unit(self):
         """ Return a unit quaternion object (versor) representing the same rotation as this
 
         Result is guaranteed to be a unit quaternion
         """
         return self.normalised()
+
+    def is_unit(self, tolerance=1e-14):
+        """ Determine whether the quaternion is of unit length to within a specified tolerance value
+        """
+        return abs(1.0 - self.norm()) < tolerance
 
     def _q_matrix(self):
         return np.array([

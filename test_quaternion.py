@@ -7,7 +7,50 @@ from quaternion import Quaternion
 from math import sqrt, pi, sin, cos
  
 def randomElements():
-    return ( uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.) )
+    return tuple(np.random.uniform(-1, 1, 4)) #( uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.) )
+
+def R_x(theta):
+    """
+    Generate a rotation matrix describing a rotation of theta degrees about the x-axis
+    """
+    c = cos(theta)
+    s = sin(theta)
+    return np.array([
+        [1, 0, 0],
+        [0, c,-s],
+        [0, s, c]])
+
+def R_y(theta):
+    """
+    Generate a rotation matrix describing a rotation of theta degrees about the y-axis
+    """
+    c = cos(theta)
+    s = sin(theta)
+    return np.array([
+        [c, 0, s],
+        [0, 1, 0],
+        [-s,0, c]])
+
+def R_z(theta):
+    """
+    Generate a rotation matrix describing a rotation of theta degrees about the z-axis
+    """
+    c = cos(theta)
+    s = sin(theta)
+    return np.array([
+        [c,-s, 0],
+        [s, c, 0],
+        [0, 0, 1]])
+
+def R(alpha, beta, gamma):
+    """
+    Return a general rotation matrix describing an intrinsic rotation whose 
+    Tait-Bryan angles are alpha, beta, gamma, about axes z, y, x respectively.
+    In this case, alpha, beta and gamma correspond to yaw, pitch and roll respectively. 
+
+    As described here: http://en.wikipedia.org/wiki/Rotation_matrix#General_rotations
+    """
+    return np.dot(R_z(alpha), np.dot(R_y(beta), R_z(gamma)))
 
 class TestQuaternionInitialisation(unittest.TestCase):
     
@@ -36,7 +79,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
     def test_init_from_scalar(self):
         s = random()
         q1 = Quaternion(s)
-        q2 = Quaternion(str(s))
+        q2 = Quaternion(repr(s))
         self.assertIsInstance(q1, Quaternion)
         self.assertIsInstance(q2, Quaternion)
         self.assertEqual(q1, Quaternion(s, 0.0, 0.0, 0.0))
@@ -49,8 +92,8 @@ class TestQuaternionInitialisation(unittest.TestCase):
     def test_init_from_elements(self):
         a, b, c, d = randomElements()
         q1 = Quaternion(a, b, c, d)
-        q2 = Quaternion(str(a), str(b), str(c), str(d))
-        q3 = Quaternion(a, str(b), c, d)
+        q2 = Quaternion(repr(a), repr(b), repr(c), repr(d))
+        q3 = Quaternion(a, repr(b), c, d)
         self.assertIsInstance(q1, Quaternion)
         self.assertIsInstance(q2, Quaternion)
         self.assertIsInstance(q3, Quaternion)
@@ -105,7 +148,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
     def test_init_from_explicit_elements(self):
         e1, e2, e3, e4 = randomElements()
         q1 = Quaternion(w=e1, x=e2, y=e3, z=e4)
-        q2 = Quaternion(a=e1, b=str(e2), c=e3, d=e4)
+        q2 = Quaternion(a=e1, b=repr(e2), c=e3, d=e4)
         q3 = Quaternion(a=e1, i=e2, j=e3, k=e4)
         q4 = Quaternion(a=e1)
         self.assertIsInstance(q1, Quaternion)
@@ -220,8 +263,32 @@ class TestQuaternionInitialisation(unittest.TestCase):
         with self.assertRaises(ZeroDivisionError):
             q = Quaternion(axis=[0., 0., 0.], angle=theta)
 
-    def init_from_explicit_matrix(self):
-        self.fail()
+    def test_init_from_explicit_matrix(self):
+        v = np.array([1, 0, 0])
+        for angle in [0, pi/6, pi/4, pi/2, pi, 4*pi/3, 3*pi/2, 2*pi]:
+            R = R_z(angle) # rotation matrrix describing rotation of 90 about +z
+            v_prime_r = np.dot(R, v)
+
+            q1 = Quaternion(axis=[0,0,1], angle=angle)
+            v_prime_q1 = q1.rotate(v)
+
+            self.assertTrue(np.allclose(v_prime_r, v_prime_q1))
+
+            q2 = Quaternion(matrix=R)
+            v_prime_q2 = q2.rotate(v)
+
+            self.assertTrue(np.allclose(v_prime_q2, v_prime_r))
+
+        R = np.matrix(np.eye(3))
+        q3 = Quaternion(matrix=R)
+        v_prime_q3 = q3.rotate(v)
+        self.assertTrue(np.allclose(v, v_prime_q3))
+        self.assertEqual(q3, Quaternion())
+
+        R[0,1] += 3 # introduce error to make matrix non-orthogonal
+        with self.assertRaises(ValueError):
+            q4 = Quaternion(matrix=R)
+
 
     def test_init_from_explicit_arrray(self):
         r = randomElements()
@@ -403,7 +470,7 @@ class TestQuaternionArithmetic(unittest.TestCase):
             q3 = q1
             self.assertEqual(q1 * s, q2) # post-multiply by scalar
             self.assertEqual(s * q1, q2) # pre-multiply by scalar
-            q3 *= str(s)
+            q3 *= repr(s)
             self.assertEqual(q3, q2)
 
     def test_multiply_incorrect_type(self):
@@ -460,7 +527,7 @@ class TestQuaternionArithmetic(unittest.TestCase):
             q3 = q1
             self.assertEqual(q1 / s, q2)
             self.assertEqual(s / q1, q2.inverse())
-            q3 /= str(s)
+            q3 /= repr(s)
             self.assertEqual(q3, q2)
 
         with self.assertRaises(ZeroDivisionError):
@@ -659,6 +726,18 @@ class TestQuaternionFeatures(unittest.TestCase):
         self.assertTrue((abs(v1_ - q.rotate(v1)) < tolerance).all())
         self.assertTrue((abs(v2_[0:3] - q.rotate(v2[0:3])) < tolerance).all())
 
+    def test_matrix_conversion(self):
+        v = np.random.uniform(-100, 100, 3)
+
+        for i in range(10):
+            q0 = Quaternion.random()
+            R  = q0.rotation_matrix()
+            q1 = Quaternion(matrix=R)
+            self.assertTrue(np.allclose(q0.rotate(v), np.dot(R, v)))
+            self.assertTrue(np.allclose(q0.rotate(v), q1.rotate(v)))
+            self.assertTrue(np.allclose(q1.rotate(v), np.dot(R, v)))
+            self.assertTrue((q0 == q1) or (q0 == -q1)) # q1 and -q1 are equivalent rotations
+
     def test_conversion_to_axis_angle(self):
         axes = [np.array([1, 0, 0]), np.array([-1, 0, 0]), np.array([uniform(-1, 1), uniform(-1, 1), uniform(-1, 1)])]
         angles = [pi / 2., 3*pi*random(), -pi*random()]
@@ -667,9 +746,9 @@ class TestQuaternionFeatures(unittest.TestCase):
             an = angles[i]
             q = Quaternion(axis=ax, angle=an)
             ax = ax / np.linalg.norm(ax)
-            print()
-            print("Axis. In:", ax, "Out:", q.axis())
-            print("Angle. In:", an, "Out:", q.angle())
+            #print()
+            #print("Axis. In:", ax, "Out:", q.axis())
+            #print("Angle. In:", an, "Out:", q.angle())
             tolerance = 1e-14
             # self.assertTrue((abs(ax - q.axis()) < tolerance).all())
             # self.assertAlmostEqual(an % (2*pi) , q.angle(), 14)

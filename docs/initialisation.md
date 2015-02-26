@@ -111,18 +111,23 @@ Specify the angle (in radians) for a rotation about an axis vector [x, y, z] to 
 > Raises `ZeroDivisionError` if the axis vector has 0 length.
 
 ## Explicitly by rotation or transformation matrix
-Specify the 3x3 rotation or 4x4 transformation matrix (as a numpy array) from which the quaternion's rotation should be created. 
+Specify the 3x3 rotation or 4x4 transformation matrix (as a numpy array or matrix) from which the quaternion's rotation should be created. 
 
-Note: when using a transformation matrix as a basis, the translation part will be ignored, and only the rotational component of the matrix will be encoded within the quaternion.
+When using a transformation matrix as a basis, the translation part will be ignored, and only the rotational component of the matrix will be encoded within the quaternion. 
+
+**Important:** The rotation component of the provided matrix must be a pure rotation i.e. [special orthogonal](http://mathworld.wolfram.com/SpecialOrthogonalMatrix.html).
+
+
+This code uses a modification of the algorithm described in [Converting a Rotation Matrix to a Quaternion](https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf), which is itself based on the method described [here](http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/).
 	
 		rotation = numpy.eye(3)
 		transformation = numpy.eye(4)
 		q8d = Quaternion(matrix=rotation) // Using 3x3 rotation matrix
 		q8d = Quaternion(matrix=transformation) // Using 4x4 transformation matrix
  
- 	
+>**Note:** Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence, the output may jump between these equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.
  
-> Raises `ValueError` if the matrix is not 3x3 or 4x4.
+> Raises `ValueError` if the matrix is not 3x3 or 4x4 or if the matrix is not special orthogonal.
 >
 > Raises `TypeError` if the matrix is of the wrong type
  

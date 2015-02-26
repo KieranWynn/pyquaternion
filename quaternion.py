@@ -104,7 +104,58 @@ class Quaternion:
         (as a numpy array) from which the quaternion's rotation should be created.
 
         """
-        return cls()
+        shape = matrix.shape
+        if shape == (3, 3):
+            R = matrix
+        elif shape == (4,4):
+            R = matrix[:-1][:,:-1] # Upper left 3x3 sub-matrix
+        else:
+            raise ValueError("Invalid matrix shape: Input must be a 3x3 or 4x4 numpy array")
+        
+        # Check matrix properties
+        if not np.allclose(np.dot(R, R.conj().transpose()), np.eye(3)):
+            raise ValueError("Matrix must be orthogonal, i.e. its transpose should be its inverse")
+        if not np.isclose(np.linalg.det(R), 1.0):
+            raise ValueError("Matrix must be special orthogonal i.e. its determinant must be +1.0")
+
+        def decomposition_method(matrix):
+            x, y, z = 0, 1, 2 # indices
+            K = np.array([
+                [R[x,x]-R[y,y]-R[z,z],  R[y,x]+R[x,y],          R[z,x]+R[x,z],          R[y,z]-R[z,y] ],
+                [R[y,x]+R[x,y],         R[y,y]-R[x,x]-R[z,z],   R[z,y]+R[y,z],          R[z,x]-R[x,z] ],
+                [R[z,x]+R[x,z],         R[z,y]+R[y,z],          R[z,z]-R[x,x]-R[y,y],   R[x,y]-R[y,x] ],
+                [R[y,z]-R[z,y],         R[z,x]-R[x,z],          R[x,y]-R[y,x],          R[x,x]+R[y,y]+R[z,z] ]])
+            K = K / 3.0
+
+            e_vals, e_vecs = np.linalg.eig(K)
+            print('Eigenvalues:', e_vals)
+            print('Eigenvectors:', e_vecs)
+            max_index = np.argmax(e_vals)
+            principal_component = e_vecs[max_index]
+            return principal_component
+
+        def trace_method(matrix):
+            m = matrix.conj().transpose() # This method assumes row-vector and postmultiplication of that vector
+            if m[2,2] < 0:
+                if m[0,0] > m[1,1]:
+                    t = 1 + m[0,0] - m[1,1] - m[2,2]
+                    q = [m[1,2]-m[2,1], t, m[0,1]+m[1,0], m[2,0]+m[0,2]]
+                else:
+                    t = 1 - m[0,0] + m[1,1] - m[2,2]
+                    q = [m[2,0]-m[0,2], m[0,1]+m[1,0], t, m[1,2]+m[2,1]]
+            else:
+                if m[0,0] < -m[1,1]:
+                    t = 1 - m[0,0] - m[1,1] + m[2,2]
+                    q = [m[0,1]-m[1,0], m[2,0]+m[0,2], m[1,2]+m[2,1], t]
+                else:
+                    t = 1 + m[0,0] + m[1,1] + m[2,2]
+                    q = [t, m[1,2]-m[2,1], m[2,0]-m[0,2], m[0,1]-m[1,0]]
+
+            q = np.array(q)
+            q *= 0.5 / sqrt(t);
+            return q
+
+        return cls(array=trace_method(R))
 
     # Initialise from axis-angle
     @classmethod

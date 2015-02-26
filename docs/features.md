@@ -127,7 +127,9 @@ Get the 3x3 rotation or 4x4 homogeneous transformation matrix equivalent of the 
 * `Quaternion.rotation_matrix()` : a 3x3 orthogonal rotation matrix as a 3x3 Numpy array
 * `Quaternion.transformation_matrix()` : a 4x4 homogeneous transformation matrix as a 4x4 Numpy array
 
-> **Note:** This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+> **Note 1:** This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+>
+>**Note 2:** Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence, the output may jump between these equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.
 	
 	R = my_quaternion.rotation_matrix() 		# 3x3 rotation matrix
 	T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix

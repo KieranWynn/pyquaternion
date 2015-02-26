@@ -5,9 +5,9 @@ The following should get you up and running in no time with pyquaternion.
 
 <a name="dependencies"></a>
 # Dependencies
-pyQuaternion has been tested to work correctly on Python 2.7x and Python 3x. Compatibility outside of these versions is not guaranteed. If you really need support for other versions, feel free to fork the project on [Github](https://github.com/KieranWynn/pyquaternion) and make the necessary modifications.
+pyquaternion has been tested to work correctly on Python 2.7x and Python 3x. Compatibility outside of these versions is not guaranteed. If you really need support for other versions, feel free to fork the project on [Github](https://github.com/KieranWynn/pyquaternion) and make the necessary modifications.
 
-pyQuaternion requires [Numpy](http://www.numpy.org) for the representation of arrays and matrices. Chances are if you're needing quaternions, you've been dealing with numerical computation already and you have it installed. If so, great, ignore the rest of this section. If not, read on!
+pyquaternion requires [Numpy](http://www.numpy.org) for the representation of arrays and matrices. Chances are if you're needing quaternions, you've been dealing with numerical computation already and you have it installed. If so, great, ignore the rest of this section. If not, read on!
 
 Numpy is a core element of the [SciPy](http://www.scipy.org/about.html) package, which also contains a number of useful scientific computing and visualisation tools. If you will be using these (e.g. plotting 3D vectors with [Matplotlib](http://matplotlib.org)), you might want to look into [installing the whole SciPy stack](http://www.scipy.org/install.html), however, SciPy is not required in its entirety for pyquaternion. If you just want the important bit, proceed as follows:
 

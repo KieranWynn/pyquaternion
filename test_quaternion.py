@@ -11,49 +11,6 @@ ALMOST_EQUAL_TOLERANCE = 13
 def randomElements():
     return tuple(np.random.uniform(-1, 1, 4)) #( uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.) )
 
-def R_x(theta):
-    """
-    Generate a rotation matrix describing a rotation of theta degrees about the x-axis
-    """
-    c = cos(theta)
-    s = sin(theta)
-    return np.array([
-        [1, 0, 0],
-        [0, c,-s],
-        [0, s, c]])
-
-def R_y(theta):
-    """
-    Generate a rotation matrix describing a rotation of theta degrees about the y-axis
-    """
-    c = cos(theta)
-    s = sin(theta)
-    return np.array([
-        [c, 0, s],
-        [0, 1, 0],
-        [-s,0, c]])
-
-def R_z(theta):
-    """
-    Generate a rotation matrix describing a rotation of theta degrees about the z-axis
-    """
-    c = cos(theta)
-    s = sin(theta)
-    return np.array([
-        [c,-s, 0],
-        [s, c, 0],
-        [0, 0, 1]])
-
-def R(alpha, beta, gamma):
-    """
-    Return a general rotation matrix describing an intrinsic rotation whose 
-    Tait-Bryan angles are alpha, beta, gamma, about axes z, y, x respectively.
-    In this case, alpha, beta and gamma correspond to yaw, pitch and roll respectively. 
-
-    As described here: http://en.wikipedia.org/wiki/Rotation_matrix#General_rotations
-    """
-    return np.dot(R_z(alpha), np.dot(R_y(beta), R_z(gamma)))
-
 class TestQuaternionInitialisation(unittest.TestCase):
     
     def test_init_default(self):
@@ -266,6 +223,18 @@ class TestQuaternionInitialisation(unittest.TestCase):
             q = Quaternion(axis=[0., 0., 0.], angle=theta)
 
     def test_init_from_explicit_matrix(self):
+        
+        def R_z(theta):
+            """
+            Generate a rotation matrix describing a rotation of theta degrees about the z-axis
+            """
+            c = cos(theta)
+            s = sin(theta)
+            return np.array([
+                [c,-s, 0],
+                [s, c, 0],
+                [0, 0, 1]])
+
         v = np.array([1, 0, 0])
         for angle in [0, pi/6, pi/4, pi/2, pi, 4*pi/3, 3*pi/2, 2*pi]:
             R = R_z(angle) # rotation matrrix describing rotation of 90 about +z

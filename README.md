@@ -1,6 +1,8 @@
 #pyquaternion
 
-A barebones python module for representing quaternions for use in the fields of 3D rotation and animation.
+A fully featured python module for quaternion representation, manipulation, 3D rotation and animation.
+
+Please visit the **[pyquaternion homepage](http://kieranwynn.github.io/pyquaternion/)** for full information and the latest documentation.
 
 
 **Designed for Python 2.7+ and 3.0+**
@@ -19,8 +21,5 @@ python3 test_quaternion.py -v
 
 ![demo](./demo.gif)
 
-> The above image shows smooth interpolation between random orientations using the pyquaternion module.
-
-## Documentation
-You will find complete documentation for working with the pyquaternion module [here](./docs/index.md).
+> Smooth animation with interpolation between random orientations using the pyquaternion module.
 

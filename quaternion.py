@@ -123,6 +123,9 @@ class Quaternion:
             raise ValueError("Matrix must be special orthogonal i.e. its determinant must be +1.0")
 
         def decomposition_method(matrix):
+            """ Method supposedly able to deal with non-orthogonal matrices - NON-FUNCTIONAL!
+            Based on this method: http://arc.aiaa.org/doi/abs/10.2514/2.4654
+            """
             x, y, z = 0, 1, 2 # indices
             K = np.array([
                 [R[x,x]-R[y,y]-R[z,z],  R[y,x]+R[x,y],          R[z,x]+R[x,z],          R[y,z]-R[z,y] ],
@@ -139,6 +142,14 @@ class Quaternion:
             return principal_component
 
         def trace_method(matrix):
+            """
+            This code uses a modification of the algorithm described in: 
+            https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
+            which is itself based on the method described here:
+            http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+            
+            Altered to work with the column vector convention instead of row vectors
+            """
             m = matrix.conj().transpose() # This method assumes row-vector and postmultiplication of that vector
             if m[2,2] < 0:
                 if m[0,0] > m[1,1]:

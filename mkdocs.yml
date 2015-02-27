@@ -1,8 +1,12 @@
 site_name: pyquaternion 
+site_description: A fully featured python module for quaternion representation, manipulation, 3D rotation and animation.
+site_author: Kieran Wynn
+repo_url: https://github.com/KieranWynn/pyquaternion
+site_url: http://kieranwynn.github.io/pyquaternion/
 pages:
 - [index.md, Home]
 - [quaternion_basics.md, Quaternion Basics]
 - [initialisation.md, Object Initialisation]
 - [features.md, Quaternion Features]
 - [operations.md, Quaternion Operations]
-theme: mkdocs
+theme: yeti

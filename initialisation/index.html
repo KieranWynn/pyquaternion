@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+        <title>Object Initialisation - pyquaternion</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../css/prettify-1.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">pyquaternion</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../quaternion_basics">Quaternion Basics</a>
+                </li>
+            
+            
+            
+                <li class="active">
+                    <a href=".">Object Initialisation</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../features">Quaternion Features</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../operations">Quaternion Operations</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li >
+                    <a rel="next" href="../quaternion_basics">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../features">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#default">Default</a></li>
+        
+    
+        <li class="main "><a href="#copy">Copy</a></li>
+        
+    
+        <li class="main "><a href="#random">Random</a></li>
+        
+    
+        <li class="main "><a href="#from-scalar">From scalar</a></li>
+        
+    
+        <li class="main "><a href="#from-elements">From elements</a></li>
+        
+    
+        <li class="main "><a href="#from-a-numpy-array">From a Numpy array</a></li>
+        
+    
+        <li class="main "><a href="#from-a-sequence">From a sequence</a></li>
+        
+    
+        <li class="main "><a href="#using-named-parameters">Using named parameters:</a></li>
+        
+            <li><a href="#explicitly-by-element">Explicitly by element</a></li>
+        
+            <li><a href="#explicitly-by-component">Explicitly by component</a></li>
+        
+            <li><a href="#explicitly-by-rotation-parameters">Explicitly by rotation parameters</a></li>
+        
+            <li><a href="#explicitly-by-rotation-or-transformation-matrix">Explicitly by rotation or transformation matrix</a></li>
+        
+            <li><a href="#explicitly-by-a-numpy-array">Explicitly by a numpy array</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<p>A Quaternion object can be created in the following ways:</p>
+<h1 id="default">Default</h1>
+<p>Creates a unit quaternion, <code>1 + 0i + 0j + 0k</code> the quaternion representation of the real number 1.0.</p>
+<pre><code>    q1 = Quaternion()
+</code></pre>
+<p>For the purposes of rotation, this is a null quaternion (has no effect when rotating).
+For the purposes of quaternion multiplication, this is a unit quaternion (has no effect when multiplying)</p>
+<h1 id="copy">Copy</h1>
+<p>Clone another quaternion object</p>
+<pre><code>    q2 = Quaternion(q1)
+</code></pre>
+<blockquote>
+<p>Raises <code>TypeError</code> if the provided object is not an instance of Quaternion, or any valid positional argument as outlined below.</p>
+</blockquote>
+<h1 id="random">Random</h1>
+<p>Create a random quaternion that describes a rotation randomly chosen from a uniform distribution across the rotation space. <a href="http://planning.cs.uiuc.edu/node198.html">Source</a>.</p>
+<p>This is a class method and is called as a method of the class itself rather than on a particular instance.</p>
+<pre><code>    q3 = Quaternion.random() # called as a class method
+</code></pre>
+<h1 id="from-scalar">From scalar</h1>
+<p>Create the quaternion representation of a scalar (single real number) value.</p>
+<pre><code>    q4 = Quaternion(4.7349)
+    q4 = Quaternion(-3)
+    q4 = Quaternion("4.7349")
+    q4 = Quaternion("98")
+</code></pre>
+<p>The imaginary part of the resulting quaternion will always be <code>0i + 0j + 0k</code>.
+The scalar can be a real number, or a string representing a real number.    </p>
+<blockquote>
+<p>Raises <code>TypeError</code> if the provided value cannot be converted to a real number.</p>
+<p>Raises <code>ValueError</code> if a provided string cannot be interpreted as a real number.</p>
+</blockquote>
+<h1 id="from-elements">From elements</h1>
+<p>Create a quaternion by specifying 4 real-numbered scalar elements.</p>
+<pre><code>    q5 = Quaternion(1, 1, 0, 0)
+    q5 = Quaternion("1.0", "0", ""0.347"", "0.0")
+    q5 = Quaternion("1.76", 0, 0, 0)
+</code></pre>
+<p>Elements can be real numbers, strings representing real numbers, or a mixture of both.</p>
+<blockquote>
+<p>Raises <code>TypeError</code> if any of the provided values cannot be converted to a real number.</p>
+<p>Raises <code>ValueError</code> if any of the provided strings cannot be interpreted as a real number.</p>
+</blockquote>
+<h1 id="from-a-numpy-array">From a Numpy array</h1>
+<p>Create a quaternion from the elements of a 4-element Numpy array</p>
+<pre><code>    q6 = Quaternion(numpy.array([a, b, c, d]))
+</code></pre>
+<p>The elements a, b, c, d of the array correspond the the real, and each imaginary component respectively in the order a + bi + cj + dk.</p>
+<blockquote>
+<p>Raises <code>TypeError</code> if any of the array contents cannot be converted to a real number.</p>
+<p>Raises <code>ValueError</code> if the array contains less/more than 4 elements</p>
+</blockquote>
+<h1 id="from-a-sequence">From a sequence</h1>
+<p>Create a quaternion object from a sequence containing 4 real valued scalar elements</p>
+<pre><code>    q7 = Quaternion((a, b, c, d)) // from 4-tuple
+    q7 = Quaternion([a, b, c, d]) // from list of 4
+</code></pre>
+<p>The sequential elements a, b, c, d of the sequence correspond the the real, and each imaginary component respectively in the order a + bi + cj + dk.</p>
+<blockquote>
+<p>Raises <code>TypeError</code> if any of the sequence contents cannot be converted to a real number.</p>
+<p>Raises <code>ValueError</code> if the sequence contains less/more than 4 elements</p>
+</blockquote>
+<h1 id="using-named-parameters">Using named parameters:</h1>
+<h2 id="explicitly-by-element">Explicitly by element</h2>
+<p>Specify each element, using any sequence of ordered labels</p>
+<pre><code>    q8a = Quaternion(a=1.0, b=0.0, c=0.0, d=0.0)
+    q8a = Quaternion(w=1.0, x=0.0, y=0.0, z=0.0)
+    q8a = Quaternion(a=1.0, i=0.0, j=0.0, k=0.0)
+    q8a = Quaternion(q1=1.0, q2=0.0, q3=0.0, q4=0.0)
+</code></pre>
+<blockquote>
+<p>Exception behaviour is the same as initialisation by element as described above.</p>
+</blockquote>
+<h2 id="explicitly-by-component">Explicitly by component</h2>
+<p>Specify the scalar (real) and vector (imaginary) parts of the desired quaternion.</p>
+<pre><code>    q8b = Quaternion(scalar=1.0, vector=(0.0, 0.0, 0.0)) // Using 3-tuple
+    q8b = Quaternion(scalar=1.0, vector=[0.0, 0.0, 0.0]) // Using list
+    q8b = Quaternion(scalar=1.0, vector=numpy.array([0.0, 0.0, 0.0])) // Using Numpy 3-array
+
+    q8b = Quaternion(real=1.0, imaginary=(0.0, 0.0, 0.0)) // Using 3-tuple
+    q8b = Quaternion(real=1.0, imaginary=[0.0, 0.0, 0.0]) // Using list
+    q8b = Quaternion(real=1.0, imaginary=numpy.array([0.0, 0.0, 0.0])) // Using Numpy 3-array
+</code></pre>
+<p>Either of ( <em>scalar</em> | <em>real</em> ) and ( <em>vector</em> | <em>imaginary</em> ) may be absent, <em>'None'</em> or empty, and will be assumed to be zero in that case.</p>
+<blockquote>
+<p>Raises <code>ValueError</code> if the vector/imaginary component contains less/more than 3 elements</p>
+</blockquote>
+<h2 id="explicitly-by-rotation-parameters">Explicitly by rotation parameters</h2>
+<p>Specify the angle (in radians) for a rotation about an axis vector [x, y, z] to be described by the quaternion object.</p>
+<pre><code>    q8c = Quaternion(angle=math.pi/2, axis=(1.0, 0.0, 0.0)) // Using 3-tuple
+    q8c = Quaternion(angle=math.pi/2, axis=[1.0, 0.0, 0.0]) // Using list
+    q8c = Quaternion(angle=math.pi/2, axis=numpy.array([1.0, 0.0, 0.0])) // Using Numpy 3-array
+</code></pre>
+<blockquote>
+<p>Raises <code>ValueError</code> if either <em>angle</em> or <em>axis</em> is missing - both must be provided to describe a meaningful rotation.</p>
+<p>Raises <code>ValueError</code> if the axis vector contains less/more than 3 elements </p>
+<p>Raises <code>ZeroDivisionError</code> if the axis vector has 0 length.</p>
+</blockquote>
+<h2 id="explicitly-by-rotation-or-transformation-matrix">Explicitly by rotation or transformation matrix</h2>
+<p>Specify the 3x3 rotation or 4x4 transformation matrix (as a numpy array or matrix) from which the quaternion's rotation should be created. </p>
+<p>When using a transformation matrix as a basis, the translation part will be ignored, and only the rotational component of the matrix will be encoded within the quaternion. </p>
+<p><strong>Important:</strong> The rotation component of the provided matrix must be a pure rotation i.e. <a href="http://mathworld.wolfram.com/SpecialOrthogonalMatrix.html">special orthogonal</a>.</p>
+<p>This code uses a modification of the algorithm described in <a href="https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf">Converting a Rotation Matrix to a Quaternion</a>, which is itself based on the method described <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/">here</a>.</p>
+<pre><code>    rotation = numpy.eye(3)
+    transformation = numpy.eye(4)
+    q8d = Quaternion(matrix=rotation) // Using 3x3 rotation matrix
+    q8d = Quaternion(matrix=transformation) // Using 4x4 transformation matrix
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence, the output may jump between these equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.</p>
+<p>Raises <code>ValueError</code> if the matrix is not 3x3 or 4x4 or if the matrix is not special orthogonal.</p>
+<p>Raises <code>TypeError</code> if the matrix is of the wrong type</p>
+</blockquote>
+<h2 id="explicitly-by-a-numpy-array">Explicitly by a numpy array</h2>
+<p>Specify a numpy 4-array of quaternion elements to be assigned directly to the internal vector representation of the quaternion object.</p>
+<pre><code>    q8e = Quaternion(array=numpy.array([1.0, 0.0, 0.0, 0.0]))
+</code></pre>
+<p>This is more direct, and may be faster than feeding a numpy array as a positional argument to the initialiser.</p>
+<blockquote>
+<p>Raises <code>ValueError</code> if the array vector contains less/more than 4 elements</p>
+</blockquote>
+</div>
+        </div>
+
+        
+
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/prettify-1.0.min.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>

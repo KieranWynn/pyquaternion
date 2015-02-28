@@ -105,92 +105,96 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#norm">Norm</a></li>
+        <li class="main active"><a href="#quaternion-features">Quaternion Features</a></li>
         
-    
-        <li class="main "><a href="#inversion">Inversion</a></li>
+            <li><a href="#norm">Norm</a></li>
         
-    
-        <li class="main "><a href="#conjugation">Conjugation</a></li>
+            <li><a href="#inversion">Inversion</a></li>
         
-    
-        <li class="main "><a href="#normalisation">Normalisation</a></li>
+            <li><a href="#conjugation">Conjugation</a></li>
         
-    
-        <li class="main "><a href="#rotation">Rotation</a></li>
+            <li><a href="#normalisation">Normalisation</a></li>
         
-    
-        <li class="main "><a href="#interpolation">Interpolation</a></li>
+            <li><a href="#rotation">Rotation</a></li>
         
-    
-        <li class="main "><a href="#conversion-to-matrix-form">Conversion to matrix form</a></li>
+            <li><a href="#interpolation">Interpolation</a></li>
         
-    
-        <li class="main "><a href="#accessing-rotation-axis">Accessing rotation axis</a></li>
+            <li><a href="#conversion-to-matrix-form">Conversion to matrix form</a></li>
         
-    
-        <li class="main "><a href="#accessing-rotation-angle">Accessing rotation angle</a></li>
+            <li><a href="#accessing-rotation-axis">Accessing rotation axis</a></li>
         
-    
-        <li class="main "><a href="#accessing-real-components">Accessing real components</a></li>
+            <li><a href="#accessing-rotation-angle">Accessing rotation angle</a></li>
         
-    
-        <li class="main "><a href="#accessing-imaginary-components">Accessing imaginary components</a></li>
+            <li><a href="#accessing-real-components">Accessing real components</a></li>
         
-    
-        <li class="main "><a href="#accessing-individual-elements">Accessing individual elements</a></li>
+            <li><a href="#accessing-imaginary-components">Accessing imaginary components</a></li>
         
-    
-        <li class="main "><a href="#modifying-individual-elements">Modifying individual elements</a></li>
+            <li><a href="#accessing-individual-elements">Accessing individual elements</a></li>
+        
+            <li><a href="#modifying-individual-elements">Modifying individual elements</a></li>
         
     
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
+<h1 id="quaternion-features">Quaternion Features</h1>
 <p>This page defines features available for pyquaternion's Quaternion objects</p>
 <p>The code examples below assume the existence of a Quaternion object. You can recreate this by running the following in your Python interpreter of choice:</p>
 <pre><code>my_quaternion = Quaternion.random()
 </code></pre>
-<h1 id="norm">Norm</h1>
-<p><code>Quaternion.norm()</code> &amp; <code>Quaternion.magnitude()</code></p>
+<h2 id="norm">Norm</h2>
+<blockquote>
+<p><strong><code>norm()</code> or <code>magnitude()</code></strong></p>
+</blockquote>
 <p>L2 norm of the quaternion 4-vector </p>
 <p>This should be 1.0 for a unit quaternion (versor)</p>
 <p><strong>Returns:</strong> a scalar real number representing the square root of the sum of the squares of the elements of the quaternion.</p>
 <pre><code>my_quaternion.norm()
 my_quaternion.magnitude()
 </code></pre>
-<p><code>Quaternion.is_unit(tolerance=1e-14)</code></p>
+<hr />
+<blockquote>
+<p><strong><code>is_unit(tolerance=1e-14)</code></strong></p>
+</blockquote>
 <p><strong>Returns:</strong> <code>True</code> if the Quaternion object is of unit length to within the specified tolerance value. <code>False</code> otherwise.</p>
 <p><strong>Params:</strong> </p>
 <ul>
 <li><code>tolerance</code> - maximum absolute value by which the norm can differ from 1.0 for the object to be considered a unit quaternion. Defaults to <code>1e-14</code>.</li>
 </ul>
-<h1 id="inversion">Inversion</h1>
-<p><code>Quaternion.inverse()</code></p>
+<h2 id="inversion">Inversion</h2>
+<blockquote>
+<p><strong><code>inverse()</code></strong></p>
+</blockquote>
 <p>Inverse of the quaternion object</p>
 <p>For a unit quaternion, this is the inverse rotation, i.e. when combined with the original rotation, will result in the null rotation.</p>
 <p><strong>Returns:</strong> a new Quaternion object representing the inverse of this object</p>
 <pre><code>inv_quaternion = my_quaternion.inverse()
 </code></pre>
-<h1 id="conjugation">Conjugation</h1>
-<p><code>Quaternion.conjugate()</code></p>
+<h2 id="conjugation">Conjugation</h2>
+<blockquote>
+<p><strong><code>conjugate()</code></strong></p>
+</blockquote>
 <p>Quaternion conjugate</p>
 <p>For a unit quaternion, this is the same as the inverse.</p>
 <p><strong>Returns:</strong> a new Quaternion object clone with its vector part negated</p>
 <pre><code>conj_quaternion = my_quaternion.conjugate()
 </code></pre>
-<h1 id="normalisation">Normalisation</h1>
-<p><code>Quaternion.normalised()</code> &amp; <code>Quaternion.unit()</code>
-Get a unit quaternion (versor) version of this Quaternion object.</p>
-<p>A unit quaternion has a norm() of 1.0</p>
+<h2 id="normalisation">Normalisation</h2>
+<blockquote>
+<p><strong><code>normalised()</code> or <code>unit()</code></strong></p>
+</blockquote>
+<p>Get a unit quaternion (versor) copy of this Quaternion object.</p>
+<p>A unit quaternion has a <code>norm()</code> of 1.0</p>
 <p><strong>Returns:</strong> a new Quaternion object clone that is guaranteed to be a unit quaternion</p>
 <pre><code>unit_quaternion = my_quaternion.normalise()
 unit_quaternion = my_quaternion.unit()
 </code></pre>
-<h1 id="rotation">Rotation</h1>
-<p><code>Quaternion.rotate(vector)</code>
-Rotate a 3D vector by the rotation stored in the Quaternion object</p>
+<h2 id="rotation">Rotation</h2>
+<blockquote>
+<p><strong><code>rotate(vector)</code></strong></p>
+</blockquote>
+<p>Rotate a 3D vector by the rotation stored in the Quaternion object</p>
 <p><strong>Params:</strong></p>
 <ul>
 <li><code>vector</code> - a 3-vector specified as any ordered sequence of 3 real numbers corresponding to x, y, and z values. Some types that are recognised are: numpy arrays, lists and tuples. A 3-vector can also be represented by a Quaternion object who's scalar part is 0 and vector part is the required 3-vector. Thus it is possible to call <code>Quaternion.rotate(q)</code> with another quaternion object as an input.</li>
@@ -205,8 +209,10 @@ rotated_quaternion  = my_quaternion.rotate(Quaternion(vector=[1, 0, 0])) # Retur
 <p>Raises <code>TypeError</code> if any of the vector elements cannot be converted to a real number.</p>
 <p>Raises <code>ValueError</code> if <code>vector</code> cannot be interpreted as a 3-vector or a Quaternion object.</p>
 </blockquote>
-<h1 id="interpolation">Interpolation</h1>
-<p><code>Quaternion.slerp(q0, q1, amount=0.5)</code> - <em>class method</em></p>
+<h2 id="interpolation">Interpolation</h2>
+<blockquote>
+<p><strong><code>Quaternion.slerp(q0, q1, amount=0.5)</code></strong> - <em>class method</em></p>
+</blockquote>
 <p>Find a valid quaternion rotation at a specified distance along the minor arc of a great circle passing through any two existing quaternion endpoints lying on the unit radius hypersphere. <a href="http://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp">Source</a></p>
 <p>This is a class method and is called as a method of the class itself rather than on a particular instance.</p>
 <p><strong>Params:</strong></p>
@@ -224,7 +230,10 @@ a new Quaternion object representing the interpolated rotation. This is guarante
 q1 = Quaternion(axis=[1, 1, 1], angle=3.141592)
 q  = Quaternion.slerp(q0, q1, 2.0/3.0) # Rotate 120 degrees (2 * pi / 3)
 </code></pre>
-<p><code>Quaternion.intermediates(q_start, q_end, n, include_endpoints=False)</code> - <em>class method</em></p>
+<hr />
+<blockquote>
+<p><strong><code>Quaternion.intermediates(q_start, q_end, n, include_endpoints=False)</code></strong> - <em>class method</em></p>
+</blockquote>
 <p>Generator method to get an iterable sequence of <code>n</code> evenly spaced quaternion rotations between any two existing quaternion endpoints lying on the unit radius hypersphere. This is a convenience function that is based on <code>Quaternion.slerp()</code> as defined above.</p>
 <p>This is a class method and is called as a method of the class itself rather than on a particular instance.</p>
 <p><strong>Params:</strong></p>
@@ -245,8 +254,10 @@ for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
     v = q.rotate([1, 0, 0])
     print(v)
 </code></pre>
-<h1 id="conversion-to-matrix-form">Conversion to matrix form</h1>
-<p><code>Quaternion.rotation_matrix()</code> &amp; <code>Quaternion.transformation_matrix()</code></p>
+<h2 id="conversion-to-matrix-form">Conversion to matrix form</h2>
+<blockquote>
+<p><strong><code>rotation_matrix()</code> &amp; <code>transformation_matrix()</code></strong></p>
+</blockquote>
 <p>Get the 3x3 rotation or 4x4 homogeneous transformation matrix equivalent of the quaternion rotation.</p>
 <p><strong>Returns:</strong></p>
 <ul>
@@ -260,8 +271,10 @@ for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
 <pre><code>R = my_quaternion.rotation_matrix()         # 3x3 rotation matrix
 T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 </code></pre>
-<h1 id="accessing-rotation-axis">Accessing rotation axis</h1>
-<p><code>Quaternion.axis()</code></p>
+<h2 id="accessing-rotation-axis">Accessing rotation axis</h2>
+<blockquote>
+<p><strong><code>axis()</code></strong></p>
+</blockquote>
 <p>Get the axis or vector about which the quaternion rotation occurs</p>
 <p><strong>Returns:</strong> a Numpy unit 3-vector describing the Quaternion object's axis of rotation.</p>
 <blockquote>
@@ -269,8 +282,10 @@ T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 </blockquote>
 <pre><code>u = my_quaternion.axis() # Unit vector about which rotation occurs
 </code></pre>
-<h1 id="accessing-rotation-angle">Accessing rotation angle</h1>
-<p><code>Quaternion.angle()</code> </p>
+<h2 id="accessing-rotation-angle">Accessing rotation angle</h2>
+<blockquote>
+<p><strong><code>angle()</code></strong></p>
+</blockquote>
 <p>Get the angle (in radians) describing the magnitude of the quaternion rotation about its rotation axis. This is guaranteed to be within the range (-pi:pi) with the direction of rotation indicated by the sign.</p>
 <p><strong>Returns:</strong> a real number in the range (-pi:pi) describing the angle of rotation in radians about a Quaternion object's axis of rotation. </p>
 <blockquote>
@@ -278,8 +293,10 @@ T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 </blockquote>
 <pre><code>theta = my_quaternion.angle() # Magnitude of rotation about the prescribed axis
 </code></pre>
-<h1 id="accessing-real-components">Accessing real components</h1>
-<p><code>Quaternion.scalar()</code> &amp; <code>Quaternion.real()</code></p>
+<h2 id="accessing-real-components">Accessing real components</h2>
+<blockquote>
+<p><strong><code>scalar()</code> or <code>real()</code></strong></p>
+</blockquote>
 <p>Get the real or scalar component of the Quaternion object</p>
 <blockquote>
 <p>A quaternion can be described in terms of a scalar and vector part, q = [r, <strong>v</strong>] where:</p>
@@ -291,8 +308,10 @@ T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 <pre><code>r = my_quaternion.scalar()
 r = my_quaternion.real()
 </code></pre>
-<h1 id="accessing-imaginary-components">Accessing imaginary components</h1>
-<p><code>Quaternion.vector()</code> &amp; <code>Quaternion.imaginary()</code></p>
+<h2 id="accessing-imaginary-components">Accessing imaginary components</h2>
+<blockquote>
+<p><strong><code>vector()</code> or <code>imaginary()</code></strong></p>
+</blockquote>
 <p>Get the imaginary or vector component of the Quaternion object. This can be used, for example, to extract the stored vector when a pure-imaginary quaternion object is used to describe a vector within the three-dimensional vector space.</p>
 <blockquote>
 <p>A quaternion can be described in terms of a scalar and vector part, q = [r, <strong>v</strong>] where:</p>
@@ -304,19 +323,24 @@ r = my_quaternion.real()
 <pre><code>v = my_quaternion.vector()
 v = my_quaternion.imaginary()
 </code></pre>
-<h1 id="accessing-individual-elements">Accessing individual elements</h1>
-<p><code>Quaternion.elements()</code></p>
+<h2 id="accessing-individual-elements">Accessing individual elements</h2>
+<blockquote>
+<p><strong><code>elements()</code></strong></p>
+</blockquote>
 <p>Return all four elements of the quaternion object. Result is not guaranteed to be a unit 4-vector.</p>
 <p><strong>Returns:</strong> a numpy 4-array of real numbered coefficients.</p>
 <pre><code>a = my_quaternion.elements()
 print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
 </code></pre>
-<p><code>Quaternion.__getitem__(index)</code></p>
+<hr />
+<blockquote>
+<p><strong><code>__getitem__(index)</code></strong></p>
+</blockquote>
+<p><strong>Returns:</strong> the real numbered element at the specified index in the quaternion 4-array</p>
 <p><strong>Params:</strong></p>
 <ul>
 <li><code>index</code> - integer in the range [-4:3] inclusive</li>
 </ul>
-<p><strong>Returns:</strong> the real numbered element at the specified index in the quaternion 4-array</p>
 <blockquote>
 <p>Raises <code>IndexError</code> if the index provided is invalid</p>
 <p>Raises <code>TypeError</code> or <code>ValueError</code> if the index cannot be interpreted as an integer</p>
@@ -324,8 +348,10 @@ print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
 <pre><code>print("{} + {}i + {}j + {}k".format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
 print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
 </code></pre>
-<h1 id="modifying-individual-elements">Modifying individual elements</h1>
-<p><code>Quaternion.__setitem__(index, value)</code></p>
+<h2 id="modifying-individual-elements">Modifying individual elements</h2>
+<blockquote>
+<p><strong><code>__setitem__(index, value)</code></strong></p>
+</blockquote>
 <p>Set the element at the specified index in the quaternion 4-array to the specified value.</p>
 <p><strong>Params:</strong></p>
 <ul>

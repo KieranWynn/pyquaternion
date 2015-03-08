@@ -1,11 +1,12 @@
+# Quaternion Features
 This page defines features available for pyquaternion's Quaternion objects
 
 The code examples below assume the existence of a Quaternion object. You can recreate this by running the following in your Python interpreter of choice:
 	
 	my_quaternion = Quaternion.random()
 
-# Norm
-`Quaternion.norm()` & `Quaternion.magnitude()`
+## Norm
+> **`norm()` or `magnitude()`**
 
 L2 norm of the quaternion 4-vector 
 
@@ -15,8 +16,10 @@ This should be 1.0 for a unit quaternion (versor)
 
 	my_quaternion.norm()
 	my_quaternion.magnitude()
+	
+----
 
-`Quaternion.is_unit(tolerance=1e-14)`
+> **`is_unit(tolerance=1e-14)`**
 
 **Returns:** `True` if the Quaternion object is of unit length to within the specified tolerance value. `False` otherwise.
 
@@ -24,8 +27,8 @@ This should be 1.0 for a unit quaternion (versor)
 	
 * `tolerance` - maximum absolute value by which the norm can differ from 1.0 for the object to be considered a unit quaternion. Defaults to `1e-14`.
 	
-# Inversion
-`Quaternion.inverse()`
+## Inversion
+> **`inverse()`**
 
 Inverse of the quaternion object
 
@@ -35,8 +38,8 @@ For a unit quaternion, this is the inverse rotation, i.e. when combined with the
 	
 	inv_quaternion = my_quaternion.inverse()
 	
-# Conjugation
-`Quaternion.conjugate()`
+## Conjugation
+> **`conjugate()`**
 
 Quaternion conjugate
 
@@ -46,11 +49,12 @@ For a unit quaternion, this is the same as the inverse.
 
 	conj_quaternion = my_quaternion.conjugate()
 	
-# Normalisation
-`Quaternion.normalised()` & `Quaternion.unit()`
-Get a unit quaternion (versor) version of this Quaternion object.
+## Normalisation
+> **`normalised()` or `unit()`**
 
-A unit quaternion has a norm() of 1.0
+Get a unit quaternion (versor) copy of this Quaternion object.
+
+A unit quaternion has a `norm()` of 1.0
 
 **Returns:** a new Quaternion object clone that is guaranteed to be a unit quaternion
 	
@@ -58,8 +62,9 @@ A unit quaternion has a norm() of 1.0
 	unit_quaternion = my_quaternion.unit()
 	
 
-# Rotation
-`Quaternion.rotate(vector)`
+## Rotation
+> **`rotate(vector)`**
+
 Rotate a 3D vector by the rotation stored in the Quaternion object
 
 **Params:**
@@ -78,9 +83,9 @@ Rotate a 3D vector by the rotation stored in the Quaternion object
 > Raises `ValueError` if `vector` cannot be interpreted as a 3-vector or a Quaternion object.
 
 
-# Interpolation
+## Interpolation
 
-`Quaternion.slerp(q0, q1, amount=0.5)` - *class method*
+> **`Quaternion.slerp(q0, q1, amount=0.5)`** - *class method*
 
 Find a valid quaternion rotation at a specified distance along the minor arc of a great circle passing through any two existing quaternion endpoints lying on the unit radius hypersphere. [Source](http://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp)
 
@@ -101,7 +106,9 @@ a new Quaternion object representing the interpolated rotation. This is guarante
 	q1 = Quaternion(axis=[1, 1, 1], angle=3.141592)
 	q  = Quaternion.slerp(q0, q1, 2.0/3.0) # Rotate 120 degrees (2 * pi / 3)
 
-`Quaternion.intermediates(q_start, q_end, n, include_endpoints=False)` - *class method*
+-----
+
+> **`Quaternion.intermediates(q_start, q_end, n, include_endpoints=False)`** - *class method*
 
 Generator method to get an iterable sequence of `n` evenly spaced quaternion rotations between any two existing quaternion endpoints lying on the unit radius hypersphere. This is a convenience function that is based on `Quaternion.slerp()` as defined above.
 
@@ -125,8 +132,8 @@ a generator object iterating over a sequence of intermediate quaternion objects.
 		v = q.rotate([1, 0, 0])
 		print(v)
 
-# Conversion to matrix form
-`Quaternion.rotation_matrix()` & `Quaternion.transformation_matrix()`
+## Conversion to matrix form
+> **`rotation_matrix()` & `transformation_matrix()`**
 
 Get the 3x3 rotation or 4x4 homogeneous transformation matrix equivalent of the quaternion rotation.
 
@@ -142,8 +149,8 @@ Get the 3x3 rotation or 4x4 homogeneous transformation matrix equivalent of the 
 	R = my_quaternion.rotation_matrix() 		# 3x3 rotation matrix
 	T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 
-# Accessing rotation axis
-`Quaternion.axis()`
+## Accessing rotation axis
+> **`axis()`**
 
 Get the axis or vector about which the quaternion rotation occurs
 
@@ -154,8 +161,8 @@ Get the axis or vector about which the quaternion rotation occurs
 	u = my_quaternion.axis() # Unit vector about which rotation occurs
 
 
-# Accessing rotation angle 
-`Quaternion.angle()` 
+## Accessing rotation angle 
+> **`angle()`**
 
 Get the angle (in radians) describing the magnitude of the quaternion rotation about its rotation axis. This is guaranteed to be within the range (-pi:pi) with the direction of rotation indicated by the sign.
 
@@ -166,8 +173,8 @@ Get the angle (in radians) describing the magnitude of the quaternion rotation a
 	theta = my_quaternion.angle() # Magnitude of rotation about the prescribed axis
 
 
-# Accessing real components
-`Quaternion.scalar()` & `Quaternion.real()`
+## Accessing real components
+> **`scalar()` or `real()`**
 
 Get the real or scalar component of the Quaternion object
 
@@ -184,8 +191,8 @@ This method returns r
 	r = my_quaternion.scalar()
 	r = my_quaternion.real()
 
-# Accessing imaginary components
-`Quaternion.vector()` & `Quaternion.imaginary()`
+## Accessing imaginary components
+> **`vector()` or `imaginary()`**
 
 Get the imaginary or vector component of the Quaternion object. This can be used, for example, to extract the stored vector when a pure-imaginary quaternion object is used to describe a vector within the three-dimensional vector space.
 
@@ -202,8 +209,8 @@ This method returns **v**
 	v = my_quaternion.vector()
 	v = my_quaternion.imaginary()
 
-# Accessing individual elements
-`Quaternion.elements()`
+## Accessing individual elements
+> **`elements()`**
 
 Return all four elements of the quaternion object. Result is not guaranteed to be a unit 4-vector.
 
@@ -212,13 +219,16 @@ Return all four elements of the quaternion object. Result is not guaranteed to b
 	a = my_quaternion.elements()
 	print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
 
-`Quaternion.__getitem__(index)`
+---
+ 
+> **`__getitem__(index)`**
+
+**Returns:** the real numbered element at the specified index in the quaternion 4-array
 
 **Params:**
 
 * `index` - integer in the range [-4:3] inclusive
 
-**Returns:** the real numbered element at the specified index in the quaternion 4-array
 
 > Raises `IndexError` if the index provided is invalid
 > 
@@ -227,8 +237,8 @@ Return all four elements of the quaternion object. Result is not guaranteed to b
 	print("{} + {}i + {}j + {}k".format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
 	print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
 	
-# Modifying individual elements
-`Quaternion.__setitem__(index, value)`
+## Modifying individual elements
+> **`__setitem__(index, value)`**
 
 Set the element at the specified index in the quaternion 4-array to the specified value.
 

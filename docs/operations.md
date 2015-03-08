@@ -1,25 +1,30 @@
+#Quaternion Operations
 This page defines operations applicable to pyquaternion's Quaternion objects.
 
 The code examples below assume the existence of a Quaternion object. You can recreate this by running the following in your Python interpreter of choice:
 	
 	my_quaternion = Quaternion.random()
 	
-# String Representation
-`Quaternion.__str__()`
+## String Representation
+> **`__str__()`**
 
 An informal, nicely printable string representation of the Quaternion object. [Source](https://docs.python.org/3.4/reference/datamodel.html#object.__str__)
 
 	>>> str(my_quaternion)
 		'-0.810 +0.022i -0.563j -0.166k'
 
-`Quaternion.__repr__()`
+___
+
+> **`__repr__()`**
 
 The 'official' string representation of the Quaternion object.  This is a string representation of a valid Python expression that could be used to recreate an object with the same value (given an appropriate environment). [Source](https://docs.python.org/3.4/reference/datamodel.html#object.__repr__)
 
 	>>> repr(my_quaternion)
 		'Quaternion(-0.80951530224438595, 0.022231097065902788, -0.56268832802625091,-0.16604999023923223)'
+
+___
 		
-`Quaternion.__format__(format_spec)`
+> **`__format__(format_spec)`**
 
 A customisable, nicely printable string representation of the Quaternion object. [Source](https://docs.python.org/3.4/reference/datamodel.html#object.__format__)
 
@@ -32,8 +37,8 @@ An empty `format_spec` string will result in the same behaviour as the `Quaterni
 		'My quaternion is: -0.809515 +0.0222311i -0.562688j -0.16605k'
 	
 	
-# Bool
-`Quaternion.__bool__()` and `Quaternion.__nonzero__()`
+## Bool
+> **`__bool__()` or `__nonzero__()`**
 
 **Returns:** `False` if the Quaternion object is zero, i.e. `Quaternion(0.0, 0.0, 0.0, 0.0)` or `True` otherwise. 
 
@@ -49,14 +54,14 @@ The bitwise not operator `~` can be used to invert the boolean value, however th
 	True
 
 
-# Equality
-`Quaternion.__eq__(other)`
+## Equality
+> **`__eq__(other)`**
 
 **Returns:** `True` if all corresponding elements are equal between two Quaternion objects, or `False` otherwise. 
 
 The inequality operator `!=` can also be used to verify inequality in a similar way.
 
-Because comparisons are carried out on floating point elements, equality is considered `True` when the absolute difference between elements falls below a threshold error. Thus objects differing by very small individual element differences may be considered equal.
+Because comparisons are carried out on floating point elements, equality is considered `True` when the absolute difference between elements falls below a threshold error. This is determined by [numpy.allclose()](http://docs.scipy.org/doc/numpy/reference/generated/numpy.allclose.html) with an absolute tolerance of `1.0e-14` and a relative tolerance of `1.0e-13`. As a result, objects differing by very small individual element differences may be considered equal.
 
 > **Note:** This does not directly evaluate the equality of a quaternion rotation. For example, unit Quaternions q and -q will have an equality of `False` even though they represent the equivalent rotation.
 
@@ -68,8 +73,8 @@ Because comparisons are carried out on floating point elements, equality is cons
 	True
 
 
-# Negation
-`Quaternion.__neg__()`
+## Negation
+> **`__neg__()`**
 
 `-q` is the quaternion formed by the element wise negation of the elements of `q`.
 
@@ -81,8 +86,8 @@ If the operand is a unit quaternion, the result is guaranteed to be a unit quate
 	True
 
 
-# Addition
-`Quaternion.__add__(other)`
+## Addition
+> **`__add__(other)`**
 
 `q1 + q2` is the quaternion formed by element-wise sum of `q1` and `q2`. [Source][arithmetic]
 
@@ -96,8 +101,8 @@ The sum is **not** guaranteed to be a unit quaternion.
 	>>> q1 + q2 == Quaternion(q1.elements() + q2.elements())
 	True
 
-# Subtraction
-`Quaternion.__sub__(other)`
+## Subtraction
+> **`__sub__(other)`**
 
 `q1 - q2` is the quaternion formed by element-wise difference between `q1` and `q2`. [Source][arithmetic] 
 
@@ -112,8 +117,8 @@ The difference is **not** guaranteed to be a unit quaternion.
 	True
 
 
-# Multiplication
-`Quaternion.__mul__(other)`
+## Multiplication
+> **`__mul__(other)`**
 
 `q1 * q2` is the quaternion formed by Hamilton product of `q1` and `q2`. [Source][arithmetic]
 
@@ -132,8 +137,8 @@ If the two multiplicands are unit quaternions, the product is guaranteed to be a
 	True
 	
 
-# Division
-`Quaternion.__truediv__(other)` and `Quaternion.__div__(other)`
+## Division
+> **`__truediv__(other)` or `__div__(other)`**
 
 `q1 / q2` is the quaternion formed by Hamilton product of `q1` and `q2.inverse()`. [Source][arithmetic]
 
@@ -150,8 +155,8 @@ If the dividend and divisor are unit quaternions, the quotient is guaranteed to 
 	True
 
 
-# Exponentiation
-`Quaternion.__pow__(other)`
+## Exponentiation
+> **`__pow__(other)`**
 
 `q ** p` is the quaternion formed by raising the Quaternion `q1` to the power of `p` for any real `p`. [Source](http://en.wikipedia.org/wiki/Quaternion#Exponential.2C_logarithm.2C_and_power)
 

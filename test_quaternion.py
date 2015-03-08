@@ -706,7 +706,7 @@ class TestQuaternionFeatures(unittest.TestCase):
         np.testing.assert_almost_equal(v1_, q.rotate(v1), decimal=ALMOST_EQUAL_TOLERANCE)
         np.testing.assert_almost_equal(v2_[0:3], q.rotate(v2[0:3]), decimal=ALMOST_EQUAL_TOLERANCE)
 
-    def test_matrix_conversion(self):
+    def test_matrix_io(self):
         v = np.random.uniform(-100, 100, 3)
 
         for i in range(10):
@@ -719,27 +719,61 @@ class TestQuaternionFeatures(unittest.TestCase):
 
             self.assertTrue((q0 == q1) or (q0 == -q1)) # q1 and -q1 are equivalent rotations
 
-    def conversion_to_axis_angle(self):
-        axes = [np.array([1, 0, 0]), np.array([-1, 0, 0]), np.array([uniform(-1, 1), uniform(-1, 1), uniform(-1, 1)])]
-        angles = [pi / 2., 3*pi*random(), -pi*random()]
-        for i in range(0,3):
-            ax = axes[i]
-            an = angles[i]
-            q = Quaternion(axis=ax, angle=an)
-            ax = ax / np.linalg.norm(ax)
-            #print()
-            #print("Axis. In:", ax, "Out:", q.axis())
-            #print("Angle. In:", an, "Out:", q.angle())
-            tolerance = 1e-14
-            # self.assertTrue((abs(ax - q.axis()) < tolerance).all())
-            # self.assertAlmostEqual(an % (2*pi) , q.angle(), 14)
+    def validate_axis_angle(self, axis, angle):
+        
+        def wrap_angle(theta):
+            """ Wrap any angle to lie between -pi and pi 
+
+            Odd multiples of pi are wrapped to +pi (as opposed to -pi)
+            """
+            result = ((theta + pi) % (2*pi)) - pi
+            if result == -pi: result = pi
+            return result
+
+        theta = wrap_angle(angle)
+        v = axis
+
+        q = Quaternion(angle=theta, axis=v)
+
+        v_ = q.axis()
+        theta_ = q.angle()
+        
+        if theta == 0.0: # axis is irrelevant (check defaults to x=y=z)
+            np.testing.assert_almost_equal(theta_, 0.0, decimal=ALMOST_EQUAL_TOLERANCE)
+            np.testing.assert_almost_equal(v_, np.zeros(3), decimal=ALMOST_EQUAL_TOLERANCE)
+        elif abs(theta) == pi: # rotation in either direction is equivalent
             self.assertTrue(
-                """ Replace tolerance with np.testing.assert_almost_equal
-                """
-                # (q.axis() == ax and q.angle() == an) or (q.axis() == -ax and q.angle() == -an)
-                (abs(ax - q.axis()) < tolerance).all() and abs(q.angle() - an) < tolerance 
+                np.isclose(theta, pi) or np.isclose(theta, -pi) 
+                and 
+                np.isclose(v, v_).all() or np.isclose(v, -v_).all()
+                )
+        else:
+            self.assertTrue(
+                np.isclose(theta, theta_) and np.isclose(v, v_).all()
                 or
-                (abs(ax + q.axis()) < tolerance).all() and abs(q.angle() + an) < tolerance)
+                np.isclose(theta, -theta_) and np.isclose(v, -v_).all()
+                )
+
+    def test_conversion_to_axis_angle(self):
+        random_axis = np.random.uniform(-1, 1, 3)
+        random_axis /= np.linalg.norm(random_axis)
+
+        angles = np.array([-3, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3]) * pi
+        axes = [np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1]), random_axis]
+
+        for v in axes:
+            for theta in angles:
+                self.validate_axis_angle(v, theta)
+    
+
+
+    def test_axis_angle_io(self):
+        for i in range(20):
+            v = np.random.uniform(-1, 1, 3)
+            v /= np.linalg.norm(v)
+            theta = float(np.random.uniform(-2,2, 1)) * pi
+            self.validate_axis_angle(v, theta)
+
 
     def test_slerp(self):
         q1 = Quaternion(axis=[1, 0, 0], angle=0.0)

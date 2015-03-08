@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import random
-from math import sqrt, pi, sin, cos, asin, acos
+from math import sqrt, pi, sin, cos, asin, acos, atan2
 
 class Quaternion:
 
@@ -270,11 +270,10 @@ class Quaternion:
         `absolute(a - b) <= (atol + rtol * absolute(b))`
         """
         if isinstance(other, self.__class__):
-            tolerance = 1.0e-14
             r_tol = 1.0e-13
             a_tol = 1.0e-14
             try:
-                isEqual = np.allclose(self.q, other.q, rtol=r_tol, atol=a_tol)#(abs(self.q - other.q) <= tolerance).all()
+                isEqual = np.allclose(self.q, other.q, rtol=r_tol, atol=a_tol)
             except AttributeError:
                 raise AttributeError("Error in internal quaternion representation means it cannot be compared like a numpy array.")
             return isEqual
@@ -384,20 +383,22 @@ class Quaternion:
         """
         Object is guaranteed to be a unit quaternion after calling this operation
         """
-        self.q = self.q / self.norm()
+        if not self.is_unit():
+            self.q = self.q / self.norm()
 
     def _fast_normalise(self):
         """ Normalise the object to a unit quaternion using a fast approximation method if appropriate
 
         Object is guaranteed to be a quaternion of approximately unit length after calling this operation
         """
-        mag_squared = np.dot(self.q, self.q)
-        if (abs(1.0 - mag_squared) < 2.107342e-08):
-            mag =  ((1.0 + mag_squared) / 2.0) # More efficient. Pade approximation valid if error is small 
-        else:
-            mag =  sqrt(mag_squared) # Error is too big, take the performance hit to calculate the square root properly
+        if not self.is_unit():
+            mag_squared = np.dot(self.q, self.q)
+            if (abs(1.0 - mag_squared) < 2.107342e-08):
+                mag =  ((1.0 + mag_squared) / 2.0) # More efficient. Pade approximation valid if error is small 
+            else:
+                mag =  sqrt(mag_squared) # Error is too big, take the performance hit to calculate the square root properly
 
-        self.q = self.q / mag
+            self.q = self.q / mag
 
     def normalised(self):
         """ Return a unit quaternion object (versor) representing the same rotation as this
@@ -418,7 +419,7 @@ class Quaternion:
     def is_unit(self, tolerance=1e-14):
         """ Determine whether the quaternion is of unit length to within a specified tolerance value
         """
-        return abs(1.0 - self.norm()) < tolerance
+        return abs(1.0 - self._sum_of_squares()) < tolerance # if _sum_of_squares is 1, norm is 1. This saves a call to sqrt()
 
     def _q_matrix(self):
         return np.array([
@@ -492,15 +493,31 @@ class Quaternion:
         Rt = np.hstack([self.rotation_matrix(), t])
         return np.vstack([Rt, np.array([0.0, 0.0, 0.0, 1.0])])
 
-    def axis(self):
+    def _wrap_angle(self, theta):
+            """ Wrap any angle to lie between -pi and pi 
+
+            Odd multiples of pi are wrapped to +pi (as opposed to -pi)
+            """
+            result = ((theta + pi) % (2*pi)) - pi
+            if result == -pi: result = pi
+            return result
+
+    def axis(self, undefined=np.zeros(3)):
+        tolerance = 1e-17
         self._normalise()
-        partial_angle = acos(self.q[0])
-        axis = np.array([self.q[1] / sin(partial_angle), self.q[2] / sin(partial_angle), self.q[3] / sin(partial_angle)])
-        return axis
+        #partial_angle = acos(self.q[0])
+        #axis = np.array([self.q[1] / sin(partial_angle), self.q[2] / sin(partial_angle), self.q[3] / sin(partial_angle)])
+        norm = np.linalg.norm(self.vector())
+        if norm < tolerance:
+            # Here there are an infinite set of possible axes, use what has been specified as an undefined axis.
+            return undefined 
+        else:
+            return self.vector() / norm
 
     def angle(self):
         self._normalise()
-        return 2. * acos(self.q[0])
+        norm = np.linalg.norm(self.vector())
+        return self._wrap_angle(2.0 * atan2(norm,self.scalar()))
 
     def scalar(self):
         """ Return the real or scalar component of the quaternion object

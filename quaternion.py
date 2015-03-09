@@ -412,9 +412,13 @@ class Quaternion:
     # Exponentiation
     def __pow__(self, exponent):
         exponent = float(exponent) # Explicitly reject non-real exponents
-        theta = acos(self.scalar() / self.norm())
-        n = self.vector() / np.linalg.norm(self.vector())
-        return (self.norm() ** exponent) * Quaternion(scalar=cos(exponent * theta), vector=(n * sin(exponent * theta)))
+        norm = self.norm()
+        if norm > 0.0:
+            theta = acos(self.scalar() / self.norm())
+            n = self.vector() / np.linalg.norm(self.vector())
+            return (self.norm() ** exponent) * Quaternion(scalar=cos(exponent * theta), vector=(n * sin(exponent * theta)))
+        else:
+            return Quaternion(self)
 
     def __ipow__(self, other):
         return self ** other
@@ -447,7 +451,11 @@ class Quaternion:
         Returns:
             A new Quaternion object representing the inverse of this object
         """
-        return self.__class__(array=(self._vector_conjugate() / self._sum_of_squares()))
+        ss = self._sum_of_squares()
+        if ss > 0:
+            return self.__class__(array=(self._vector_conjugate() / ss))
+        else:
+            raise ZeroDivisionError("a zero quaternion (0 + 0i + 0j + 0k) cannot be inverted")
 
     def norm(self):
         """L2 norm of the quaternion 4-vector.
@@ -465,18 +473,24 @@ class Quaternion:
         return self.norm()
 
     def _normalise(self):
-        """Object is guaranteed to be a unit quaternion after calling this operation.
+        """Object is guaranteed to be a unit quaternion after calling this 
+        operation UNLESS the object is equivalent to Quaternion(0)
         """
         if not self.is_unit():
-            self.q = self.q / self.norm()
+            n = self.norm()
+            if n > 0:
+                self.q = self.q / n
 
     def _fast_normalise(self):
         """Normalise the object to a unit quaternion using a fast approximation method if appropriate.
 
-        Object is guaranteed to be a quaternion of approximately unit length after calling this operation
+        Object is guaranteed to be a quaternion of approximately unit length 
+        after calling this operation UNLESS the object is equivalent to Quaternion(0)
         """
         if not self.is_unit():
             mag_squared = np.dot(self.q, self.q)
+            if (mag_squared == 0):
+                return
             if (abs(1.0 - mag_squared) < 2.107342e-08):
                 mag =  ((1.0 + mag_squared) / 2.0) # More efficient. Pade approximation valid if error is small 
             else:
@@ -643,7 +657,10 @@ class Quaternion:
     def integrate(self, rate, timestep):
         rate = self._validate_number_sequence(rate, 3)
         rate_norm = np.linalg.norm(rate)
-        normalised_rate = rate / rate_norm
+        if rate_norm > 0:
+            normalised_rate = rate / rate_norm
+        else:
+            normalised_rate = rate
         half_step = timestep / 2.0
         theta = rate_norm * half_step
         return Quaternion(scalar=cos(theta), vector=normalised_rate * sin(theta))
@@ -705,8 +722,6 @@ class Quaternion:
         """
         tolerance = 1e-17
         self._normalise()
-        #partial_angle = acos(self.q[0])
-        #axis = np.array([self.q[1] / sin(partial_angle), self.q[2] / sin(partial_angle), self.q[3] / sin(partial_angle)])
         norm = np.linalg.norm(self.vector())
         if norm < tolerance:
             # Here there are an infinite set of possible axes, use what has been specified as an undefined axis.

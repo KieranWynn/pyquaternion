@@ -42,6 +42,7 @@ ALMOST_EQUAL_TOLERANCE = 13
 
 def randomElements():
     return tuple(np.random.uniform(-1, 1, 4)) #( uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.) )
+    #return (0., 0., 0., 0.)
 
 class TestQuaternionInitialisation(unittest.TestCase):
     
@@ -60,12 +61,12 @@ class TestQuaternionInitialisation(unittest.TestCase):
         with self.assertRaises(ValueError):
             q4 = Quaternion("String")
     
-    def test_init_random(self): #TODO, this *may* fail at random 
+    def test_init_random(self): 
         r1 = Quaternion.random()
         r2 = Quaternion.random()
         self.assertAlmostEqual(r1.norm(), 1.0, ALMOST_EQUAL_TOLERANCE)
         self.assertIsInstance(r1, Quaternion)
-        self.assertNotEqual(r1, r2)
+        #self.assertNotEqual(r1, r2) #TODO, this *may* fail at random 
 
     def test_init_from_scalar(self):
         s = random()
@@ -488,8 +489,12 @@ class TestQuaternionArithmetic(unittest.TestCase):
     def test_divide(self):
         r = randomElements()
         q = Quaternion(*r)
-        self.assertEqual(q / q, Quaternion())
-        self.assertEqual(q / r, Quaternion())
+        if q:
+            self.assertEqual(q / q, Quaternion())
+            self.assertEqual(q / r, Quaternion())
+        else:
+            with self.assertRaises(ZeroDivisionError):
+                q / q
 
         with self.assertRaises(ZeroDivisionError):
             q / Quaternion(0.0)
@@ -529,7 +534,12 @@ class TestQuaternionArithmetic(unittest.TestCase):
             q2 = Quaternion(a/s, b/s, c/s, d/s)
             q3 = q1
             self.assertEqual(q1 / s, q2)
-            self.assertEqual(s / q1, q2.inverse())
+            if q1:
+                self.assertEqual(s / q1, q2.inverse())
+            else:
+                with self.assertRaises(ZeroDivisionError):
+                    s / q1
+
             q3 /= repr(s)
             self.assertEqual(q3, q2)
 
@@ -574,7 +584,8 @@ class TestQuaternionArithmetic(unittest.TestCase):
     def test_noncommutative(self):
         q1 = Quaternion.random()
         q2 = Quaternion.random()
-        self.assertNotEqual(q1 * q2, q2 * q1)
+        if not q1 == q2: # Small chance of this happening with random initialisation
+            self.assertNotEqual(q1 * q2, q2 * q1)
 
 
 class TestQuaternionFeatures(unittest.TestCase):
@@ -608,13 +619,23 @@ class TestQuaternionFeatures(unittest.TestCase):
     def test_inverse(self):
         q1 = Quaternion(randomElements())
         q2 = Quaternion.random()
-        self.assertEqual(q1 * q1.inverse(), Quaternion(1.0, 0.0, 0.0, 0.0))
+        if q1:
+            self.assertEqual(q1 * q1.inverse(), Quaternion(1.0, 0.0, 0.0, 0.0))
+        else:
+            with self.assertRaises(ZeroDivisionError):
+                q1 * q1.inverse()
+
+        self.assertEqual(q2 * q2.inverse(), Quaternion(1.0, 0.0, 0.0, 0.0))
 
     def test_normalisation(self): # normalise to unit quaternion
         r = randomElements()
-        q1 = Quaternion(*r) 
+        q1 = Quaternion(*r)
         v = q1.unit()
         n = q1.normalised()
+
+        if q1 == Quaternion(0): # small chance with random generation
+            return # a 0 quaternion does not normalise
+
         # Test normalised objects are unit quaternions
         np.testing.assert_almost_equal(v.q, q1.elements() / q1.norm(), decimal=ALMOST_EQUAL_TOLERANCE)
         np.testing.assert_almost_equal(n.q, q1.elements() / q1.norm(), decimal=ALMOST_EQUAL_TOLERANCE)
@@ -625,6 +646,9 @@ class TestQuaternionFeatures(unittest.TestCase):
         np.testing.assert_almost_equal(q1.axis(), n.axis(), decimal=ALMOST_EQUAL_TOLERANCE)
         self.assertAlmostEqual(q1.angle(), v.angle(), ALMOST_EQUAL_TOLERANCE)
         self.assertAlmostEqual(q1.angle(), n.angle(), ALMOST_EQUAL_TOLERANCE)
+        # Test special case where q is zero
+        q2 = Quaternion(0)
+        self.assertEqual(q2, q2.normalised())
 
     def test_is_unit(self):
         q1 = Quaternion()
@@ -847,7 +871,7 @@ class TestQuaternionFeatures(unittest.TestCase):
         q0 = Quaternion() # no rotation
         rotation_rate = [0, 0, 2*pi] # one rev per sec around z
         v = [1, 0, 0] # test vector
-        for dt in [0, 0.25, 0.5, 0.75, 1, 2, 10, random()*10]: # time step in seconds
+        for dt in [0, 0.25, 0.5, 0.75, 1, 2, 10, 1e-10, random()*10]: # time step in seconds
             qt = q0.integrate(rotation_rate, dt)
             q_truth = Quaternion(axis=[0,0,1], angle=dt*2*pi)   
             a = qt.rotate(v)
@@ -856,4 +880,3 @@ class TestQuaternionFeatures(unittest.TestCase):
  
 if __name__ == '__main__':
     unittest.main()
-    

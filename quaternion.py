@@ -1,15 +1,41 @@
-# A python module for basic quaternion math
+"""
+This file is part of the pyquaternion python module
 
-# Add compatibility for Python 2x
-from __future__ import absolute_import, division, print_function
+Author:         Kieran Wynn
+Website:        https://github.com/KieranWynn/pyquaternion
+Documentation:  http://kieranwynn.github.io/pyquaternion/
 
-import numpy as np
-import random
-from math import sqrt, pi, sin, cos, asin, acos, atan2
+Version         1.0.0
+
+quaternion.py - The Quaternion class
+
+"""
+
+from __future__ import absolute_import, division, print_function # Add compatibility for Python 2.7+
+
+from math import sqrt, pi, sin, cos, asin, acos, atan2 
+import numpy as np # Numpy is required for many vector operations
+
 
 class Quaternion:
+    """Class to represent a 4-dimensional complex number or quaternion.
+
+    Quaternion objects can be used generically as 4D numbers, 
+    or as unit quaternions to represent rotations in 3D space.
+
+    Attributes:
+        q: Quaternion 4-vector represented as a Numpy array
+
+    """
 
     def __init__(self, *args, **kwargs):
+        """Initialise a new Quaternion object. 
+
+        See Object Initialisation docs for complete behaviour:
+        
+        http://kieranwynn.github.io/pyquaternion/initialisation/
+        
+        """
         s = len(args)
         if s is 0:
             # No positional arguments supplied
@@ -83,24 +109,31 @@ class Quaternion:
             self.q = self._validate_number_sequence(args, 4)
 
     def _validate_number_sequence(self, seq, n):
+        """Validate a sequence to be of a certain length and ensure it's a numpy array of floats.
+
+        Raises:
+            ValueError: Invalid length or non-numeric value
+        """
         if seq is None:
             return np.zeros(n)
         if len(seq) is n:
             try:
                 l = [float(e) for e in seq]
             except ValueError:
-                raise ValueError("One or more elements in sequence <" + str(seq) + "> cannot be interpreted as a real number")
+                raise ValueError("One or more elements in sequence <" + repr(seq) + "> cannot be interpreted as a real number")
             else:
                 return np.asarray(l)
         elif len(seq) is 0:
             return np.zeros(n)
         else:
-            raise ValueError("Unexpected number of elements in sequence.")
+            raise ValueError("Unexpected number of elements in sequence. Got: " + str(len(seq)) + ", Expected: " + str(n) + ".")
 
     # Initialise from matrix
     @classmethod
     def _from_matrix(cls, matrix):
-        """ Create a Quaternion by specifying the 3x3 rotation or 4x4 transformation matrix 
+        """Initialise from matrix representation
+
+        Create a Quaternion by specifying the 3x3 rotation or 4x4 transformation matrix 
         (as a numpy array) from which the quaternion's rotation should be created.
 
         """
@@ -175,8 +208,14 @@ class Quaternion:
     # Initialise from axis-angle
     @classmethod
     def _from_axis_angle(cls, axis, angle):
-        """
-        Precondition: axis is a valid numpy 3-vector, angle is a real valued angle in radians
+        """Initialise from axis and angle representation
+
+        Create a Quaternion by specifying the 3-vector rotation axis and rotation 
+        angle (in radians) from which the quaternion's rotation should be created.
+
+        Params:
+            axis: a valid numpy 3-vector
+            angle: a real valued angle in radians
         """
         mag_sq = np.dot(axis, axis)
         if mag_sq == 0.0:
@@ -192,14 +231,12 @@ class Quaternion:
 
     @classmethod
     def random(cls):
-        """ Generate a random unit quaternion. 
+        """Generate a random unit quaternion. 
 
         Uniformly distributed across the rotation space
         As per: http://planning.cs.uiuc.edu/node198.html
         """
-        r1 = random.random()
-        r2 = random.random()
-        r3 = random.random()
+        r1, r2, r3 = np.random.random(3)
 
         q1 = sqrt(1.0 - r1) * (sin(2 * pi * r2))
         q2 = sqrt(1.0 - r1) * (cos(2 * pi * r2))
@@ -210,12 +247,24 @@ class Quaternion:
 
     # Representation
     def __str__(self):
+        """An informal, nicely printable string representation of the Quaternion object.
+        """
         return "{:.3f} {:+.3f}i {:+.3f}j {:+.3f}k".format(self.q[0], self.q[1], self.q[2], self.q[3])
 
     def __repr__(self):
+        """The 'official' string representation of the Quaternion object.  
+
+        This is a string representation of a valid Python expression that could be used
+        to recreate an object with the same value (given an appropriate environment)
+        """
         return "Quaternion({}, {}, {}, {})".format(repr(self.q[0]), repr(self.q[1]), repr(self.q[2]), repr(self.q[3]))
 
     def __format__(self, formatstr):
+        """Inserts a customisable, nicely printable string representation of the Quaternion object
+
+        The syntax for `format_spec` mirrors that of the built in format specifiers for floating point types. 
+        Check out the official Python [format specification mini-language](https://docs.python.org/3.4/library/string.html#formatspec) for details.
+        """
         if formatstr.strip() == '': # Defualt behaviour mirrors self.__str__()
             formatstr = '+.3f'
 
@@ -228,7 +277,7 @@ class Quaternion:
 
     # Type Conversion
     def __int__(self):
-        """ Implements type conversion to int.
+        """Implements type conversion to int.
 
         Truncates the Quaternion object by only considering the real 
         component and rounding to the next integer value towards zero.
@@ -237,7 +286,7 @@ class Quaternion:
         return int(self.q[0])
 
     def __float__(self):
-        """ Implements type conversion to float.
+        """Implements type conversion to float.
 
         Truncates the Quaternion object by only considering the real 
         component.
@@ -245,7 +294,7 @@ class Quaternion:
         return self.q[0]
 
     def __complex__(self):
-        """ Implements type conversion to complex.
+        """Implements type conversion to complex.
 
         Truncates the Quaternion object by only considering the real 
         component and the first imaginary component. 
@@ -265,8 +314,7 @@ class Quaternion:
 
     # Comparison
     def __eq__(self, other):
-        """
-        Returns true if the following is true for each element:
+        """Returns true if the following is true for each element:
         `absolute(a - b) <= (atol + rtol * absolute(b))`
         """
         if isinstance(other, self.__class__):
@@ -361,17 +409,33 @@ class Quaternion:
         return np.dot(self.q, self.q)
 
     def conjugate(self):
-        # Return vector conjugate encapsulated in a new instance
+        """Quaternion conjugate, encapsulated in a new instance.
+
+        For a unit quaternion, this is the same as the inverse.
+
+        Returns:
+            A new Quaternion object clone with its vector part negated
+        """
         return self.__class__(scalar=self.scalar(), vector= -self.vector())
 
     def inverse(self):
+        """Inverse of the quaternion object, encapsulated in a new instance.
+
+        For a unit quaternion, this is the inverse rotation, i.e. when combined with the original rotation, will result in the null rotation.
+
+        Returns:
+            A new Quaternion object representing the inverse of this object
+        """
         return self.__class__(array=(self._vector_conjugate() / self._sum_of_squares()))
 
-    def norm(self): # -> scalar double
-        """ Return L2 norm of the quaternion 4-vector 
+    def norm(self):
+        """L2 norm of the quaternion 4-vector.
 
-        Returns the square root of the sum of the squares of the elements of q
+        This should be 1.0 for a unit quaternion (versor)
         Slow but accurate. If speed is a concern, consider using _fast_normalise() instead
+
+        Returns:
+            A scalar real number representing the square root of the sum of the squares of the elements of the quaternion.
         """
         mag_squared = self._sum_of_squares()
         return sqrt(mag_squared)
@@ -380,14 +444,13 @@ class Quaternion:
         return self.norm()
 
     def _normalise(self):
-        """
-        Object is guaranteed to be a unit quaternion after calling this operation
+        """Object is guaranteed to be a unit quaternion after calling this operation.
         """
         if not self.is_unit():
             self.q = self.q / self.norm()
 
     def _fast_normalise(self):
-        """ Normalise the object to a unit quaternion using a fast approximation method if appropriate
+        """Normalise the object to a unit quaternion using a fast approximation method if appropriate.
 
         Object is guaranteed to be a quaternion of approximately unit length after calling this operation
         """
@@ -401,27 +464,34 @@ class Quaternion:
             self.q = self.q / mag
 
     def normalised(self):
-        """ Return a unit quaternion object (versor) representing the same rotation as this
+        """Get a unit quaternion (versor) copy of this Quaternion object.
 
-        Result is guaranteed to be a unit quaternion
+        A unit quaternion has a `norm()` of 1.0
+
+        Returns:
+            A new Quaternion object clone that is guaranteed to be a unit quaternion
         """
         q = Quaternion(self)
         q._normalise()
         return q
 
     def unit(self):
-        """ Return a unit quaternion object (versor) representing the same rotation as this
-
-        Result is guaranteed to be a unit quaternion
-        """
         return self.normalised()
 
     def is_unit(self, tolerance=1e-14):
-        """ Determine whether the quaternion is of unit length to within a specified tolerance value
+        """Determine whether the quaternion is of unit length to within a specified tolerance value.
+        
+        Params:
+            tolerance: [optional] maximum absolute value by which the norm can differ from 1.0 for the object to be considered a unit quaternion. Defaults to `1e-14`.
+        
+        Returns:
+            `True` if the Quaternion object is of unit length to within the specified tolerance value. `False` otherwise.
         """
         return abs(1.0 - self._sum_of_squares()) < tolerance # if _sum_of_squares is 1, norm is 1. This saves a call to sqrt()
 
     def _q_matrix(self):
+        """Matrix representation of quaternion for multiplication purposes.
+        """
         return np.array([
             [self.q[0], -self.q[1], -self.q[2], -self.q[3]],
             [self.q[1],  self.q[0], -self.q[3],  self.q[2]],
@@ -429,6 +499,8 @@ class Quaternion:
             [self.q[3], -self.q[2],  self.q[1],  self.q[0]]])
 
     def _q_bar_matrix(self):
+        """Matrix representation of quaternion for multiplication purposes.
+        """
         return np.array([
             [self.q[0], -self.q[1], -self.q[2], -self.q[3]],
             [self.q[1],  self.q[0],  self.q[3], -self.q[2]],
@@ -436,20 +508,33 @@ class Quaternion:
             [self.q[3],  self.q[2], -self.q[1],  self.q[0]]])
 
     def _rotate_quaternion(self, q):
-        """ Rotate a quaternion vector using the stored rotation.
+        """Rotate a quaternion vector using the stored rotation.
 
-        The input q is the vector to be rotated, in quaternion form (0 + xi + yj + kz)
+        Params:
+            q: The vector to be rotated, in quaternion form (0 + xi + yj + kz)
+
+        Returns:
+            A Quaternion object representing the rotated vector in quaternion from (0 + xi + yj + kz)
         """
         self._normalise()
         return self * q * self.conjugate()
 
     def rotate(self, vector):
-        """ Rotate a vector using the quaternion's stored rotation (similarity transform)
+        """Rotate a 3D vector by the rotation stored in the Quaternion object.
 
-        Input vector can be specified as another (pure imaginary) quaternion 
-        or a 3-vector described by a tuple, list or numpy array of length 3.
+        Params:
+            vector: A 3-vector specified as any ordered sequence of 3 real numbers corresponding to x, y, and z values. 
+                Some types that are recognised are: numpy arrays, lists and tuples. 
+                A 3-vector can also be represented by a Quaternion object who's scalar part is 0 and vector part is the required 3-vector. 
+                Thus it is possible to call `Quaternion.rotate(q)` with another quaternion object as an input.
 
-        Output is returned in the type of the provided input vector
+        Returns: 
+            The rotated vector returned as the same type it was specified at input.
+
+        Raises:
+            TypeError: if any of the vector elements cannot be converted to a real number.
+            ValueError: if `vector` cannot be interpreted as a 3-vector or a Quaternion object.
+
         """
         if isinstance(vector, self.__class__):
             return self._rotate_quaternion(vector)
@@ -466,6 +551,28 @@ class Quaternion:
 
     @classmethod
     def slerp(cls, q0, q1, amount=0.5):
+        """Spherical Linear Interpolation between quaternions.
+
+        Find a valid quaternion rotation at a specified distance along the 
+        minor arc of a great circle passing through any two existing quaternion 
+        endpoints lying on the unit radius hypersphere. [Source](http://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp)
+
+        This is a class method and is called as a method of the class itself rather than on a particular instance.
+
+        Params:
+            q0: first endpoint rotation as a Quaternion object
+            q1: second endpoint rotation as a Quaternion object
+            amount: interpolation parameter between 0 and 1. This describes the linear placement position of 
+                the result along the arc between endpoints; 0 being at `q0` and 1 being at `q1`. 
+                Defaults to the midpoint (0.5).
+
+        Returns:
+            A new Quaternion object representing the interpolated rotation. This is guaranteed to be a unit quaternion.
+
+        Note:
+            This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). 
+                Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
+        """
         # Ensure quaternion inputs are unit quaternions and 0 <= amount <=1
         q0._fast_normalise()
         q1._fast_normalise()
@@ -475,6 +582,29 @@ class Quaternion:
         
     @classmethod
     def intermediates(cls, q0, q1, n, include_endpoints=False):
+        """Generator method to get an iterable sequence of `n` evenly spaced quaternion 
+        rotations between any two existing quaternion endpoints lying on the unit 
+        radius hypersphere. 
+
+        This is a convenience function that is based on `Quaternion.slerp()` as defined above.
+
+        This is a class method and is called as a method of the class itself rather than on a particular instance.
+
+        Params:
+            q_start: initial endpoint rotation as a Quaternion object
+            q_end:   final endpoint rotation as a Quaternion object
+            n:       number of intermediate quaternion objects to include within the interval
+            include_endpoints: [optional] if set to `True`, the sequence of intermediates 
+                will be 'bookended' by `q_start` and `q_end`, resulting in a sequence length of `n + 2`. 
+                If set to `False`, endpoints are not included. Defaults to `False`.
+
+        Yields:
+            A generator object iterating over a sequence of intermediate quaternion objects.
+
+        Note:
+            This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). 
+            Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
+        """
         step_size = 1.0 / (n + 1)
         if include_endpoints:
             steps = [i * step_size for i in range(0, n + 2)]
@@ -484,25 +614,60 @@ class Quaternion:
             yield cls.slerp(q0, q1, step)
 
     def rotation_matrix(self):
+        """Get the 3x3 rotation matrix equivalent of the quaternion rotation.
+
+        Returns:
+            A 3x3 orthogonal rotation matrix as a 3x3 Numpy array
+
+        Note: 
+            This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+        
+        """
         self._normalise()
         product_matrix = np.dot(self._q_matrix(), self._q_bar_matrix().conj().transpose())
         return product_matrix[1:][:,1:]
 
     def transformation_matrix(self):
+        """Get the 4x4 homogeneous transformation matrix equivalent of the quaternion rotation.
+
+        Returns:
+            A 4x4 homogeneous transformation matrix as a 4x4 Numpy array
+
+        Note: 
+            This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+        """
         t = np.array([[0.0], [0.0], [0.0]])
         Rt = np.hstack([self.rotation_matrix(), t])
         return np.vstack([Rt, np.array([0.0, 0.0, 0.0, 1.0])])
 
     def _wrap_angle(self, theta):
-            """ Wrap any angle to lie between -pi and pi 
+        """Helper method: Wrap any angle to lie between -pi and pi 
 
-            Odd multiples of pi are wrapped to +pi (as opposed to -pi)
-            """
-            result = ((theta + pi) % (2*pi)) - pi
-            if result == -pi: result = pi
-            return result
+        Odd multiples of pi are wrapped to +pi (as opposed to -pi)
+        """
+        result = ((theta + pi) % (2*pi)) - pi
+        if result == -pi: result = pi
+        return result
 
     def axis(self, undefined=np.zeros(3)):
+        """Get the axis or vector about which the quaternion rotation occurs
+
+        For a null rotation (a purely real quaternion), the rotation angle will 
+        always be `0`, but the rotation axis is undefined. 
+        It is by default assumed to be `[0, 0, 0]`.
+
+        Params:
+            undefined: [optional] specify the axis vector that should define a null rotation. 
+                This is geometrically meaningless, and could be any of an infinite set of vectors, 
+                but can be specified if the default (`[0, 0, 0]`) causes undesired behaviour.
+
+        Returns:
+            A Numpy unit 3-vector describing the Quaternion object's axis of rotation.
+
+        Note:
+            This feature only makes sense when referring to a unit quaternion. 
+            Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+        """
         tolerance = 1e-17
         self._normalise()
         #partial_angle = acos(self.q[0])
@@ -515,45 +680,55 @@ class Quaternion:
             return self.vector() / norm
 
     def angle(self):
+        """Get the angle (in radians) describing the magnitude of the quaternion rotation about its rotation axis. 
+
+        This is guaranteed to be within the range (-pi:pi) with the direction of 
+        rotation indicated by the sign.
+
+        When a particular rotation describes a 180 degree rotation about an arbitrary 
+        axis vector `v`, the conversion to axis / angle representation may jump 
+        discontinuously between all permutations of `(-pi, pi)` and `(-v, v)`, 
+        each being geometrically equivalent (see Note in documentation).
+
+        Returns:
+            A real number in the range (-pi:pi) describing the angle of rotation 
+                in radians about a Quaternion object's axis of rotation. 
+
+        Note:
+            This feature only makes sense when referring to a unit quaternion. 
+            Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+        """
         self._normalise()
         norm = np.linalg.norm(self.vector())
         return self._wrap_angle(2.0 * atan2(norm,self.scalar()))
 
     def scalar(self):
-        """ Return the real or scalar component of the quaternion object
+        """ Return the real or scalar component of the quaternion object.
 
-        Result is a real number i.e. float
+        Returns:
+            A real number i.e. float
         """
         return self.q[0]
 
     def vector(self):
-        """ Return the imaginary or vector component of the quaternion object
+        """ Return the imaginary or vector component of the quaternion object.
 
-        Result is a numpy 3-array of floats
-        Result is not guaranteed to be a unit vector
+        Returns:
+            A numpy 3-array of floats. NOT guaranteed to be a unit vector
         """
         return self.q[1:4]
 
     def real(self):
-        """ Return the real or scalar component of the quaternion object
-
-        Result is a real number i.e. float
-        """
         return self.scalar()
 
     def imaginary(self):
-        """ Return the imaginary or vector component of the quaternion object
-
-        Result is a numpy 3-array of floats
-        Result is not guaranteed to be a unit vector
-        """
         return self.vector()
 
     def elements(self):
-        """ Return all the elements of the quaternion object
+        """ Return all the elements of the quaternion object.
 
-        Result is a numpy 4-array of floats
-        Result is not guaranteed to be a unit vector
+        Returns:
+            A numpy 4-array of floats. NOT guaranteed to be a unit vector
         """
         return self.q
 
@@ -564,7 +739,6 @@ class Quaternion:
     def __setitem__(self, index, value):
         index = int(index)
         self.q[index] = float(value)
-
 
     def __deepcopy__(self):
         return self.__class__(self)

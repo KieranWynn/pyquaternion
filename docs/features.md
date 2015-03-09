@@ -104,7 +104,7 @@ This is a class method and is called as a method of the class itself rather than
 **Returns:**
 a new Quaternion object representing the interpolated rotation. This is guaranteed to be a unit quaternion.
 
-> **Note:** This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
+**Note:** This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
 
 	q0 = Quaternion(axis=[1, 1, 1], angle=0.0)
 	q1 = Quaternion(axis=[1, 1, 1], angle=3.141592)
@@ -125,7 +125,7 @@ This is a class method and is called as a method of the class itself rather than
 * `n` - number of intermediate quaternion objects to include within the interval
 * `include_endpoints` - [optional] - If set to `True`, the sequence of intermediates will be 'bookended' by `q_start` and `q_end`, resulting in a sequence length of `n + 2`. If set to `False`, endpoints are not included. Defaults to `False`.
 
-**Returns:** 
+**Yields:** 
 a generator object iterating over a sequence of intermediate quaternion objects.
 
 **Note:** This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.

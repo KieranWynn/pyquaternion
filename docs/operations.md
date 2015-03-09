@@ -8,25 +8,30 @@ The code examples below assume the existence of a Quaternion object. You can rec
 ## String Representation
 > **`__str__()`**
 
-An informal, nicely printable string representation of the Quaternion object. [Source](https://docs.python.org/3.4/reference/datamodel.html#object.__str__)
+`str(my_quaternion)` returns an informal, nicely printable string representation of the Quaternion object. [Source](https://docs.python.org/3.4/reference/datamodel.html#object.__str__)
 
 	>>> str(my_quaternion)
 		'-0.810 +0.022i -0.563j -0.166k'
+	>>> print(my_quaternion)
+		-0.810 +0.022i -0.563j -0.166k
+	>>>
 
 ___
 
 > **`__repr__()`**
 
-The 'official' string representation of the Quaternion object.  This is a string representation of a valid Python expression that could be used to recreate an object with the same value (given an appropriate environment). [Source](https://docs.python.org/3.4/reference/datamodel.html#object.__repr__)
+`repr(my_quaternion)` returns the 'official' string representation of the Quaternion object.  This is a string representation of a valid Python expression that could be used to recreate an object with the same value (given an appropriate environment). [Source](https://docs.python.org/3.4/reference/datamodel.html#object.__repr__)
 
 	>>> repr(my_quaternion)
 		'Quaternion(-0.80951530224438595, 0.022231097065902788, -0.56268832802625091,-0.16604999023923223)'
-
+	>>> my_quaternion
+		Quaternion(-0.80951530224438595, 0.022231097065902788, -0.56268832802625091,-0.16604999023923223)
+	>>>
 ___
 		
 > **`__format__(format_spec)`**
 
-A customisable, nicely printable string representation of the Quaternion object. [Source](https://docs.python.org/3.4/reference/datamodel.html#object.__format__)
+`a_string_containing_{format_spec}_placeholders.format(my_quaternion)` inserts a customisable, nicely printable string representation of the Quaternion object into the respective places in the provided string. [Source](https://docs.python.org/3.4/reference/datamodel.html#object.__format__)
 
 The syntax for `format_spec` mirrors that of the built in format specifiers for floating point types. Check out the official Python [format specification mini-language](https://docs.python.org/3.4/library/string.html#formatspec) for details.
 An empty `format_spec` string will result in the same behaviour as the `Quaternion.__str__()`.
@@ -40,11 +45,11 @@ An empty `format_spec` string will result in the same behaviour as the `Quaterni
 ## Bool
 > **`__bool__()` or `__nonzero__()`**
 
-**Returns:** `False` if the Quaternion object is zero, i.e. `Quaternion(0.0, 0.0, 0.0, 0.0)` or `True` otherwise. 
+**Returns:** `False` within a logical context if the Quaternion object is zero, i.e. `Quaternion(0.0, 0.0, 0.0, 0.0)` or `True` otherwise. 
 
 The bitwise not operator `~` can be used to invert the boolean value, however the keyword `not` (logical) is preferred.
 
-> **Note:** This does not evaluate the booleanity of a quaternion rotation. A non-zero Quaternion object such as `Quaternion(1.0, 0.0, 0.0, 0.0)` will have a boolean value of `True` even though it represents a **null** rotation.
+**Note:** This does not evaluate the booleanity of a quaternion rotation. A non-zero Quaternion object such as `Quaternion(1.0, 0.0, 0.0, 0.0)` will have a boolean value of `True` even though it represents a **null** rotation.
 
 	>>> Quaternion() == True
 	True
@@ -57,13 +62,13 @@ The bitwise not operator `~` can be used to invert the boolean value, however th
 ## Equality
 > **`__eq__(other)`**
 
-**Returns:** `True` if all corresponding elements are equal between two Quaternion objects, or `False` otherwise. 
+`q1 == q2` returns `True` if all corresponding elements are equal between two Quaternion objects `q1` and `q2`, or `False` otherwise. 
 
 The inequality operator `!=` can also be used to verify inequality in a similar way.
 
 Because comparisons are carried out on floating point elements, equality is considered `True` when the absolute difference between elements falls below a threshold error. This is determined by [numpy.allclose()](http://docs.scipy.org/doc/numpy/reference/generated/numpy.allclose.html) with an absolute tolerance of `1.0e-14` and a relative tolerance of `1.0e-13`. As a result, objects differing by very small individual element differences may be considered equal.
 
-> **Note:** This does not directly evaluate the equality of a quaternion rotation. For example, unit Quaternions q and -q will have an equality of `False` even though they represent the equivalent rotation.
+**Note:** This does not directly evaluate the equality of a quaternion rotation. For example, unit Quaternions q and -q will have an equality of `False` even though they represent the equivalent rotation.
 
 	>>> Quaternion(1, 0, 1, 1) == Quaternion(scalar=1.0, vector=[0.0, 1.0, 1.0])
 	True
@@ -91,7 +96,7 @@ If the operand is a unit quaternion, the result is guaranteed to be a unit quate
 
 `q1 + q2` is the quaternion formed by element-wise sum of `q1` and `q2`. [Source][arithmetic]
 
-> **Note:** If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a `TypeError` or `ValueError` will be raised if this conversion fails.
+**Note:** If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a `TypeError` or `ValueError` will be raised if this conversion fails.
 
 **Returns:** a new Quaternion object representing the sum of the inputs.
 The sum is **not** guaranteed to be a unit quaternion.
@@ -106,7 +111,7 @@ The sum is **not** guaranteed to be a unit quaternion.
 
 `q1 - q2` is the quaternion formed by element-wise difference between `q1` and `q2`. [Source][arithmetic] 
 
-> **Note:** If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a `TypeError` or `ValueError` will be raised if this conversion fails.
+**Note:** If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a `TypeError` or `ValueError` will be raised if this conversion fails.
 
 **Returns:** a new Quaternion object representing the difference of the inputs.
 The difference is **not** guaranteed to be a unit quaternion.
@@ -124,7 +129,7 @@ The difference is **not** guaranteed to be a unit quaternion.
 
 The Hamiltonian product is not commutative. Ensure your operands are correctly placed. 
 
-> **Note:** If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a `TypeError` or `ValueError` will be raised if this conversion fails. As a result this operation holds true for scalar multiplication as scalars are converted to pure real Quaternion objects.
+**Note:** If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a `TypeError` or `ValueError` will be raised if this conversion fails. As a result this operation holds true for scalar multiplication as scalars are converted to pure real Quaternion objects.
 
 **Returns:** a new Quaternion object representing the Hamilton product of the inputs.
 If the two multiplicands are unit quaternions, the product is guaranteed to be a unit quaternion.
@@ -146,7 +151,7 @@ The Hamiltonian product is not commutative. Ensure your operands are correctly p
 
 
 
-> **Note:** If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a `TypeError` or `ValueError` will be raised if this conversion fails. As a result this operation holds true for scalar division as scalars are converted to pure real Quaternion objects.
+**Note:** If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a `TypeError` or `ValueError` will be raised if this conversion fails. As a result this operation holds true for scalar division as scalars are converted to pure real Quaternion objects.
 
 **Returns:** a new Quaternion object representing the Hamilton quotient of the inputs. 
 If the dividend and divisor are unit quaternions, the quotient is guaranteed to be a unit quaternion.
@@ -160,8 +165,6 @@ If the dividend and divisor are unit quaternions, the quotient is guaranteed to 
 
 `q ** p` is the quaternion formed by raising the Quaternion `q1` to the power of `p` for any real `p`. [Source](http://en.wikipedia.org/wiki/Quaternion#Exponential.2C_logarithm.2C_and_power)
 
-> Raises `TypeError` if `other` cannot be interpreted as a real number.
-
 **Returns:** a new Quaternion object representing the the object raised to the power of the input.
 If the base object is a unit quaternion, the result is guaranteed to be a unit quaternion.
 
@@ -172,6 +175,7 @@ If the base object is a unit quaternion, the result is guaranteed to be a unit q
 	>>> (i ** 2) == (j ** 2) == (k ** 2) == -1
 	True
 
+**Raises:** `TypeError` if `other` cannot be interpreted as a real number.
 
 [initialisation]: ./initialisation.md
 [arithmetic]: http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/arithmetic/index.htm

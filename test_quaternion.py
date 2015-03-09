@@ -741,6 +741,7 @@ class TestQuaternionFeatures(unittest.TestCase):
         if theta == 0.0: # axis is irrelevant (check defaults to x=y=z)
             np.testing.assert_almost_equal(theta_, 0.0, decimal=ALMOST_EQUAL_TOLERANCE)
             np.testing.assert_almost_equal(v_, np.zeros(3), decimal=ALMOST_EQUAL_TOLERANCE)
+            return
         elif abs(theta) == pi: # rotation in either direction is equivalent
             self.assertTrue(
                 np.isclose(theta, pi) or np.isclose(theta, -pi) 
@@ -753,6 +754,8 @@ class TestQuaternionFeatures(unittest.TestCase):
                 or
                 np.isclose(theta, -theta_) and np.isclose(v, -v_).all()
                 )
+        # Ensure the returned axis is a unit vector
+        np.testing.assert_almost_equal(np.linalg.norm(v_), 1.0, decimal=ALMOST_EQUAL_TOLERANCE)
 
     def test_conversion_to_axis_angle(self):
         random_axis = np.random.uniform(-1, 1, 3)

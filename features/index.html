@@ -228,9 +228,7 @@ rotated_quaternion  = my_quaternion.rotate(Quaternion(vector=[1, 0, 0])) # Retur
 </ul>
 <p><strong>Returns:</strong>
 a new Quaternion object representing the interpolated rotation. This is guaranteed to be a unit quaternion.</p>
-<blockquote>
 <p><strong>Note:</strong> This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.</p>
-</blockquote>
 <pre><code>q0 = Quaternion(axis=[1, 1, 1], angle=0.0)
 q1 = Quaternion(axis=[1, 1, 1], angle=3.141592)
 q  = Quaternion.slerp(q0, q1, 2.0/3.0) # Rotate 120 degrees (2 * pi / 3)
@@ -248,7 +246,7 @@ q  = Quaternion.slerp(q0, q1, 2.0/3.0) # Rotate 120 degrees (2 * pi / 3)
 <li><code>n</code> - number of intermediate quaternion objects to include within the interval</li>
 <li><code>include_endpoints</code> - [optional] - If set to <code>True</code>, the sequence of intermediates will be 'bookended' by <code>q_start</code> and <code>q_end</code>, resulting in a sequence length of <code>n + 2</code>. If set to <code>False</code>, endpoints are not included. Defaults to <code>False</code>.</li>
 </ul>
-<p><strong>Returns:</strong> 
+<p><strong>Yields:</strong> 
 a generator object iterating over a sequence of intermediate quaternion objects.</p>
 <p><strong>Note:</strong> This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.</p>
 <pre><code>q0 = Quaternion(axis=[1, 1, 1], angle=0.0)

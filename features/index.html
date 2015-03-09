@@ -157,11 +157,11 @@ my_quaternion.magnitude()
 <blockquote>
 <p><strong><code>is_unit(tolerance=1e-14)</code></strong></p>
 </blockquote>
-<p><strong>Returns:</strong> <code>True</code> if the Quaternion object is of unit length to within the specified tolerance value. <code>False</code> otherwise.</p>
 <p><strong>Params:</strong> </p>
 <ul>
-<li><code>tolerance</code> - maximum absolute value by which the norm can differ from 1.0 for the object to be considered a unit quaternion. Defaults to <code>1e-14</code>.</li>
+<li><code>tolerance</code> - [optional] - maximum absolute value by which the norm can differ from 1.0 for the object to be considered a unit quaternion. Defaults to <code>1e-14</code>.</li>
 </ul>
+<p><strong>Returns:</strong> <code>True</code> if the Quaternion object is of unit length to within the specified tolerance value. <code>False</code> otherwise.</p>
 <h2 id="inversion">Inversion</h2>
 <blockquote>
 <p><strong><code>inverse()</code></strong></p>
@@ -205,10 +205,15 @@ rotated_list        = my_quaternion.rotate([1.0, 0.0, 0.0]) # Returns a list
 rotated_array       = my_quaternion.rotate(numpy.array([1.0, 0.0, 0.0])) # Returns a Numpy 3-array
 rotated_quaternion  = my_quaternion.rotate(Quaternion(vector=[1, 0, 0])) # Returns a Quaternion object
 </code></pre>
-<blockquote>
-<p>Raises <code>TypeError</code> if any of the vector elements cannot be converted to a real number.</p>
-<p>Raises <code>ValueError</code> if <code>vector</code> cannot be interpreted as a 3-vector or a Quaternion object.</p>
-</blockquote>
+<p><strong>Raises:</strong></p>
+<ul>
+<li>
+<p><code>TypeError</code> if any of the vector elements cannot be converted to a real number.</p>
+</li>
+<li>
+<p><code>ValueError</code> if <code>vector</code> cannot be interpreted as a 3-vector or a Quaternion object.</p>
+</li>
+</ul>
 <h2 id="interpolation">Interpolation</h2>
 <blockquote>
 <p><strong><code>Quaternion.slerp(q0, q1, amount=0.5)</code></strong> - <em>class method</em></p>
@@ -241,13 +246,11 @@ q  = Quaternion.slerp(q0, q1, 2.0/3.0) # Rotate 120 degrees (2 * pi / 3)
 <li><code>q_start</code> - initial endpoint rotation as a Quaternion object</li>
 <li><code>q_end</code> - final endpoint rotation as a Quaternion object</li>
 <li><code>n</code> - number of intermediate quaternion objects to include within the interval</li>
-<li><code>include_endpoints</code> - If set to <code>True</code>, the sequence of intermediates will be 'bookended' by <code>q_start</code> and <code>q_end</code>, resulting in a sequence length of <code>n + 2</code>. If set to <code>False</code>, endpoints are not included. Defaults to <code>False</code>.</li>
+<li><code>include_endpoints</code> - [optional] - If set to <code>True</code>, the sequence of intermediates will be 'bookended' by <code>q_start</code> and <code>q_end</code>, resulting in a sequence length of <code>n + 2</code>. If set to <code>False</code>, endpoints are not included. Defaults to <code>False</code>.</li>
 </ul>
 <p><strong>Returns:</strong> 
 a generator object iterating over a sequence of intermediate quaternion objects.</p>
-<blockquote>
 <p><strong>Note:</strong> This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.</p>
-</blockquote>
 <pre><code>q0 = Quaternion(axis=[1, 1, 1], angle=0.0)
 q1 = Quaternion(axis=[1, 1, 1], angle=2 * 3.141592 / 3)
 for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
@@ -264,10 +267,8 @@ for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
 <li><code>Quaternion.rotation_matrix()</code> : a 3x3 orthogonal rotation matrix as a 3x3 Numpy array</li>
 <li><code>Quaternion.transformation_matrix()</code> : a 4x4 homogeneous transformation matrix as a 4x4 Numpy array</li>
 </ul>
-<blockquote>
 <p><strong>Note 1:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.</p>
-<p><strong>Note 2:</strong> Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence, the output may jump between these equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.</p>
-</blockquote>
+<p><strong>Note 2:</strong> Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.</p>
 <pre><code>R = my_quaternion.rotation_matrix()         # 3x3 rotation matrix
 T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 </code></pre>
@@ -276,10 +277,14 @@ T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 <p><strong><code>axis()</code></strong></p>
 </blockquote>
 <p>Get the axis or vector about which the quaternion rotation occurs</p>
+<p>For a null rotation (a purely real quaternion), the rotation angle will always be <code>0</code>, but the rotation axis is undefined. It is by default assumed to be <code>[0, 0, 0]</code>.</p>
+<p><strong>Params: </strong></p>
+<ul>
+<li><code>undefined</code> - [optional] - specify the axis vector that should define a null rotation. This is geometrically meaningless, and could be any of an infinite set of vectors, but can be specified if the default (<code>[0, 0, 0]</code>) causes undesired behaviour.</li>
+</ul>
 <p><strong>Returns:</strong> a Numpy unit 3-vector describing the Quaternion object's axis of rotation.</p>
-<blockquote>
-<p><strong>Note:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.</p>
-</blockquote>
+<p><strong>Note 1:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.</p>
+<p><strong>Note 2:</strong> Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence to axis/angle representation, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.</p>
 <pre><code>u = my_quaternion.axis() # Unit vector about which rotation occurs
 </code></pre>
 <h2 id="accessing-rotation-angle">Accessing rotation angle</h2>
@@ -287,10 +292,10 @@ T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 <p><strong><code>angle()</code></strong></p>
 </blockquote>
 <p>Get the angle (in radians) describing the magnitude of the quaternion rotation about its rotation axis. This is guaranteed to be within the range (-pi:pi) with the direction of rotation indicated by the sign.</p>
+<p>When a particular rotation describes a 180 degree rotation about an arbitrary axis vector <code>v</code>, the conversion to axis / angle representation may jump discontinuously between all permutations of <code>(-pi, pi)</code> and <code>(-v, v)</code>, each being geometrically equivalent (see Note 2 below).</p>
 <p><strong>Returns:</strong> a real number in the range (-pi:pi) describing the angle of rotation in radians about a Quaternion object's axis of rotation. </p>
-<blockquote>
-<p><strong>Note:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.</p>
-</blockquote>
+<p><strong>Note 1:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.</p>
+<p><strong>Note 2:</strong> Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence to axis/angle representation, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.</p>
 <pre><code>theta = my_quaternion.angle() # Magnitude of rotation about the prescribed axis
 </code></pre>
 <h2 id="accessing-real-components">Accessing real components</h2>
@@ -298,11 +303,15 @@ T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 <p><strong><code>scalar()</code> or <code>real()</code></strong></p>
 </blockquote>
 <p>Get the real or scalar component of the Quaternion object</p>
-<blockquote>
 <p>A quaternion can be described in terms of a scalar and vector part, q = [r, <strong>v</strong>] where:</p>
-<p>r is the scalar coefficient of the real part of the quaternion i.e. <strong>a</strong> in [a + b<em>i</em> + c<em>j</em> + d<em>k</em>]</p>
-<p><strong>v</strong> is the 3-vector of coefficients to the imaginary parts of the quaternion i.e. <strong>[b, c, d]</strong> in [a + b<em>i</em> + c<em>j</em> + d<em>k</em>]</p>
-</blockquote>
+<ul>
+<li>
+<p>r is the scalar coefficient of the real part of the quaternion i.e. <strong>a</strong> in a + b<em>i</em> + c<em>j</em> + d<em>k</em></p>
+</li>
+<li>
+<p><strong>v</strong> is the 3-vector of coefficients to the imaginary parts of the quaternion i.e. [b, c, d] in a + b<em>i</em> + c<em>j</em> + d<em>k</em></p>
+</li>
+</ul>
 <p>This method returns r</p>
 <p><strong>Returns</strong> the scalar, real valued element of the Quaternion object</p>
 <pre><code>r = my_quaternion.scalar()
@@ -313,11 +322,15 @@ r = my_quaternion.real()
 <p><strong><code>vector()</code> or <code>imaginary()</code></strong></p>
 </blockquote>
 <p>Get the imaginary or vector component of the Quaternion object. This can be used, for example, to extract the stored vector when a pure-imaginary quaternion object is used to describe a vector within the three-dimensional vector space.</p>
-<blockquote>
 <p>A quaternion can be described in terms of a scalar and vector part, q = [r, <strong>v</strong>] where:</p>
-<p>r is the scalar coefficient of the real part of the quaternion i.e. <strong>a</strong> in [a + b<em>i</em> + c<em>j</em> + d<em>k</em>]</p>
-<p><strong>v</strong> is the 3-vector of coefficients to the imaginary parts of the quaternion i.e. <strong>[b, c, d]</strong> in [a + b<em>i</em> + c<em>j</em> + d<em>k</em>]</p>
-</blockquote>
+<ul>
+<li>
+<p>r is the scalar coefficient of the real part of the quaternion i.e. <strong>a</strong> in a + b<em>i</em> + c<em>j</em> + d<em>k</em></p>
+</li>
+<li>
+<p><strong>v</strong> is the 3-vector of coefficients to the imaginary parts of the quaternion i.e. [b, c, d] in a + b<em>i</em> + c<em>j</em> + d<em>k</em></p>
+</li>
+</ul>
 <p>This method returns <strong>v</strong></p>
 <p><strong>Returns</strong> Numpy 3-array of the 3 imaginary elements of the Quaternion object</p>
 <pre><code>v = my_quaternion.vector()
@@ -341,13 +354,19 @@ print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
 <ul>
 <li><code>index</code> - integer in the range [-4:3] inclusive</li>
 </ul>
-<blockquote>
-<p>Raises <code>IndexError</code> if the index provided is invalid</p>
-<p>Raises <code>TypeError</code> or <code>ValueError</code> if the index cannot be interpreted as an integer</p>
-</blockquote>
-<pre><code>print("{} + {}i + {}j + {}k".format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
-print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
+<pre><code>print(&quot;{} + {}i + {}j + {}k&quot;.format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
+print(&quot;{} + {}i + {}j + {}k&quot;.format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
 </code></pre>
+
+<p><strong>Raises:</strong> </p>
+<ul>
+<li>
+<p><code>IndexError</code> if the index provided is invalid</p>
+</li>
+<li>
+<p><code>TypeError</code> or <code>ValueError</code> if the index cannot be interpreted as an integer</p>
+</li>
+</ul>
 <h2 id="modifying-individual-elements">Modifying individual elements</h2>
 <blockquote>
 <p><strong><code>__setitem__(index, value)</code></strong></p>
@@ -358,10 +377,6 @@ print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_qua
 <li><code>index</code> - integer in the range [-4:3] inclusive</li>
 <li><code>value</code> - real value to be inserted into the quaternion array at <code>index</code></li>
 </ul>
-<blockquote>
-<p>Raises <code>IndexError</code> if the index provided is invalid</p>
-<p>Raises <code>TypeError</code> or <code>ValueError</code> if the value cannot be interpreted as a real number</p>
-</blockquote>
 <pre><code>&gt;&gt;&gt; str(my_quaternion)
 '-0.653 -0.127i -0.220j +0.714k'
 &gt;&gt;&gt; my_quaternion[2] = 9
@@ -369,6 +384,16 @@ print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_qua
 '-0.653 -0.127i +9.000j +0.714k'
 &gt;&gt;&gt;
 </code></pre>
+
+<p><strong>Raises:</strong></p>
+<ul>
+<li>
+<p><code>IndexError</code> if the index provided is invalid</p>
+</li>
+<li>
+<p><code>TypeError</code> or <code>ValueError</code> if the value cannot be interpreted as a real number</p>
+</li>
+</ul>
 </div>
         </div>
 

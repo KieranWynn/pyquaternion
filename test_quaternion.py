@@ -867,16 +867,23 @@ class TestQuaternionFeatures(unittest.TestCase):
 
         self.assertEqual(q_dash, q.derivative(omega))
 
-    def test_interation(self):
-        q0 = Quaternion() # no rotation
+    def test_integration(self):
         rotation_rate = [0, 0, 2*pi] # one rev per sec around z
         v = [1, 0, 0] # test vector
         for dt in [0, 0.25, 0.5, 0.75, 1, 2, 10, 1e-10, random()*10]: # time step in seconds
-            qt = q0.integrate(rotation_rate, dt)
+            qt = Quaternion() # no rotation
+            qt.integrate(rotation_rate, dt)
             q_truth = Quaternion(axis=[0,0,1], angle=dt*2*pi)   
             a = qt.rotate(v)
             b = q_truth.rotate(v)
             np.testing.assert_almost_equal(a, b, decimal=ALMOST_EQUAL_TOLERANCE)
+            self.assertTrue(qt.is_unit())
+        # Check integrate() is norm-preserving over many calls
+        q = Quaternion()
+        for i in range(1000):
+            q.integrate([pi, 0, 0], 0.001)
+        self.assertTrue(q.is_unit())
+
  
 if __name__ == '__main__':
     unittest.main()

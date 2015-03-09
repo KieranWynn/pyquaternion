@@ -58,7 +58,9 @@ Get a unit quaternion (versor) copy of this Quaternion object.
 
 A unit quaternion has a `norm()` of 1.0
 
-**Returns:** a new Quaternion object clone that is guaranteed to be a unit quaternion
+**Note:** A Quaternion representing zero i.e. `Quaternion(0, 0, 0, 0)` cannot be normalised. In this case, the returned object will remain zero.
+
+**Returns:** a new Quaternion object clone that is guaranteed to be a unit quaternion *unless* the original object was zero, in which case the norm will remain zero.
 	
 	unit_quaternion = my_quaternion.normalise()
 	unit_quaternion = my_quaternion.unit()
@@ -135,6 +137,53 @@ a generator object iterating over a sequence of intermediate quaternion objects.
 	for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
 		v = q.rotate([1, 0, 0])
 		print(v)
+
+## Differentiation
+> **`derivative(rate)`**
+
+Get the instantaneous quaternion derivative representing a quaternion rotating at a 3D rate vector `rate`
+
+**Params:**
+
+* `rate` - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.
+
+**Returns:** A unit quaternion describing the rotation rate
+
+	q_dot = my_quaternion.derivative([0, 0, 3.14159]) # Rotate about z at 0.5 rotation per second
+
+**Raises:** 
+
+* `TypeError`  if any of `rate` contents cannot be converted to a real number.
+* `ValueError` if `rate` contains less/more than 3 elements
+
+
+
+## Integration
+> **`integrate(rate, timestep)`**
+
+Advance a time varying quaternion to its value at a time `timestep` in the future.
+
+The Quaternion object will be modified to its future value. It is guaranteed to remain a unit quaternion.
+
+**Params:**
+
+* `rate` - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.
+* `timestep` - interval over which to integrate into the future. Assuming *now* is `T=0`, the integration occurs over the interval `T=0` to `T=timestep`. Smaller intervals are more accurate when `rate` changes over time.
+
+**Note 1:** This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one. Many quaternion integration algorithms will have unwanted scaling effects leading a quaternion object to become non-unit over time, thus the object is re-normalised with each call to `integrate()`. Because this method is often called very frequently (every `timestep` for realtime simulation) an optimised re-normalisation is performed. See `_fast_normalise()` for more info.
+
+**Note 2:** The solution is in closed form given the assumption that `rate` is constant over the interval of length `timestep`. This algorithm is not an exact solution to the differential equation over any interval where the angular rates are not constant. It is a second order approximation, meaning the integral error contains terms proportional to `timestep ** 3` and higher powers.
+
+	>>> q = Quaternion() # null rotation
+	>>> q.integrate([2*pi, 0, 0], 0.25) # Rotate about x at 1 rotation per second
+	>>> q == Quaternion(axis=[1, 0, 0], angle=(pi/2))
+	True
+	>>>
+	
+**Raises:** 
+
+* `TypeError`  if any of `rate` contents cannot be converted to a real number.
+* `ValueError` if `rate` contains less/more than 3 elements
 
 ## Conversion to matrix form
 > **`rotation_matrix()` & `transformation_matrix()`**

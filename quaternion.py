@@ -634,6 +634,20 @@ class Quaternion:
         for step in steps:
             yield cls.slerp(q0, q1, step)
 
+    def derivative(self, rate):
+        """Get the time-derivative of the quaternion based on the provided angular velocity
+        """
+        rate = self._validate_number_sequence(rate, 3)
+        return 0.5 * self * Quaternion(vector=rate)
+
+    def integrate(self, rate, timestep):
+        rate = self._validate_number_sequence(rate, 3)
+        rate_norm = np.linalg.norm(rate)
+        normalised_rate = rate / rate_norm
+        half_step = timestep / 2.0
+        theta = rate_norm * half_step
+        return Quaternion(scalar=cos(theta), vector=normalised_rate * sin(theta))
+
     def rotation_matrix(self):
         """Get the 3x3 rotation matrix equivalent of the quaternion rotation.
 

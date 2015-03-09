@@ -835,6 +835,25 @@ class TestQuaternionFeatures(unittest.TestCase):
         self.assertEqual(list2[3], Quaternion(axis=[1, 0, 0], angle=3*base))
         self.assertEqual(list2[4], q2)
 
+    def test_differentiation(self):
+        q = Quaternion.random()
+        omega = np.random.uniform(-1, 1, 3) # Random angular velocity
+
+        q_dash = 0.5 * q * Quaternion(vector=omega)
+
+        self.assertEqual(q_dash, q.derivative(omega))
+
+    def test_interation(self):
+        q0 = Quaternion() # no rotation
+        rotation_rate = [0, 0, 2*pi] # one rev per sec around z
+        v = [1, 0, 0] # test vector
+        for dt in [0, 0.25, 0.5, 0.75, 1, 2, 10, random()*10]: # time step in seconds
+            qt = q0.integrate(rotation_rate, dt)
+            q_truth = Quaternion(axis=[0,0,1], angle=dt*2*pi)   
+            a = qt.rotate(v)
+            b = q_truth.rotate(v)
+            np.testing.assert_almost_equal(a, b, decimal=ALMOST_EQUAL_TOLERANCE)
  
 if __name__ == '__main__':
     unittest.main()
+    

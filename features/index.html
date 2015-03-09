@@ -119,6 +119,10 @@
         
             <li><a href="#interpolation">Interpolation</a></li>
         
+            <li><a href="#differentiation">Differentiation</a></li>
+        
+            <li><a href="#integration">Integration</a></li>
+        
             <li><a href="#conversion-to-matrix-form">Conversion to matrix form</a></li>
         
             <li><a href="#accessing-rotation-axis">Accessing rotation axis</a></li>
@@ -186,7 +190,8 @@ my_quaternion.magnitude()
 </blockquote>
 <p>Get a unit quaternion (versor) copy of this Quaternion object.</p>
 <p>A unit quaternion has a <code>norm()</code> of 1.0</p>
-<p><strong>Returns:</strong> a new Quaternion object clone that is guaranteed to be a unit quaternion</p>
+<p><strong>Note:</strong> A Quaternion representing zero i.e. <code>Quaternion(0, 0, 0, 0)</code> cannot be normalised. In this case, the returned object will remain zero.</p>
+<p><strong>Returns:</strong> a new Quaternion object clone that is guaranteed to be a unit quaternion <em>unless</em> the original object was zero, in which case the norm will remain zero.</p>
 <pre><code>unit_quaternion = my_quaternion.normalise()
 unit_quaternion = my_quaternion.unit()
 </code></pre>
@@ -255,6 +260,47 @@ for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
     v = q.rotate([1, 0, 0])
     print(v)
 </code></pre>
+<h2 id="differentiation">Differentiation</h2>
+<blockquote>
+<p><strong><code>derivative(rate)</code></strong></p>
+</blockquote>
+<p>Get the instantaneous quaternion derivative representing a quaternion rotating at a 3D rate vector <code>rate</code></p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>rate</code> - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.</li>
+</ul>
+<p><strong>Returns:</strong> A unit quaternion describing the rotation rate</p>
+<pre><code>q_dot = my_quaternion.derivative([0, 0, 3.14159]) # Rotate about z at 0.5 rotation per second
+</code></pre>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>TypeError</code>  if any of <code>rate</code> contents cannot be converted to a real number.</li>
+<li><code>ValueError</code> if <code>rate</code> contains less/more than 3 elements</li>
+</ul>
+<h2 id="integration">Integration</h2>
+<blockquote>
+<p><strong><code>integrate(rate, timestep)</code></strong></p>
+</blockquote>
+<p>Advance a time varying quaternion to its value at a time <code>timestep</code> in the future.</p>
+<p>The Quaternion object will be modified to its future value. It is guaranteed to remain a unit quaternion.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>rate</code> - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.</li>
+<li><code>timestep</code> - interval over which to integrate into the future. Assuming <em>now</em> is <code>T=0</code>, the integration occurs over the interval <code>T=0</code> to <code>T=timestep</code>. Smaller intervals are more accurate when <code>rate</code> changes over time.</li>
+</ul>
+<p><strong>Note 1:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one. Many quaternion integration algorithms will have unwanted scaling effects leading a quaternion object to become non-unit over time, thus the object is re-normalised with each call to <code>integrate()</code>. Because this method is often called very frequently (every <code>timestep</code> for realtime simulation) an optimised re-normalisation is performed. See <code>_fast_normalise()</code> for more info.</p>
+<p><strong>Note 2:</strong> The solution is in closed form given the assumption that <code>rate</code> is constant over the interval of length <code>timestep</code>. This algorithm is not an exact solution to the differential equation over any interval where the angular rates are not constant. It is a second order approximation, meaning the integral error contains terms proportional to <code>timestep ** 3</code> and higher powers.</p>
+<pre><code>&gt;&gt;&gt; q = Quaternion() # null rotation
+&gt;&gt;&gt; q.integrate([2*pi, 0, 0], 0.25) # Rotate about x at 1 rotation per second
+&gt;&gt;&gt; q == Quaternion(axis=[1, 0, 0], angle=(pi/2))
+True
+&gt;&gt;&gt;
+</code></pre>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>TypeError</code>  if any of <code>rate</code> contents cannot be converted to a real number.</li>
+<li><code>ValueError</code> if <code>rate</code> contains less/more than 3 elements</li>
+</ul>
 <h2 id="conversion-to-matrix-form">Conversion to matrix form</h2>
 <blockquote>
 <p><strong><code>rotation_matrix()</code> &amp; <code>transformation_matrix()</code></strong></p>

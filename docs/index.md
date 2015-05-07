@@ -1,7 +1,7 @@
 # Welcome
 Welcome! pyquaternion is a full-featured Python module for representing and using quaternions.
 
-The following should get you up and running in no time with pyquaternion.
+The following should get you up and running with pyquaternion in no time.
 
 <a name="dependencies"></a>
 # Dependencies

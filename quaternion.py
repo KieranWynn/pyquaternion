@@ -650,13 +650,34 @@ class Quaternion:
 
     def derivative(self, rate):
         """Get the instantaneous quaternion derivative representing a quaternion rotating at a 3D rate vector `rate`
+
+        Params:
+            rate: numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.
+
+        Returns: 
+            A unit quaternion describing the rotation rate
         """
         rate = self._validate_number_sequence(rate, 3)
         return 0.5 * self * Quaternion(vector=rate)
 
     def integrate(self, rate, timestep):
-        """
-        Predict the value of a time varying quaternion at a time `timestep` in the future.
+        """Advance a time varying quaternion to its value at a time `timestep` in the future.
+
+        The Quaternion object will be modified to its future value. 
+        It is guaranteed to remain a unit quaternion.
+
+        Params:
+
+        rate: numpy 3-array (or array-like) describing rotation rates about the 
+            global x, y and z axes respectively.
+        timestep: interval over which to integrate into the future. 
+            Assuming *now* is `T=0`, the integration occurs over the interval 
+            `T=0` to `T=timestep`. Smaller intervals are more accurate when 
+            `rate` changes over time.
+
+        Note: 
+            The solution is closed form given the assumption that `rate` is constant 
+            over the interval of length `timestep`.
         """
         self._fast_normalise()
         rate = self._validate_number_sequence(rate, 3)

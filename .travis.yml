@@ -8,4 +8,4 @@ python:
 # command to install dependencies
 install: "pip install numpy"
 # command to run tests
-script: python test_quaternion.py
+script: python pyquaternion/test/test_quaternion.py

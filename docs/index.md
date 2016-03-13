@@ -14,11 +14,11 @@ To start, you will need to install *pyquaternion* into your environment.
 
 Go into the pyquaternion repository root directory (the one with setup.py and README.md):
 
-    $ cd <path-to-repo>
+    $ cd <path_to_repo>
 
 > [Optional] If you are using virtual environments, switch to or create your environment of choice now:
 
-    $ workon myEnv
+    $ workon <my_environment>
 
 Now run the install script to install *pyquaternion* and its dependencies
 
@@ -113,8 +113,9 @@ Clone another quaternion object
 
 * `other` must be another Quaternion instance.
 
-
-    q2 = Quaternion(q1)
+```
+q2 = Quaternion(q1)
+```
 
 **Raises:** `TypeError` if the provided object is not an instance of Quaternion, or any valid positional argument as outlined below.
 
@@ -157,11 +158,11 @@ Create a quaternion by specifying 4 real-numbered scalar elements.
 
 * `w, x, y, z` can be real numbers, strings representing real numbers, or a mixture of both.
 
-
-    q5 = Quaternion(1, 1, 0, 0)
-    q5 = Quaternion("1.0", "0", ""0.347"", "0.0")
-    q5 = Quaternion("1.76", 0, 0, 0)
-
+```
+q5 = Quaternion(1, 1, 0, 0)
+q5 = Quaternion("1.0", "0", ""0.347"", "0.0")
+q5 = Quaternion("1.76", 0, 0, 0)
+```
 
 **Raises:**
 
@@ -217,11 +218,12 @@ Specify each element, using any sequence of ordered labels
 
 * `a=w, b=x, c=y, d=z` can be real numbers, strings representing real numbers, or a mixture of both.
 
-
-    q8a = Quaternion(a=1.0, b=0.0, c=0.0, d=0.0)
-    q8a = Quaternion(w=1.0, x=0.0, y=0.0, z=0.0)
-    q8a = Quaternion(a=1.0, i=0.0, j=0.0, k=0.0)
-    q8a = Quaternion(q1=1.0, q2=0.0, q3=0.0, q4=0.0)
+```
+q8a = Quaternion(a=1.0, b=0.0, c=0.0, d=0.0)
+q8a = Quaternion(w=1.0, x=0.0, y=0.0, z=0.0)
+q8a = Quaternion(a=1.0, i=0.0, j=0.0, k=0.0)
+q8a = Quaternion(q1=1.0, q2=0.0, q3=0.0, q4=0.0)
+```
 
 **Rasises:** Exception behaviour is the same as initialisation by element as described above.
 
@@ -374,7 +376,7 @@ A unit quaternion has a `norm()` of 1.0
 
 **Returns:** a new Quaternion object clone that is guaranteed to be a unit quaternion *unless* the original object was zero, in which case the norm will remain zero.
 
-	unit_quaternion = my_quaternion.normalise()
+	unit_quaternion = my_quaternion.normalised()
 	unit_quaternion = my_quaternion.unit()
 
 
@@ -513,7 +515,7 @@ Get the 3x3 rotation or 4x4 homogeneous transformation matrix equivalent of the 
 	T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 
 ## Accessing rotation axis
-> **`axis()`**
+> **`axis(undefined=[0,0,0])`**
 
 Get the axis or vector about which the quaternion rotation occurs
 
@@ -590,21 +592,26 @@ Return all four elements of the quaternion object. Result is not guaranteed to b
 
 **Returns:** a numpy 4-array of real numbered coefficients.
 
-	a = my_quaternion.elements()
-	print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
-
+	>>> a = my_quaternion.elements()
+	>>> print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
+	    -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k
 
 > **`__getitem__(index)`**
 
-**Returns:** the real numbered element at the specified index in the quaternion 4-array
+`my_quaternion[i]` returns the real numbered element at the specified index `i` in the quaternion 4-array
 
 **Params:**
 
 * `index` - integer in the range [-4:3] inclusive
 
 
-    print("{} + {}i + {}j + {}k".format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
-    print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
+```
+>>> print("{} + {}i + {}j + {}k".format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
+   -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k
+>>> print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
+   -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k
+>>>
+```
 
 **Raises:**
 
@@ -614,7 +621,7 @@ Return all four elements of the quaternion object. Result is not guaranteed to b
 ## Modifying individual elements
 > **`__setitem__(index, value)`**
 
-Set the element at the specified index in the quaternion 4-array to the specified value.
+`my_quaternion[i] = x` sets the element at the specified index `i` in the quaternion 4-array to the specified value `x`.
 
 **Params:**
 
@@ -622,12 +629,14 @@ Set the element at the specified index in the quaternion 4-array to the specifie
 * `value` - real value to be inserted into the quaternion array at `index`
 
 
-    >>> str(my_quaternion)
+```
+>>> str(my_quaternion)
     '-0.653 -0.127i -0.220j +0.714k'
-    >>> my_quaternion[2] = 9
-    >>> str(my_quaternion)
+>>> my_quaternion[2] = 9
+>>> str(my_quaternion)
     '-0.653 -0.127i +9.000j +0.714k'
-    >>>
+>>>
+```
 
 **Raises:**
 

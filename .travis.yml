@@ -1,0 +1,11 @@
+language: python
+python:
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "nightly"
+# command to install dependencies
+install: "pip install numpy"
+# command to run tests
+script: python test_quaternion.py

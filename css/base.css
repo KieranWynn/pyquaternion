@@ -62,9 +62,9 @@ div.col-md-9 img {
 
 code {
     padding: 1px 3px;
-    background: #ecf0f1;
-    border: solid 1px #ccc;
-    color: #7b8a8b;
+    background: #1c1e22;
+    border: solid 1px #0c0d0e;
+    color: #c8c8c8;
 }
 
 pre code {
@@ -73,7 +73,7 @@ pre code {
 }
 
 a > code {
-    color: #18bc9c;
+    color: #fff;
 }
 
 /*
@@ -203,12 +203,12 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
     border-color: transparent;
     border-style: solid;
     border-width: 5px 0 5px 5px;
-    border-left-color: #ccc;
+    border-left-color: #999999;
     margin-top: 5px;
     margin-right: -10px;
 }
 
 /* little arrow of parent menu */
 .dropdown-submenu:hover>a:after {
-    border-left-color: #404040;
+    border-left-color: #fff;
 }

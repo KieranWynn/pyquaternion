@@ -10,7 +10,7 @@ python:
 install: python setup.py install
 
 # command to run tests
-script: python pyquaternion/test/test_quaternion.
+script: python pyquaternion/test/test_quaternion.py
 
 # build and deploy docs
 after_script:

@@ -62,9 +62,9 @@ div.col-md-9 img {
 
 code {
     padding: 1px 3px;
-    background: #f5f5f5;
-    border: solid 1px #ccc;
-    color: #333;
+    background: #1c1e22;
+    border: solid 1px #0c0d0e;
+    color: #c8c8c8;
 }
 
 pre code {
@@ -73,11 +73,7 @@ pre code {
 }
 
 a > code {
-    color: #008cba;
-}
-
-a > code:hover, a > code:focus {
-    color: #00526e;
+    color: #fff;
 }
 
 /*
@@ -187,6 +183,9 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
     left: 100%;
     margin-top: 0px;
     margin-left: -1px;
+    -webkit-border-radius: 0 4px 4px 4px;
+    -moz-border-radius: 0 4px 4px;
+    border-radius: 0 4px 4px 4px;
 }
 
 /* display sub menu on hover*/
@@ -204,7 +203,7 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
     border-color: transparent;
     border-style: solid;
     border-width: 5px 0 5px 5px;
-    border-left-color: #ccc;
+    border-left-color: #999999;
     margin-top: 5px;
     margin-right: -10px;
 }

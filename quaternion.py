@@ -119,8 +119,8 @@ class Quaternion:
                 r = float(args[0])
                 self.q = np.array([r, 0.0, 0.0, 0.0])
                 return
-            except(TypeError):
-                pass # If the single argument is not scalar, it should be a sequence
+            except TypeError:
+                pass  # If the single argument is not scalar, it should be a sequence
 
             self.q = self._validate_number_sequence(args[0], 4)
             return

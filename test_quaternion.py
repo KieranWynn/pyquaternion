@@ -1,3 +1,5 @@
+#!/usr/bin python
+# -*- coding: utf-8 -*-
 """
 This file is part of the pyquaternion python module
 
@@ -41,8 +43,7 @@ from math import sqrt, pi, sin, cos
 ALMOST_EQUAL_TOLERANCE = 13
 
 def randomElements():
-    return tuple(np.random.uniform(-1, 1, 4)) #( uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.), uniform(-1., 1.) )
-    #return (0., 0., 0., 0.)
+    return tuple(np.random.uniform(-1, 1, 4))
 
 class TestQuaternionInitialisation(unittest.TestCase):
     
@@ -270,7 +271,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
 
         v = np.array([1, 0, 0])
         for angle in [0, pi/6, pi/4, pi/2, pi, 4*pi/3, 3*pi/2, 2*pi]:
-            R = R_z(angle) # rotation matrrix describing rotation of 90 about +z
+            R = R_z(angle) # rotation matrix describing rotation of 90 about +z
             v_prime_r = np.dot(R, v)
 
             q1 = Quaternion(axis=[0,0,1], angle=angle)

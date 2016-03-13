@@ -32,17 +32,14 @@ demo.py - Demo of pyquaternion using matplotlib
 
 """
 
-from quaternion import Quaternion
 import numpy as np
-from scipy import integrate
-from math import pi
+
+from pyquaternion import Quaternion
 
 #import matplotlib
 #matplotlib.use('TKAgg')
 
 from matplotlib import pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.colors import cnames
 from matplotlib import animation
 
 def generate_quaternion():

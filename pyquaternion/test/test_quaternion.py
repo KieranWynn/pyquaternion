@@ -30,16 +30,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-test_quaternion.py - Unit tests for quaternion module
+test_quaternion.py - Unit test for quaternion module
 
 """
 
 import unittest
+from math import pi, sin, cos
+from random import random
+
 import numpy as np
-from random import random, uniform
-from quaternion import Quaternion
-from math import sqrt, pi, sin, cos
- 
+
+import pyquaternion
+
+Quaternion = pyquaternion.Quaternion
+
+
 ALMOST_EQUAL_TOLERANCE = 13
 
 def randomElements():

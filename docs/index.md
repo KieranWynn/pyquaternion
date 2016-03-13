@@ -27,11 +27,32 @@ The following aims to familiarize you with the basic functionality of quaternion
 
 If you want to learn more about quaternions and how they apply to certain problems, you can read about quaternions [here](http://en.wikipedia.org/wiki/Quaternion), and their application to rotations [here](http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation).
 
-To start, you will need to import the *Quaternion* object from the *pyquaternion* module:
+## Installation
+To start, you will need to install *pyquaternion* into your environment.
+
+Go into the pyquaternion repository root directory (the one with setup.py and README.md):
+
+    $ cd <path-to-repo>
+
+> [Optional] If you are using virtual environments, switch to or create your environment of choice now:
+
+    $ workon myEnv
+
+Now run the install script to install *pyquaternion* and its dependencies
+
+    $ python setup.py install
+
+> Note: pyquaternion requires [Numpy](http://www.numpy.org) for the representation of arrays and matrices.
+Chances are if you're needing quaternions, you've been dealing with numerical computation and you're already familiar with numpy.
+If not, don't worry, it will be installed into your environment automatically.
+
+Great, you now have pyquaternion installed and you're ready to roll. Or pitch. Or yaw. No judging here :)
+
+## Basic Usage
+
+In your code, simply import the *Quaternion* object from the *pyquaternion* module:
 
 	>>> from pyquaternion import Quaternion
-
-> Note: if this gives you an error, you may be missing a dependency. See the [dependencies](#dependencies) section for how to install them.
 
 Next, create a Quaternion object to describe your desired rotation:
 

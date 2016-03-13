@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Kieran Wynn">
+        <link rel="canonical" href="http://kieranwynn.github.io/pyquaternion/pyquaternion/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+        <title>Home - pyquaternion</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../css/prettify-1.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href=".">pyquaternion</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li class="active">
+                    <a href=".">Home</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                
+                <li class="disabled">
+                    <a rel="next" >
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li class="disabled">
+                    <a rel="prev" >
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/KieranWynn/pyquaternion">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#welcome">Welcome</a></li>
+        
+    
+        <li class="main "><a href="#dependencies">Dependencies</a></li>
+        
+    
+        <li class="main "><a href="#getting-started">Getting started</a></li>
+        
+    
+        <li class="main "><a href="#object-initialisation">Object Initialisation</a></li>
+        
+            <li><a href="#default">Default</a></li>
+        
+            <li><a href="#copy">Copy</a></li>
+        
+            <li><a href="#random">Random</a></li>
+        
+            <li><a href="#from-scalar">From scalar</a></li>
+        
+            <li><a href="#from-elements">From elements</a></li>
+        
+            <li><a href="#from-a-numpy-array">From a numpy array</a></li>
+        
+            <li><a href="#from-a-sequence">From a sequence</a></li>
+        
+            <li><a href="#using-named-parameters">Using named parameters:</a></li>
+        
+    
+        <li class="main "><a href="#quaternion-features">Quaternion Features</a></li>
+        
+            <li><a href="#norm">Norm</a></li>
+        
+            <li><a href="#inversion">Inversion</a></li>
+        
+            <li><a href="#conjugation">Conjugation</a></li>
+        
+            <li><a href="#normalisation">Normalisation</a></li>
+        
+            <li><a href="#rotation">Rotation</a></li>
+        
+            <li><a href="#interpolation">Interpolation</a></li>
+        
+            <li><a href="#differentiation">Differentiation</a></li>
+        
+            <li><a href="#integration">Integration</a></li>
+        
+            <li><a href="#conversion-to-matrix-form">Conversion to matrix form</a></li>
+        
+            <li><a href="#accessing-rotation-axis">Accessing rotation axis</a></li>
+        
+            <li><a href="#accessing-rotation-angle">Accessing rotation angle</a></li>
+        
+            <li><a href="#accessing-real-components">Accessing real components</a></li>
+        
+            <li><a href="#accessing-imaginary-components">Accessing imaginary components</a></li>
+        
+            <li><a href="#accessing-individual-elements">Accessing individual elements</a></li>
+        
+            <li><a href="#modifying-individual-elements">Modifying individual elements</a></li>
+        
+    
+        <li class="main "><a href="#quaternion-operations">Quaternion Operations</a></li>
+        
+            <li><a href="#string-representation">String Representation</a></li>
+        
+            <li><a href="#bool">Bool</a></li>
+        
+            <li><a href="#equality">Equality</a></li>
+        
+            <li><a href="#negation">Negation</a></li>
+        
+            <li><a href="#addition">Addition</a></li>
+        
+            <li><a href="#subtraction">Subtraction</a></li>
+        
+            <li><a href="#multiplication">Multiplication</a></li>
+        
+            <li><a href="#division">Division</a></li>
+        
+            <li><a href="#exponentiation">Exponentiation</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="welcome">Welcome</h1>
+<p>Welcome! pyquaternion is a full-featured Python module for representing and using quaternions.</p>
+<p>The following should get you up and running with pyquaternion in no time.</p>
+<p><a name="dependencies"></a></p>
+<h1 id="dependencies">Dependencies</h1>
+<p>pyquaternion has been tested to work correctly on Python 2.7x and Python 3x. Compatibility outside of these versions is not guaranteed. If you really need support for other versions, feel free to fork the project on <a href="https://github.com/KieranWynn/pyquaternion">Github</a> and make the necessary modifications.</p>
+<p>pyquaternion requires <a href="http://www.numpy.org">Numpy</a> for the representation of arrays and matrices. Chances are if you're needing quaternions, you've been dealing with numerical computation already and you have it installed. If so, great, ignore the rest of this section. If not, read on!</p>
+<p>Numpy is a core element of the <a href="http://www.scipy.org/about.html">SciPy</a> package, which also contains a number of useful scientific computing and visualisation tools. If you will be using these (e.g. plotting 3D vectors with <a href="http://matplotlib.org">Matplotlib</a>), you might want to look into <a href="http://www.scipy.org/install.html">installing the whole SciPy stack</a>, however, SciPy is not required in its entirety for pyquaternion. If you just want the important bit, proceed as follows:</p>
+<p>Numpy can easily be installed as a standalone with python's package manager, pip. Pip comes included with recent versions of Python (2.7.9+ and 3.4+), but if you need it, follow the instructions <a href="https://pip.pypa.io/en/latest/installing.html#install-pip">here</a>. 
+Once you have pip installed, simply do:</p>
+<pre><code>$ pip install numpy
+</code></pre>
+<blockquote>
+<p>Note: If you're using Python3, your pip command may be </p>
+</blockquote>
+<pre><code>$ pip3 install numpy
+</code></pre>
+<p><a name="getting_started"></a></p>
+<h1 id="getting-started">Getting started</h1>
+<p>The following aims to familiarize you with the basic functionality of quaternions in pyquaternion. It provides an entry point and a quick orientation (no pun intended) for those who want get stuck straight in. More comprehensive feature summaries can be found in the <a href="#Quaternion Features">features</a> and <a href="#Quaternion Operations">operations</a> documentation.</p>
+<p>If you want to learn more about quaternions and how they apply to certain problems, you can read about quaternions <a href="http://en.wikipedia.org/wiki/Quaternion">here</a>, and their application to rotations <a href="http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation">here</a>.</p>
+<p>To start, you will need to import the <em>Quaternion</em> object from the <em>pyquaternion</em> module:</p>
+<pre><code>&gt;&gt;&gt; from pyquaternion import Quaternion
+</code></pre>
+<blockquote>
+<p>Note: if this gives you an error, you may be missing a dependency. See the <a href="#Dependencies">dependencies</a> section for how to install them.</p>
+</blockquote>
+<p>Next, create a Quaternion object to describe your desired rotation:</p>
+<pre><code>&gt;&gt;&gt; my_quaternion = Quaternion(axis=[1, 0, 0], angle=3.14159265)
+</code></pre>
+<blockquote>
+<p>Note: There are many ways to create a Quaternion object. See the <a href="#Object Initialisation">initialisation</a> section for a complete guide.</p>
+</blockquote>
+<p>Now you can do a bunch of useful things with your new quaternion object. Let's try rotating a vector:</p>
+<pre><code>&gt;&gt;&gt; import numpy
+&gt;&gt;&gt; numpy.set_printoptions(suppress=True) # Suppress insignificant values for clarity
+&gt;&gt;&gt; v = numpy.array([0., 0., 1.]) # Unit vector in the +z direction
+&gt;&gt;&gt; v_prime = my_quaternion.rotate(q)
+&gt;&gt;&gt; v_prime
+    array([ 0., 0., -1.])
+&gt;&gt;&gt;
+</code></pre>
+<p>A cool feature of quaternions is that they can be intuitively chained together to form a composite rotation from a sequence of discrete rotations:</p>
+<pre><code>&gt;&gt;&gt; q1 = Quaternion(axis=[1, 0, 0], angle=3.14159265) # Rotate 180 about X
+&gt;&gt;&gt; q2 = Quaternion(axis=[0, 1, 0], angle=3.14159265 / 2) # Rotate 90 about Y
+&gt;&gt;&gt; q3 = q1 * q2 # Composite rotation of q1 then q2 expressed as standard multiplication
+&gt;&gt;&gt; v_prime = q3.rotate(v)
+&gt;&gt;&gt; v_prime
+    array([ 1., 0., 0.])
+&gt;&gt;&gt;
+</code></pre>
+<p>Quaternions are used extensively in animation to describe smooth transitions between known orientations. This is known as interpolation. This is an example of an area where quaternions are preferred to rotation matrices as smooth interpolation is not possible with the latter. Here's quaternion interpolation in action:</p>
+<pre><code>&gt;&gt;&gt; import numpy
+&gt;&gt;&gt; numpy.set_printoptions(suppress=True) # Suppress insignificant values for clarity
+&gt;&gt;&gt; v = numpy.array([0., 0., 1.]) # Unit vector in the +z direction
+&gt;&gt;&gt; q0 = Quaternion(axis=[1, 1, 1], angle=0.0) # Rotate 0 about x=y=z
+&gt;&gt;&gt; q1 = Quaternion(axis=[1, 1, 1], angle=2 * 3.14159265 / 3) # Rotate 120 about x=y=z
+&gt;&gt;&gt; for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
+...     v_prime = q.rotate(v)
+...     print(v_prime)
+... 
+[ 0.  0.  1.]
+[ 0.14213118 -0.12416109  0.98202991]
+[ 0.29457011 -0.22365854  0.92908843]
+[ 0.44909878 -0.29312841  0.84402963]
+[ 0.59738651 -0.32882557  0.73143906]
+[ 0.73143906 -0.32882557  0.59738651]
+[ 0.84402963 -0.29312841  0.44909879]
+[ 0.92908843 -0.22365854  0.29457012]
+[ 0.98202991 -0.12416109  0.14213118]
+[ 1. 0.  0.]
+</code></pre>
+<p>In the code above, the expression <code>Quaternion.intermediates(q0, q1, 8, include_endpoints=True)</code> returns an iterator over a sequence of Quaternion objects describing a set of 10 (8 + 2) rotations between <code>q0</code> and <code>q1</code>. The printed output is then the path of the point originally at [0, 0, 1] as it is rotated through 120 degrees about x=y=z to end up at [1, 0, 0].
+This could easily be plugged into a visualisation framework to show smooth animated rotation sequences. Read the full documentation on interpolation features <a href="#Interpolation">here</a>.</p>
+<p>For a full demonstration of 3D interpolation and animation, run the <code>demo.py</code> script included in the pyquaternion package. This will require some elements of the full <a href="http://www.scipy.org/about.html">SciPy</a> package that are not required for pyquaternion itself.</p>
+<h1 id="object-initialisation">Object Initialisation</h1>
+<p>A Quaternion object can be created in the following ways:</p>
+<h2 id="default">Default</h2>
+<blockquote>
+<p><strong><code>Quaternion()</code></strong></p>
+</blockquote>
+<p>Creates a unit quaternion <code>1 + 0i + 0j + 0k</code>: the quaternion representation of the real number 1.0.</p>
+<pre><code>q1 = Quaternion()
+</code></pre>
+<p>For the purposes of rotation, this is a null quaternion (has no effect on the rotated vector).
+For the purposes of quaternion multiplication, this is a unit quaternion (has no effect when multiplying)</p>
+<h2 id="copy">Copy</h2>
+<blockquote>
+<p><strong><code>Quaternion(other)</code></strong></p>
+</blockquote>
+<p>Clone another quaternion object</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li>
+<p><code>other</code> must be another Quaternion instance.</p>
+<p>q2 = Quaternion(q1)</p>
+</li>
+</ul>
+<p><strong>Raises:</strong> <code>TypeError</code> if the provided object is not an instance of Quaternion, or any valid positional argument as outlined below.</p>
+<h2 id="random">Random</h2>
+<blockquote>
+<p><strong><code>Quaternion.random()</code></strong></p>
+</blockquote>
+<p>Create a random quaternion that describes a rotation randomly chosen from a uniform distribution across the rotation space. <a href="http://planning.cs.uiuc.edu/node198.html">Source</a>.</p>
+<p>This is a class method and is called as a method of the class itself rather than on a particular instance.</p>
+<pre><code>q3 = Quaternion.random() # called as a class method
+</code></pre>
+<h2 id="from-scalar">From scalar</h2>
+<blockquote>
+<p><strong><code>Quaternion(scalar)</code></strong></p>
+</blockquote>
+<p>Create the quaternion representation of a scalar (single real number) value.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>scalar</code> can be a real number, or a string representing a real number.</li>
+</ul>
+<p>The imaginary part of the resulting quaternion will always be <code>0i + 0j + 0k</code>.</p>
+<pre><code>q4 = Quaternion(4.7349)
+q4 = Quaternion(-3)
+q4 = Quaternion("4.7349")
+q4 = Quaternion("98")
+</code></pre>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>TypeError</code> if the provided value cannot be converted to a real number.</li>
+<li><code>ValueError</code> if a provided string cannot be interpreted as a real number.</li>
+</ul>
+<h2 id="from-elements">From elements</h2>
+<blockquote>
+<p><strong><code>Quaternion(w, x, y, z)</code></strong></p>
+</blockquote>
+<p>Create a quaternion by specifying 4 real-numbered scalar elements.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li>
+<p><code>w, x, y, z</code> can be real numbers, strings representing real numbers, or a mixture of both.</p>
+<p>q5 = Quaternion(1, 1, 0, 0)
+q5 = Quaternion("1.0", "0", ""0.347"", "0.0")
+q5 = Quaternion("1.76", 0, 0, 0)</p>
+</li>
+</ul>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>TypeError</code> if any of the provided values cannot be converted to a real number.</li>
+<li><code>ValueError</code> if any of the provided strings cannot be interpreted as a real number.</li>
+</ul>
+<h2 id="from-a-numpy-array">From a numpy array</h2>
+<blockquote>
+<p><strong><code>Quaternion(array)</code></strong></p>
+</blockquote>
+<p>Create a quaternion from the elements of a 4-element Numpy array</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>array</code> must be a 4-element numpy array containing real valued elements.</li>
+</ul>
+<p>The elements <code>[a, b, c, d]</code> of the array correspond the the real, and each imaginary component respectively in the order <code>a + bi + cj + dk</code>.</p>
+<pre><code>q6 = Quaternion(numpy.array([a, b, c, d]))
+</code></pre>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>TypeError</code> if any of the array contents cannot be converted to a real number.</li>
+<li><code>ValueError</code> if the array contains less/more than 4 elements</li>
+</ul>
+<h2 id="from-a-sequence">From a sequence</h2>
+<blockquote>
+<p><strong><code>Quaternion(seq)</code></strong></p>
+</blockquote>
+<p>Create a quaternion object from an ordered sequence containing 4 real valued scalar elements</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>seq</code> can be a list, a tuple, a generator or any iterable sequence containing 4 values, each convertible to a real number.</li>
+</ul>
+<p>The sequential elements <code>a, b, c, d</code> of the sequence correspond the the real, and each imaginary component respectively in the order <code>a + bi + cj + dk</code>.</p>
+<pre><code>q7 = Quaternion((a, b, c, d)) // from 4-tuple
+q7 = Quaternion([a, b, c, d]) // from list of 4
+</code></pre>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>TypeError</code>  if any of the sequence contents cannot be converted to a real number.</li>
+<li><code>ValueError</code> if the sequence contains less/more than 4 elements</li>
+</ul>
+<h2 id="using-named-parameters">Using named parameters:</h2>
+<h3 id="explicitly-by-element">Explicitly by element</h3>
+<blockquote>
+<p><strong><code>Quaternion(a=w, b=x, c=y, d=z)</code></strong></p>
+</blockquote>
+<p>Specify each element, using any sequence of ordered labels</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li>
+<p><code>a=w, b=x, c=y, d=z</code> can be real numbers, strings representing real numbers, or a mixture of both.</p>
+<p>q8a = Quaternion(a=1.0, b=0.0, c=0.0, d=0.0)
+q8a = Quaternion(w=1.0, x=0.0, y=0.0, z=0.0)
+q8a = Quaternion(a=1.0, i=0.0, j=0.0, k=0.0)
+q8a = Quaternion(q1=1.0, q2=0.0, q3=0.0, q4=0.0)</p>
+</li>
+</ul>
+<p><strong>Rasises:</strong> Exception behaviour is the same as initialisation by element as described above.</p>
+<h3 id="explicitly-by-component">Explicitly by component</h3>
+<blockquote>
+<p><strong><code>Quaternion(scalar=s, vector=v)</code> or <code>Quaternion(real=r, imaginary=i)</code></strong></p>
+</blockquote>
+<p>Specify the scalar (real) and vector (imaginary) parts of the desired quaternion.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>scalar=s</code> or <code>real=r</code> can be a real number, or a string representing a real number.</li>
+<li><code>vector=v</code> or <code>imaginary=i</code> can be a sequence or numpy array containing 3 real numbers.</li>
+</ul>
+<p>Either component (but not both) may be absent, <code>None</code> or empty, and will be assumed to be zero in that case.</p>
+<pre><code>q8b = Quaternion(scalar=1.0, vector=(0.0, 0.0, 0.0)) // Using 3-tuple
+q8b = Quaternion(scalar=None, vector=[1.0, 0.0, 0.0]) // Using list
+q8b = Quaternion(vector=numpy.array([1.0, 0.0, 0.0])) // Using Numpy 3-array
+
+q8b = Quaternion(real=1.0, imaginary=(0.0, 0.0, 0.0)) // Using 3-tuple
+q8b = Quaternion(real=None, imaginary=[1.0, 0.0, 0.0]) // Using list
+q8b = Quaternion(imaginary=numpy.array([1.0, 0.0, 0.0])) // Using Numpy 3-array
+</code></pre>
+<p><strong>Raises:</strong> <code>ValueError</code> if the <code>vector</code> or <code>imaginary</code> component contains less/more than 3 elements</p>
+<h3 id="explicitly-by-rotation-parameters">Explicitly by rotation parameters</h3>
+<blockquote>
+<p><strong><code>Quaternion(axis=ax, angle=theta)</code></strong></p>
+</blockquote>
+<p>Specify the angle (in radians) for a rotation about an axis vector [x, y, z] to be described by the quaternion object.</p>
+<p><strong>Params</strong>
+<em> <code>angle=theta</code> can be a real number, or a string representing a real number.
+</em> <code>axis=ax</code> can be a sequence or numpy array containing 3 real numbers. It can have any magnitude except <code>0</code>.</p>
+<p>Both <code>axis</code> and <code>angle</code> must be provided to describe a meaningful rotation.</p>
+<pre><code>q8c = Quaternion(angle=math.pi/2, axis=(1.0, 0.0, 0.0)) // Using 3-tuple
+q8c = Quaternion(angle=math.pi/2, axis=[1.0, 0.0, 0.0]) // Using list
+q8c = Quaternion(angle=math.pi/2, axis=numpy.array([1.0, 0.0, 0.0])) // Using Numpy 3-array
+</code></pre>
+<p><strong>Raises:</strong></p>
+<ul>
+<li><code>ValueError</code> if either <code>angle</code> or <code>axis</code> is missing</li>
+<li><code>ValueError</code> if <code>axis</code> contains less/more than 3 elements  </li>
+<li><code>ZeroDivisionError</code> if <code>axis</code> has 0 length.</li>
+</ul>
+<h3 id="explicitly-by-rotation-or-transformation-matrix">Explicitly by rotation or transformation matrix</h3>
+<blockquote>
+<p><strong><code>Quaternion(matrix=R)</code> or <code>Quaternion(matrix=T)</code></strong></p>
+</blockquote>
+<p>Specify the 3x3 rotation matrix (<code>R</code>) or 4x4 transformation matrix (<code>T</code>) from which the quaternion's rotation should be created. </p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>matrix=R</code> can be a 3x3 numpy array or matrix</li>
+<li><code>matrix=T</code> can be a 4x4 numpy array or matrix. In this case, the translation part will be ignored, and only the rotational component of the matrix will be encoded within the quaternion. </li>
+</ul>
+<p><strong>Important:</strong> The rotation component of the provided matrix must be a pure rotation i.e. <a href="http://mathworld.wolfram.com/SpecialOrthogonalMatrix.html">special orthogonal</a>.</p>
+<pre><code>rotation = numpy.eye(3)
+transformation = numpy.eye(4)
+q8d = Quaternion(matrix=rotation) // Using 3x3 rotation matrix
+q8d = Quaternion(matrix=transformation) // Using 4x4 transformation matrix
+</code></pre>
+<p>This code uses a modification of the algorithm described in <a href="https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf">Converting a Rotation Matrix to a Quaternion</a>, which is itself based on the method described <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/">here</a>.</p>
+<p><strong>Note:</strong> Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence, the output may jump between these equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.</p>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>ValueError</code> if the matrix is not 3x3 or 4x4 or if the matrix is not special orthogonal.</li>
+<li><code>TypeError</code> if the matrix is of the wrong type</li>
+</ul>
+<h3 id="explicitly-by-a-numpy-array">Explicitly by a numpy array</h3>
+<blockquote>
+<p><strong><code>Quaternion(array=a)</code></strong></p>
+</blockquote>
+<p>Specify a numpy 4-array of quaternion elements to be assigned directly to the internal vector representation of the quaternion object.</p>
+<p>This is more direct, and may be faster than feeding a numpy array as a positional argument to the initialiser.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>array=a</code> must be a 4-element numpy array containing real valued elements.</li>
+</ul>
+<p>The elements <code>[a, b, c, d]</code> of the array correspond the the real, and each imaginary component respectively in the order <code>a + bi + cj + dk</code>.</p>
+<pre><code>q8e = Quaternion(array=numpy.array([1.0, 0.0, 0.0, 0.0]))
+</code></pre>
+<p><strong>Raises:</strong> <code>ValueError</code> if the array vector contains less/more than 4 elements</p>
+<h1 id="quaternion-features">Quaternion Features</h1>
+<p>This section defines features available for pyquaternion's Quaternion objects</p>
+<p>The code examples below assume the existence of a Quaternion object. You can recreate this by running the following in your Python interpreter of choice:</p>
+<pre><code>my_quaternion = Quaternion.random()
+</code></pre>
+<h2 id="norm">Norm</h2>
+<blockquote>
+<p><strong><code>norm()</code> or <code>magnitude()</code></strong></p>
+</blockquote>
+<p>L2 norm of the quaternion 4-vector </p>
+<p>This should be 1.0 for a unit quaternion (versor)</p>
+<p><strong>Returns:</strong> a scalar real number representing the square root of the sum of the squares of the elements of the quaternion.</p>
+<pre><code>my_quaternion.norm()
+my_quaternion.magnitude()
+</code></pre>
+<hr />
+<blockquote>
+<p><strong><code>is_unit(tolerance=1e-14)</code></strong></p>
+</blockquote>
+<p><strong>Params:</strong> </p>
+<ul>
+<li><code>tolerance</code> - [optional] - maximum absolute value by which the norm can differ from 1.0 for the object to be considered a unit quaternion. Defaults to <code>1e-14</code>.</li>
+</ul>
+<p><strong>Returns:</strong> <code>True</code> if the Quaternion object is of unit length to within the specified tolerance value. <code>False</code> otherwise.</p>
+<h2 id="inversion">Inversion</h2>
+<blockquote>
+<p><strong><code>inverse()</code></strong></p>
+</blockquote>
+<p>Inverse of the quaternion object</p>
+<p>For a unit quaternion, this is the inverse rotation, i.e. when combined with the original rotation, will result in the null rotation.</p>
+<p><strong>Returns:</strong> a new Quaternion object representing the inverse of this object</p>
+<pre><code>inv_quaternion = my_quaternion.inverse()
+</code></pre>
+<h2 id="conjugation">Conjugation</h2>
+<blockquote>
+<p><strong><code>conjugate()</code></strong></p>
+</blockquote>
+<p>Quaternion conjugate</p>
+<p>For a unit quaternion, this is the same as the inverse.</p>
+<p><strong>Returns:</strong> a new Quaternion object clone with its vector part negated</p>
+<pre><code>conj_quaternion = my_quaternion.conjugate()
+</code></pre>
+<h2 id="normalisation">Normalisation</h2>
+<blockquote>
+<p><strong><code>normalised()</code> or <code>unit()</code></strong></p>
+</blockquote>
+<p>Get a unit quaternion (versor) copy of this Quaternion object.</p>
+<p>A unit quaternion has a <code>norm()</code> of 1.0</p>
+<p><strong>Note:</strong> A Quaternion representing zero i.e. <code>Quaternion(0, 0, 0, 0)</code> cannot be normalised. In this case, the returned object will remain zero.</p>
+<p><strong>Returns:</strong> a new Quaternion object clone that is guaranteed to be a unit quaternion <em>unless</em> the original object was zero, in which case the norm will remain zero.</p>
+<pre><code>unit_quaternion = my_quaternion.normalise()
+unit_quaternion = my_quaternion.unit()
+</code></pre>
+<h2 id="rotation">Rotation</h2>
+<blockquote>
+<p><strong><code>rotate(vector)</code></strong></p>
+</blockquote>
+<p>Rotate a 3D vector by the rotation stored in the Quaternion object</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>vector</code> - a 3-vector specified as any ordered sequence of 3 real numbers corresponding to x, y, and z values. Some types that are recognised are: numpy arrays, lists and tuples. A 3-vector can also be represented by a Quaternion object who's scalar part is 0 and vector part is the required 3-vector. Thus it is possible to call <code>Quaternion.rotate(q)</code> with another quaternion object as an input.</li>
+</ul>
+<p><strong>Returns:</strong> the rotated vector returned as the same type it was specified at input.</p>
+<pre><code>rotated_tuple       = my_quaternion.rotate((1, 0, 0)) # Returns a tuple
+rotated_list        = my_quaternion.rotate([1.0, 0.0, 0.0]) # Returns a list
+rotated_array       = my_quaternion.rotate(numpy.array([1.0, 0.0, 0.0])) # Returns a Numpy 3-array
+rotated_quaternion  = my_quaternion.rotate(Quaternion(vector=[1, 0, 0])) # Returns a Quaternion object
+</code></pre>
+<p><strong>Raises:</strong></p>
+<ul>
+<li><code>TypeError</code> if any of the vector elements cannot be converted to a real number.</li>
+<li><code>ValueError</code> if <code>vector</code> cannot be interpreted as a 3-vector or a Quaternion object.</li>
+</ul>
+<h2 id="interpolation">Interpolation</h2>
+<blockquote>
+<p><strong><code>Quaternion.slerp(q0, q1, amount=0.5)</code></strong> - <em>class method</em></p>
+</blockquote>
+<p>Find a valid quaternion rotation at a specified distance along the minor arc of a great circle passing through any two existing quaternion endpoints lying on the unit radius hypersphere. <a href="http://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp">Source</a></p>
+<p>This is a class method and is called as a method of the class itself rather than on a particular instance.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>q0</code> - first endpoint rotation as a Quaternion object</li>
+<li><code>q1</code> - second endpoint rotation as a Quaternion object</li>
+<li><code>amount</code> - interpolation parameter between 0 and 1. This describes the linear placement position of the result along the arc between endpoints; 0 being at <code>q0</code> and 1 being at <code>q1</code>. Defaults to the midpoint (0.5).</li>
+</ul>
+<p><strong>Returns:</strong>
+a new Quaternion object representing the interpolated rotation. This is guaranteed to be a unit quaternion.</p>
+<p><strong>Note:</strong> This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.</p>
+<pre><code>q0 = Quaternion(axis=[1, 1, 1], angle=0.0)
+q1 = Quaternion(axis=[1, 1, 1], angle=3.141592)
+q  = Quaternion.slerp(q0, q1, 2.0/3.0) # Rotate 120 degrees (2 * pi / 3)
+</code></pre>
+<blockquote>
+<p><strong><code>Quaternion.intermediates(q_start, q_end, n, include_endpoints=False)</code></strong> - <em>class method</em></p>
+</blockquote>
+<p>Generator method to get an iterable sequence of <code>n</code> evenly spaced quaternion rotations between any two existing quaternion endpoints lying on the unit radius hypersphere. This is a convenience function that is based on <code>Quaternion.slerp()</code> as defined above.</p>
+<p>This is a class method and is called as a method of the class itself rather than on a particular instance.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>q_start</code> - initial endpoint rotation as a Quaternion object</li>
+<li><code>q_end</code> - final endpoint rotation as a Quaternion object</li>
+<li><code>n</code> - number of intermediate quaternion objects to include within the interval</li>
+<li><code>include_endpoints</code> - [optional] - If set to <code>True</code>, the sequence of intermediates will be 'bookended' by <code>q_start</code> and <code>q_end</code>, resulting in a sequence length of <code>n + 2</code>. If set to <code>False</code>, endpoints are not included. Defaults to <code>False</code>.</li>
+</ul>
+<p><strong>Yields:</strong> 
+a generator object iterating over a sequence of intermediate quaternion objects.</p>
+<p><strong>Note:</strong> This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.</p>
+<pre><code>q0 = Quaternion(axis=[1, 1, 1], angle=0.0)
+q1 = Quaternion(axis=[1, 1, 1], angle=2 * 3.141592 / 3)
+for q in Quaternion.intermediates(q0, q1, 8, include_endpoints=True):
+    v = q.rotate([1, 0, 0])
+    print(v)
+</code></pre>
+<h2 id="differentiation">Differentiation</h2>
+<blockquote>
+<p><strong><code>derivative(rate)</code></strong></p>
+</blockquote>
+<p>Get the instantaneous quaternion derivative representing a quaternion rotating at a 3D rate vector <code>rate</code></p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>rate</code> - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.</li>
+</ul>
+<p><strong>Returns:</strong> A unit quaternion describing the rotation rate</p>
+<pre><code>q_dot = my_quaternion.derivative([0, 0, 3.14159]) # Rotate about z at 0.5 rotation per second
+</code></pre>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>TypeError</code>  if any of <code>rate</code> contents cannot be converted to a real number.</li>
+<li><code>ValueError</code> if <code>rate</code> contains less/more than 3 elements</li>
+</ul>
+<h2 id="integration">Integration</h2>
+<blockquote>
+<p><strong><code>integrate(rate, timestep)</code></strong></p>
+</blockquote>
+<p>Advance a time varying quaternion to its value at a time <code>timestep</code> in the future.</p>
+<p>The Quaternion object will be modified to its future value. It is guaranteed to remain a unit quaternion.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>rate</code> - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.</li>
+<li><code>timestep</code> - interval over which to integrate into the future. Assuming <em>now</em> is <code>T=0</code>, the integration occurs over the interval <code>T=0</code> to <code>T=timestep</code>. Smaller intervals are more accurate when <code>rate</code> changes over time.</li>
+</ul>
+<p><strong>Note 1:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one. Many quaternion integration algorithms will have unwanted scaling effects leading a quaternion object to become non-unit over time, thus the object is re-normalised with each call to <code>integrate()</code>. Because this method is often called very frequently (every <code>timestep</code> for realtime simulation) an optimised re-normalisation is performed. See <code>_fast_normalise()</code> for more info.</p>
+<p><strong>Note 2:</strong> The solution is in closed form given the assumption that <code>rate</code> is constant over the interval of length <code>timestep</code>. This algorithm is not an exact solution to the differential equation over any interval where the angular rates are not constant. It is a second order approximation, meaning the integral error contains terms proportional to <code>timestep ** 3</code> and higher powers.</p>
+<pre><code>&gt;&gt;&gt; q = Quaternion() # null rotation
+&gt;&gt;&gt; q.integrate([2*pi, 0, 0], 0.25) # Rotate about x at 1 rotation per second
+&gt;&gt;&gt; q == Quaternion(axis=[1, 0, 0], angle=(pi/2))
+True
+&gt;&gt;&gt;
+</code></pre>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>TypeError</code>  if any of <code>rate</code> contents cannot be converted to a real number.</li>
+<li><code>ValueError</code> if <code>rate</code> contains less/more than 3 elements</li>
+</ul>
+<h2 id="conversion-to-matrix-form">Conversion to matrix form</h2>
+<blockquote>
+<p><strong><code>rotation_matrix()</code> &amp; <code>transformation_matrix()</code></strong></p>
+</blockquote>
+<p>Get the 3x3 rotation or 4x4 homogeneous transformation matrix equivalent of the quaternion rotation.</p>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Quaternion.rotation_matrix()</code> : a 3x3 orthogonal rotation matrix as a 3x3 Numpy array</li>
+<li><code>Quaternion.transformation_matrix()</code> : a 4x4 homogeneous transformation matrix as a 4x4 Numpy array</li>
+</ul>
+<p><strong>Note 1:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.</p>
+<p><strong>Note 2:</strong> Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.</p>
+<pre><code>R = my_quaternion.rotation_matrix()         # 3x3 rotation matrix
+T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
+</code></pre>
+<h2 id="accessing-rotation-axis">Accessing rotation axis</h2>
+<blockquote>
+<p><strong><code>axis()</code></strong></p>
+</blockquote>
+<p>Get the axis or vector about which the quaternion rotation occurs</p>
+<p>For a null rotation (a purely real quaternion), the rotation angle will always be <code>0</code>, but the rotation axis is undefined. It is by default assumed to be <code>[0, 0, 0]</code>.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>undefined</code> - [optional] - specify the axis vector that should define a null rotation. This is geometrically meaningless, and could be any of an infinite set of vectors, but can be specified if the default (<code>[0, 0, 0]</code>) causes undesired behaviour.</li>
+</ul>
+<p><strong>Returns:</strong> a Numpy unit 3-vector describing the Quaternion object's axis of rotation.</p>
+<p><strong>Note 1:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.</p>
+<p><strong>Note 2:</strong> Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence to axis/angle representation, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.</p>
+<pre><code>u = my_quaternion.axis() # Unit vector about which rotation occurs
+</code></pre>
+<h2 id="accessing-rotation-angle">Accessing rotation angle</h2>
+<blockquote>
+<p><strong><code>angle()</code></strong></p>
+</blockquote>
+<p>Get the angle (in radians) describing the magnitude of the quaternion rotation about its rotation axis. This is guaranteed to be within the range (-pi:pi) with the direction of rotation indicated by the sign.</p>
+<p>When a particular rotation describes a 180 degree rotation about an arbitrary axis vector <code>v</code>, the conversion to axis / angle representation may jump discontinuously between all permutations of <code>(-pi, pi)</code> and <code>(-v, v)</code>, each being geometrically equivalent (see Note 2 below).</p>
+<p><strong>Returns:</strong> a real number in the range (-pi:pi) describing the angle of rotation in radians about a Quaternion object's axis of rotation. </p>
+<p><strong>Note 1:</strong> This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.</p>
+<p><strong>Note 2:</strong> Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence to axis/angle representation, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.</p>
+<pre><code>theta = my_quaternion.angle() # Magnitude of rotation about the prescribed axis
+</code></pre>
+<h2 id="accessing-real-components">Accessing real components</h2>
+<blockquote>
+<p><strong><code>scalar()</code> or <code>real()</code></strong></p>
+</blockquote>
+<p>Get the real or scalar component of the Quaternion object</p>
+<p>A quaternion can be described in terms of a scalar and vector part, q = [r, <strong>v</strong>] where:</p>
+<ul>
+<li>r is the scalar coefficient of the real part of the quaternion i.e. <strong>a</strong> in a + b<em>i</em> + c<em>j</em> + d<em>k</em></li>
+<li><strong>v</strong> is the 3-vector of coefficients to the imaginary parts of the quaternion i.e. [b, c, d] in a + b<em>i</em> + c<em>j</em> + d<em>k</em></li>
+</ul>
+<p>This method returns r</p>
+<p><strong>Returns</strong> the scalar, real valued element of the Quaternion object</p>
+<pre><code>r = my_quaternion.scalar()
+r = my_quaternion.real()
+</code></pre>
+<h2 id="accessing-imaginary-components">Accessing imaginary components</h2>
+<blockquote>
+<p><strong><code>vector()</code> or <code>imaginary()</code></strong></p>
+</blockquote>
+<p>Get the imaginary or vector component of the Quaternion object. This can be used, for example, to extract the stored vector when a pure-imaginary quaternion object is used to describe a vector within the three-dimensional vector space.</p>
+<p>A quaternion can be described in terms of a scalar and vector part, q = [r, <strong>v</strong>] where:</p>
+<ul>
+<li>r is the scalar coefficient of the real part of the quaternion i.e. <strong>a</strong> in a + b<em>i</em> + c<em>j</em> + d<em>k</em></li>
+<li><strong>v</strong> is the 3-vector of coefficients to the imaginary parts of the quaternion i.e. [b, c, d] in a + b<em>i</em> + c<em>j</em> + d<em>k</em></li>
+</ul>
+<p>This method returns <strong>v</strong></p>
+<p><strong>Returns</strong> Numpy 3-array of the 3 imaginary elements of the Quaternion object</p>
+<pre><code>v = my_quaternion.vector()
+v = my_quaternion.imaginary()
+</code></pre>
+<h2 id="accessing-individual-elements">Accessing individual elements</h2>
+<blockquote>
+<p><strong><code>elements()</code></strong></p>
+</blockquote>
+<p>Return all four elements of the quaternion object. Result is not guaranteed to be a unit 4-vector.</p>
+<p><strong>Returns:</strong> a numpy 4-array of real numbered coefficients.</p>
+<pre><code>a = my_quaternion.elements()
+print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
+</code></pre>
+<blockquote>
+<p><strong><code>__getitem__(index)</code></strong></p>
+</blockquote>
+<p><strong>Returns:</strong> the real numbered element at the specified index in the quaternion 4-array</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li>
+<p><code>index</code> - integer in the range [-4:3] inclusive</p>
+<p>print("{} + {}i + {}j + {}k".format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
+print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))</p>
+</li>
+</ul>
+<p><strong>Raises:</strong> </p>
+<ul>
+<li><code>IndexError</code> if the index provided is invalid</li>
+<li><code>TypeError</code> or <code>ValueError</code> if the index cannot be interpreted as an integer</li>
+</ul>
+<h2 id="modifying-individual-elements">Modifying individual elements</h2>
+<blockquote>
+<p><strong><code>__setitem__(index, value)</code></strong></p>
+</blockquote>
+<p>Set the element at the specified index in the quaternion 4-array to the specified value.</p>
+<p><strong>Params:</strong></p>
+<ul>
+<li><code>index</code> - integer in the range [-4:3] inclusive</li>
+<li>
+<p><code>value</code> - real value to be inserted into the quaternion array at <code>index</code></p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>str(my_quaternion)
+'-0.653 -0.127i -0.220j +0.714k'
+my_quaternion[2] = 9
+str(my_quaternion)
+'-0.653 -0.127i +9.000j +0.714k'
+</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<p><strong>Raises:</strong></p>
+<ul>
+<li><code>IndexError</code> if the index provided is invalid</li>
+<li><code>TypeError</code> or <code>ValueError</code> if the value cannot be interpreted as a real number</li>
+</ul>
+<h1 id="quaternion-operations">Quaternion Operations</h1>
+<p>This section defines operations applicable to pyquaternion's Quaternion objects.</p>
+<p>The code examples below assume the existence of a Quaternion object. You can recreate this by running the following in your Python interpreter of choice:</p>
+<pre><code>my_quaternion = Quaternion.random()
+</code></pre>
+<h2 id="string-representation">String Representation</h2>
+<blockquote>
+<p><strong><code>__str__()</code></strong></p>
+</blockquote>
+<p><code>str(my_quaternion)</code> returns an informal, nicely printable string representation of the Quaternion object. <a href="https://docs.python.org/3.4/reference/datamodel.html#object.__str__">Source</a></p>
+<pre><code>&gt;&gt;&gt; str(my_quaternion)
+    '-0.810 +0.022i -0.563j -0.166k'
+&gt;&gt;&gt; print(my_quaternion)
+    -0.810 +0.022i -0.563j -0.166k
+&gt;&gt;&gt;
+</code></pre>
+<blockquote>
+<p><strong><code>__repr__()</code></strong></p>
+</blockquote>
+<p><code>repr(my_quaternion)</code> returns the 'official' string representation of the Quaternion object.  This is a string representation of a valid Python expression that could be used to recreate an object with the same value (given an appropriate environment). <a href="https://docs.python.org/3.4/reference/datamodel.html#object.__repr__">Source</a></p>
+<pre><code>&gt;&gt;&gt; repr(my_quaternion)
+    'Quaternion(-0.80951530224438595, 0.022231097065902788, -0.56268832802625091,-0.16604999023923223)'
+&gt;&gt;&gt; my_quaternion
+    Quaternion(-0.80951530224438595, 0.022231097065902788, -0.56268832802625091,-0.16604999023923223)
+&gt;&gt;&gt;
+</code></pre>
+<blockquote>
+<p><strong><code>__format__(format_spec)</code></strong></p>
+</blockquote>
+<p><code>a_string_containing_{format_spec}_placeholders.format(my_quaternion)</code> inserts a customisable, nicely printable string representation of the Quaternion object into the respective places in the provided string. <a href="https://docs.python.org/3.4/reference/datamodel.html#object.__format__">Source</a></p>
+<p>The syntax for <code>format_spec</code> mirrors that of the built in format specifiers for floating point types. Check out the official Python <a href="https://docs.python.org/3.4/library/string.html#formatspec">format specification mini-language</a> for details.
+An empty <code>format_spec</code> string will result in the same behaviour as the <code>Quaternion.__str__()</code>.</p>
+<pre><code>&gt;&gt;&gt; "My quaternion is: {}".format(my_quaternion)
+    'My quaternion is: -0.810 +0.022i -0.563j -0.166k'
+&gt;&gt;&gt; "My quaternion is: {:+.6}".format(my_quaternion)
+    'My quaternion is: -0.809515 +0.0222311i -0.562688j -0.16605k'
+</code></pre>
+<h2 id="bool">Bool</h2>
+<blockquote>
+<p><strong><code>__bool__()</code> or <code>__nonzero__()</code></strong></p>
+</blockquote>
+<p><strong>Returns:</strong> <code>False</code> within a logical context if the Quaternion object is zero, i.e. <code>Quaternion(0.0, 0.0, 0.0, 0.0)</code> or <code>True</code> otherwise. </p>
+<p>The bitwise not operator <code>~</code> can be used to invert the boolean value, however the keyword <code>not</code> (logical) is preferred.</p>
+<p><strong>Note:</strong> This does not evaluate the booleanity of a quaternion rotation. A non-zero Quaternion object such as <code>Quaternion(1.0, 0.0, 0.0, 0.0)</code> will have a boolean value of <code>True</code> even though it represents a <strong>null</strong> rotation.</p>
+<pre><code>&gt;&gt;&gt; Quaternion() == True
+True
+&gt;&gt;&gt; not Quaternion() == False
+True
+&gt;&gt;&gt; Quaternion(scalar=0.0) == False
+True
+</code></pre>
+<h2 id="equality">Equality</h2>
+<blockquote>
+<p><strong><code>__eq__(other)</code></strong></p>
+</blockquote>
+<p><code>q1 == q2</code> returns <code>True</code> if all corresponding elements are equal between two Quaternion objects <code>q1</code> and <code>q2</code>, or <code>False</code> otherwise. </p>
+<p>The inequality operator <code>!=</code> can also be used to verify inequality in a similar way.</p>
+<p>Because comparisons are carried out on floating point elements, equality is considered <code>True</code> when the absolute difference between elements falls below a threshold error. This is determined by <a href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.allclose.html">numpy.allclose()</a> with an absolute tolerance of <code>1.0e-14</code> and a relative tolerance of <code>1.0e-13</code>. As a result, objects differing by very small individual element differences may be considered equal.</p>
+<p><strong>Note:</strong> This does not directly evaluate the equality of a quaternion rotation. For example, unit Quaternions q and -q will have an equality of <code>False</code> even though they represent the equivalent rotation.</p>
+<pre><code>&gt;&gt;&gt; Quaternion(1, 0, 1, 1) == Quaternion(scalar=1.0, vector=[0.0, 1.0, 1.0])
+True
+&gt;&gt;&gt; Quaternion(1, 0, 1, 1) == Quaternion(scalar=1.0, vector=[0.1, 1.0, 1.0])
+False
+&gt;&gt;&gt; Quaternion() != Quaternion(scalar=2)
+True
+</code></pre>
+<h2 id="negation">Negation</h2>
+<blockquote>
+<p><strong><code>__neg__()</code></strong></p>
+</blockquote>
+<p><code>-q</code> is the quaternion formed by the element wise negation of the elements of <code>q</code>.</p>
+<p><strong>Returns:</strong> a new Quaternion object representing the negation of the single operand. 
+If the operand is a unit quaternion, the result is guaranteed to be a unit quaternion.</p>
+<pre><code>&gt;&gt;&gt; my_elements = my_quaternion.elements() # Numpy array of individual elements
+&gt;&gt;&gt; -my_quaternion == Quaternion(-my_elements)
+True
+</code></pre>
+<h2 id="addition">Addition</h2>
+<blockquote>
+<p><strong><code>__add__(other)</code></strong></p>
+</blockquote>
+<p><code>q1 + q2</code> is the quaternion formed by element-wise sum of <code>q1</code> and <code>q2</code>. <a href="http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/arithmetic/index.htm">Source</a></p>
+<p><strong>Note:</strong> If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a <code>TypeError</code> or <code>ValueError</code> will be raised if this conversion fails.</p>
+<p><strong>Returns:</strong> a new Quaternion object representing the sum of the inputs.
+The sum is <strong>not</strong> guaranteed to be a unit quaternion.</p>
+<pre><code>&gt;&gt;&gt; q1 = Quaternion.random()
+&gt;&gt;&gt; q2 = Quaternion.random()
+&gt;&gt;&gt; q1 + q2 == Quaternion(q1.elements() + q2.elements())
+True
+</code></pre>
+<h2 id="subtraction">Subtraction</h2>
+<blockquote>
+<p><strong><code>__sub__(other)</code></strong></p>
+</blockquote>
+<p><code>q1 - q2</code> is the quaternion formed by element-wise difference between <code>q1</code> and <code>q2</code>. <a href="http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/arithmetic/index.htm">Source</a> </p>
+<p><strong>Note:</strong> If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a <code>TypeError</code> or <code>ValueError</code> will be raised if this conversion fails.</p>
+<p><strong>Returns:</strong> a new Quaternion object representing the difference of the inputs.
+The difference is <strong>not</strong> guaranteed to be a unit quaternion.</p>
+<pre><code>&gt;&gt;&gt; q1 = Quaternion.random()
+&gt;&gt;&gt; q2 = Quaternion.random()
+&gt;&gt;&gt; q1 - q2 == Quaternion(q1.elements() - q2.elements())
+True
+</code></pre>
+<h2 id="multiplication">Multiplication</h2>
+<blockquote>
+<p><strong><code>__mul__(other)</code></strong></p>
+</blockquote>
+<p><code>q1 * q2</code> is the quaternion formed by Hamilton product of <code>q1</code> and <code>q2</code>. <a href="http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/arithmetic/index.htm">Source</a></p>
+<p>The Hamiltonian product is not commutative. Ensure your operands are correctly placed. </p>
+<p><strong>Note:</strong> If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a <code>TypeError</code> or <code>ValueError</code> will be raised if this conversion fails. As a result this operation holds true for scalar multiplication as scalars are converted to pure real Quaternion objects.</p>
+<p><strong>Returns:</strong> a new Quaternion object representing the Hamilton product of the inputs.
+If the two multiplicands are unit quaternions, the product is guaranteed to be a unit quaternion.</p>
+<pre><code>&gt;&gt;&gt; one = Quaternion(1, 0, 0, 0)
+&gt;&gt;&gt; i   = Quaternion(0, 1, 0, 0)
+&gt;&gt;&gt; j   = Quaternion(0, 0, 1, 0)
+&gt;&gt;&gt; k   = Quaternion(0, 0, 0, 1)
+&gt;&gt;&gt; (i * i) == (j * j) == (k * k) == (i * j * k) == -1
+True
+</code></pre>
+<h2 id="division">Division</h2>
+<blockquote>
+<p><strong><code>__truediv__(other)</code> or <code>__div__(other)</code></strong></p>
+</blockquote>
+<p><code>q1 / q2</code> is the quaternion formed by Hamilton product of <code>q1</code> and <code>q2.inverse()</code>. <a href="http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/arithmetic/index.htm">Source</a></p>
+<p>The Hamiltonian product is not commutative. Ensure your operands are correctly placed.</p>
+<p><strong>Note:</strong> If 'other' is not a Quaternion object, it will be converted to one, using the behaviour described in the [object initialisation][initialisation] section. As described therein, a <code>TypeError</code> or <code>ValueError</code> will be raised if this conversion fails. As a result this operation holds true for scalar division as scalars are converted to pure real Quaternion objects.</p>
+<p><strong>Returns:</strong> a new Quaternion object representing the Hamilton quotient of the inputs. 
+If the dividend and divisor are unit quaternions, the quotient is guaranteed to be a unit quaternion.</p>
+<pre><code>&gt;&gt;&gt; my_quaternion / my_quaternion == Quaternion(1.0)
+True
+</code></pre>
+<h2 id="exponentiation">Exponentiation</h2>
+<blockquote>
+<p><strong><code>__pow__(other)</code></strong></p>
+</blockquote>
+<p><code>q ** p</code> is the quaternion formed by raising the Quaternion <code>q1</code> to the power of <code>p</code> for any real <code>p</code>. <a href="http://en.wikipedia.org/wiki/Quaternion#Exponential.2C_logarithm.2C_and_power">Source</a></p>
+<p><strong>Returns:</strong> a new Quaternion object representing the the object raised to the power of the input.
+If the base object is a unit quaternion, the result is guaranteed to be a unit quaternion.</p>
+<pre><code>&gt;&gt;&gt; one = Quaternion(1, 0, 0, 0)
+&gt;&gt;&gt; i   = Quaternion(0, 1, 0, 0)
+&gt;&gt;&gt; j   = Quaternion(0, 0, 1, 0)
+&gt;&gt;&gt; k   = Quaternion(0, 0, 0, 1)
+&gt;&gt;&gt; (i ** 2) == (j ** 2) == (k ** 2) == -1
+True
+</code></pre>
+<p><strong>Raises:</strong> <code>TypeError</code> if <code>other</code> cannot be interpreted as a real number.</p>
+</div>
+        </div>
+
+        
+
+        <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/prettify-1.0.min.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>

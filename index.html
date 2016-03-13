@@ -507,7 +507,7 @@ my_quaternion.magnitude()
 <p>A unit quaternion has a <code>norm()</code> of 1.0</p>
 <p><strong>Note:</strong> A Quaternion representing zero i.e. <code>Quaternion(0, 0, 0, 0)</code> cannot be normalised. In this case, the returned object will remain zero.</p>
 <p><strong>Returns:</strong> a new Quaternion object clone that is guaranteed to be a unit quaternion <em>unless</em> the original object was zero, in which case the norm will remain zero.</p>
-<pre><code>unit_quaternion = my_quaternion.normalise()
+<pre><code>unit_quaternion = my_quaternion.normalised()
 unit_quaternion = my_quaternion.unit()
 </code></pre>
 <h2 id="rotation">Rotation</h2>
@@ -628,7 +628,7 @@ T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
 </code></pre>
 <h2 id="accessing-rotation-axis">Accessing rotation axis</h2>
 <blockquote>
-<p><strong><code>axis()</code></strong></p>
+<p><strong><code>axis(undefined=[0,0,0])</code></strong></p>
 </blockquote>
 <p>Get the axis or vector about which the quaternion rotation occurs</p>
 <p>For a null rotation (a purely real quaternion), the rotation angle will always be <code>0</code>, but the rotation axis is undefined. It is by default assumed to be <code>[0, 0, 0]</code>.</p>
@@ -688,19 +688,28 @@ v = my_quaternion.imaginary()
 </blockquote>
 <p>Return all four elements of the quaternion object. Result is not guaranteed to be a unit 4-vector.</p>
 <p><strong>Returns:</strong> a numpy 4-array of real numbered coefficients.</p>
-<pre><code>a = my_quaternion.elements()
-print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
+<pre><code>&gt;&gt;&gt; a = my_quaternion.elements()
+&gt;&gt;&gt; print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
+    -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k
 </code></pre>
 <blockquote>
 <p><strong><code>__getitem__(index)</code></strong></p>
 </blockquote>
-<p><strong>Returns:</strong> the real numbered element at the specified index in the quaternion 4-array</p>
+<p><code>my_quaternion[i]</code> returns the real numbered element at the specified index <code>i</code> in the quaternion 4-array</p>
 <p><strong>Params:</strong></p>
 <ul>
 <li>
 <p><code>index</code> - integer in the range [-4:3] inclusive</p>
+<blockquote>
+<blockquote>
+<blockquote>
 <p>print("{} + {}i + {}j + {}k".format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
-print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))</p>
+   -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k
+print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
+   -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k</p>
+</blockquote>
+</blockquote>
+</blockquote>
 </li>
 </ul>
 <p><strong>Raises:</strong></p>
@@ -712,24 +721,17 @@ print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_qua
 <blockquote>
 <p><strong><code>__setitem__(index, value)</code></strong></p>
 </blockquote>
-<p>Set the element at the specified index in the quaternion 4-array to the specified value.</p>
+<p><code>my_quaternion[i] = x</code> sets the element at the specified index <code>i</code> in the quaternion 4-array to the specified value <code>x</code>.</p>
 <p><strong>Params:</strong></p>
 <ul>
 <li><code>index</code> - integer in the range [-4:3] inclusive</li>
-<li>
-<p><code>value</code> - real value to be inserted into the quaternion array at <code>index</code></p>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>str(my_quaternion)
+<li><code>value</code> - real value to be inserted into the quaternion array at <code>index</code><pre><code>&gt;&gt;&gt; str(my_quaternion)
 '-0.653 -0.127i -0.220j +0.714k'
-my_quaternion[2] = 9
-str(my_quaternion)
+&gt;&gt;&gt; my_quaternion[2] = 9
+&gt;&gt;&gt; str(my_quaternion)
 '-0.653 -0.127i +9.000j +0.714k'
-</p>
-</blockquote>
-</blockquote>
-</blockquote>
+&gt;&gt;&gt;
+</code></pre>
 </li>
 </ul>
 <p><strong>Raises:</strong></p>

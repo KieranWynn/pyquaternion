@@ -6,6 +6,6 @@ python:
   - "3.4"
   - "nightly"
 # command to install dependencies
-install: "pip install numpy"
+install: "python setup.py install"
 # command to run tests
 script: python pyquaternion/test/test_quaternion.py

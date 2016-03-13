@@ -3,7 +3,3 @@
     max-height:85vh;
     overflow-y: auto;
 }
-
-.bs-sidebar .nav > li > a {
-    font-weight: 100;
-}

@@ -4,9 +4,7 @@
     overflow-y: auto;
 }
 
-.bs-sidebar .nav > .active > a,
-.bs-sidebar .nav > .active:hover > a,
-.bs-sidebar .nav > .active:focus > a {
+.bs-sidebar .nav > .active > a {
     font-weight: bold;
     color: white;
     background-color: #18bc9c;

@@ -47,36 +47,6 @@
             <!-- Main navigation -->
             <ul class="nav navbar-nav">
             
-            
-                <li >
-                    <a href="features/">Features</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="initialisation/">Initialisation</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="operations/">Operations</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="pyquaternion/">Pyquaternion</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="quaternion_basics/">Quaternion basics</a>
-                </li>
-            
-            
             </ul>
 
             <!-- Search, Navigation and Repo links -->
@@ -87,8 +57,8 @@
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
-                <li >
-                    <a rel="prev" href="features/">
+                <li class="disabled">
+                    <a rel="prev" >
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -216,7 +186,7 @@ Once you have pip installed, simply do:</p>
 </code></pre>
 <p><a name="getting_started"></a></p>
 <h1 id="getting-started">Getting started</h1>
-<p>The following aims to familiarize you with the basic functionality of quaternions in pyquaternion. It provides an entry point and a quick orientation (no pun intended) for those who want get stuck straight in. More comprehensive feature summaries can be found in the <a href="#Quaternion Features">features</a> and <a href="#Quaternion Operations">operations</a> documentation.</p>
+<p>The following aims to familiarize you with the basic functionality of quaternions in pyquaternion. It provides an entry point and a quick orientation (no pun intended) for those who want get stuck straight in. More comprehensive feature summaries can be found in the <a href="#quaternion-features">features</a> and <a href="#quaternion-operations">operations</a> documentation.</p>
 <p>If you want to learn more about quaternions and how they apply to certain problems, you can read about quaternions <a href="http://en.wikipedia.org/wiki/Quaternion">here</a>, and their application to rotations <a href="http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation">here</a>.</p>
 <p>To start, you will need to import the <em>Quaternion</em> object from the <em>pyquaternion</em> module:</p>
 <pre><code>&gt;&gt;&gt; from pyquaternion import Quaternion
@@ -270,7 +240,7 @@ Once you have pip installed, simply do:</p>
 [ 1. 0.  0.]
 </code></pre>
 <p>In the code above, the expression <code>Quaternion.intermediates(q0, q1, 8, include_endpoints=True)</code> returns an iterator over a sequence of Quaternion objects describing a set of 10 (8 + 2) rotations between <code>q0</code> and <code>q1</code>. The printed output is then the path of the point originally at [0, 0, 1] as it is rotated through 120 degrees about x=y=z to end up at [1, 0, 0].
-This could easily be plugged into a visualisation framework to show smooth animated rotation sequences. Read the full documentation on interpolation features <a href="#Interpolation">here</a>.</p>
+This could easily be plugged into a visualisation framework to show smooth animated rotation sequences. Read the full documentation on interpolation features <a href="#quaternion-features">here</a>.</p>
 <p>For a full demonstration of 3D interpolation and animation, run the <code>demo.py</code> script included in the pyquaternion package. This will require some elements of the full <a href="http://www.scipy.org/about.html">SciPy</a> package that are not required for pyquaternion itself.</p>
 <h1 id="object-initialisation">Object Initialisation</h1>
 <p>A Quaternion object can be created in the following ways:</p>

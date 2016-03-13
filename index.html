@@ -277,11 +277,11 @@ For the purposes of quaternion multiplication, this is a unit quaternion (has no
 <p>Clone another quaternion object</p>
 <p><strong>Params:</strong></p>
 <ul>
-<li>
-<p><code>other</code> must be another Quaternion instance.</p>
-<p>q2 = Quaternion(q1)</p>
-</li>
+<li><code>other</code> must be another Quaternion instance.</li>
 </ul>
+<pre><code>q2 = Quaternion(q1)
+</code></pre>
+
 <p><strong>Raises:</strong> <code>TypeError</code> if the provided object is not an instance of Quaternion, or any valid positional argument as outlined below.</p>
 <h2 id="random">Random</h2>
 <blockquote>
@@ -318,13 +318,13 @@ q4 = Quaternion("98")
 <p>Create a quaternion by specifying 4 real-numbered scalar elements.</p>
 <p><strong>Params:</strong></p>
 <ul>
-<li>
-<p><code>w, x, y, z</code> can be real numbers, strings representing real numbers, or a mixture of both.</p>
-<p>q5 = Quaternion(1, 1, 0, 0)
-q5 = Quaternion("1.0", "0", ""0.347"", "0.0")
-q5 = Quaternion("1.76", 0, 0, 0)</p>
-</li>
+<li><code>w, x, y, z</code> can be real numbers, strings representing real numbers, or a mixture of both.</li>
 </ul>
+<pre><code>q5 = Quaternion(1, 1, 0, 0)
+q5 = Quaternion(&quot;1.0&quot;, &quot;0&quot;, &quot;&quot;0.347&quot;&quot;, &quot;0.0&quot;)
+q5 = Quaternion(&quot;1.76&quot;, 0, 0, 0)
+</code></pre>
+
 <p><strong>Raises:</strong></p>
 <ul>
 <li><code>TypeError</code> if any of the provided values cannot be converted to a real number.</li>
@@ -373,14 +373,14 @@ q7 = Quaternion([a, b, c, d]) // from list of 4
 <p>Specify each element, using any sequence of ordered labels</p>
 <p><strong>Params:</strong></p>
 <ul>
-<li>
-<p><code>a=w, b=x, c=y, d=z</code> can be real numbers, strings representing real numbers, or a mixture of both.</p>
-<p>q8a = Quaternion(a=1.0, b=0.0, c=0.0, d=0.0)
+<li><code>a=w, b=x, c=y, d=z</code> can be real numbers, strings representing real numbers, or a mixture of both.</li>
+</ul>
+<pre><code>q8a = Quaternion(a=1.0, b=0.0, c=0.0, d=0.0)
 q8a = Quaternion(w=1.0, x=0.0, y=0.0, z=0.0)
 q8a = Quaternion(a=1.0, i=0.0, j=0.0, k=0.0)
-q8a = Quaternion(q1=1.0, q2=0.0, q3=0.0, q4=0.0)</p>
-</li>
-</ul>
+q8a = Quaternion(q1=1.0, q2=0.0, q3=0.0, q4=0.0)
+</code></pre>
+
 <p><strong>Rasises:</strong> Exception behaviour is the same as initialisation by element as described above.</p>
 <h3 id="explicitly-by-component">Explicitly by component</h3>
 <blockquote>
@@ -698,20 +698,14 @@ v = my_quaternion.imaginary()
 <p><code>my_quaternion[i]</code> returns the real numbered element at the specified index <code>i</code> in the quaternion 4-array</p>
 <p><strong>Params:</strong></p>
 <ul>
-<li>
-<p><code>index</code> - integer in the range [-4:3] inclusive</p>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>print("{} + {}i + {}j + {}k".format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
-   -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k
-print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
-   -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</li>
+<li><code>index</code> - integer in the range [-4:3] inclusive</li>
 </ul>
+<pre><code>&gt;&gt;&gt; print(&quot;{} + {}i + {}j + {}k&quot;.format(my_quaternion[0], my_quaternion[1], my_quaternion[2], my_quaternion[3]))
+   -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k
+&gt;&gt;&gt; print(&quot;{} + {}i + {}j + {}k&quot;.format(my_quaternion[-4], my_quaternion[-3], my_quaternion[-2], my_quaternion[-1]))
+   -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k
+</code></pre>
+
 <p><strong>Raises:</strong></p>
 <ul>
 <li><code>IndexError</code> if the index provided is invalid</li>
@@ -725,15 +719,16 @@ print("{} + {}i + {}j + {}k".format(my_quaternion[-4], my_quaternion[-3], my_qua
 <p><strong>Params:</strong></p>
 <ul>
 <li><code>index</code> - integer in the range [-4:3] inclusive</li>
-<li><code>value</code> - real value to be inserted into the quaternion array at <code>index</code><pre><code>&gt;&gt;&gt; str(my_quaternion)
+<li><code>value</code> - real value to be inserted into the quaternion array at <code>index</code></li>
+</ul>
+<pre><code>&gt;&gt;&gt; str(my_quaternion)
 '-0.653 -0.127i -0.220j +0.714k'
 &gt;&gt;&gt; my_quaternion[2] = 9
 &gt;&gt;&gt; str(my_quaternion)
 '-0.653 -0.127i +9.000j +0.714k'
 &gt;&gt;&gt;
 </code></pre>
-</li>
-</ul>
+
 <p><strong>Raises:</strong></p>
 <ul>
 <li><code>IndexError</code> if the index provided is invalid</li>

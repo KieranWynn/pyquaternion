@@ -1,2 +1,0 @@
-# Quaternion Basics
-Coming soon! In the meantime, read about quaternions [here](http://en.wikipedia.org/wiki/Quaternion), and their application to rotations [here](http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation).

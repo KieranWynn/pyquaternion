@@ -4,6 +4,7 @@ A fully featured python module for quaternion representation, manipulation, 3D r
 
 Please visit the **[pyquaternion homepage](http://kieranwynn.github.io/pyquaternion/)** for full information and the latest documentation.
 
+[![Build Status](https://travis-ci.org/KieranWynn/pyquaternion.svg?branch=master)](https://travis-ci.org/KieranWynn/pyquaternion)
 
 **Designed for Python 2.7+ and 3.0+**
 

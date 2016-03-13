@@ -62,9 +62,9 @@ div.col-md-9 img {
 
 code {
     padding: 1px 3px;
-    background: #ecf0f1;
+    background: #f5f5f5;
     border: solid 1px #ccc;
-    color: #7b8a8b;
+    color: #333;
 }
 
 pre code {
@@ -73,7 +73,11 @@ pre code {
 }
 
 a > code {
-    color: #18bc9c;
+    color: #008cba;
+}
+
+a > code:hover, a > code:focus {
+    color: #00526e;
 }
 
 /*
@@ -183,9 +187,6 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
     left: 100%;
     margin-top: 0px;
     margin-left: -1px;
-    -webkit-border-radius: 0 4px 4px 4px;
-    -moz-border-radius: 0 4px 4px;
-    border-radius: 0 4px 4px 4px;
 }
 
 /* display sub menu on hover*/
@@ -210,5 +211,5 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
 
 /* little arrow of parent menu */
 .dropdown-submenu:hover>a:after {
-    border-left-color: #404040;
+    border-left-color: #fff;
 }

@@ -31,4 +31,4 @@ SOFTWARE.
 __init__.py - Setup for the pyquaternion module
 
 """
-from pyquaternion.quaternion import Quaternion
+from quaternion import Quaternion

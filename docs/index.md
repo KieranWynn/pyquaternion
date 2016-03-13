@@ -3,24 +3,6 @@ Welcome! pyquaternion is a full-featured Python module for representing and usin
 
 The following should get you up and running with pyquaternion in no time.
 
-<a name="dependencies"></a>
-# Dependencies
-pyquaternion has been tested to work correctly on Python 2.7x and Python 3x. Compatibility outside of these versions is not guaranteed. If you really need support for other versions, feel free to fork the project on [Github](https://github.com/KieranWynn/pyquaternion) and make the necessary modifications.
-
-pyquaternion requires [Numpy](http://www.numpy.org) for the representation of arrays and matrices. Chances are if you're needing quaternions, you've been dealing with numerical computation already and you have it installed. If so, great, ignore the rest of this section. If not, read on!
-
-Numpy is a core element of the [SciPy](http://www.scipy.org/about.html) package, which also contains a number of useful scientific computing and visualisation tools. If you will be using these (e.g. plotting 3D vectors with [Matplotlib](http://matplotlib.org)), you might want to look into [installing the whole SciPy stack](http://www.scipy.org/install.html), however, SciPy is not required in its entirety for pyquaternion. If you just want the important bit, proceed as follows:
-
-Numpy can easily be installed as a standalone with python's package manager, pip. Pip comes included with recent versions of Python (2.7.9+ and 3.4+), but if you need it, follow the instructions [here](https://pip.pypa.io/en/latest/installing.html#install-pip). 
-Once you have pip installed, simply do:
-
-	$ pip install numpy
-
-> Note: If you're using Python3, your pip command may be 
-
-	$ pip3 install numpy
-
-
 <a name="getting_started"></a>
 # Getting started
 The following aims to familiarize you with the basic functionality of quaternions in pyquaternion. It provides an entry point and a quick orientation (no pun intended) for those who want get stuck straight in. More comprehensive feature summaries can be found in the [features](#quaternion-features) and [operations](#quaternion-operations) documentation.

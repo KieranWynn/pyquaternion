@@ -5,7 +5,14 @@ python:
   - "3.3"
   - "3.4"
   - "nightly"
+
 # command to install dependencies
-install: "python setup.py install"
+install: python setup.py install
+
 # command to run tests
-script: python pyquaternion/test/test_quaternion.py
+script: python pyquaternion/test/test_quaternion.
+
+# build and deploy docs
+after_script:
+   - pip install mkdocs
+   - mkdocs gh-deploy --clean

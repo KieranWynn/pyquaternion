@@ -1,5 +1,4 @@
 # pyquaternion
----
 
 [![Build Status](https://travis-ci.org/KieranWynn/pyquaternion.svg?branch=master)](https://travis-ci.org/KieranWynn/pyquaternion)
 

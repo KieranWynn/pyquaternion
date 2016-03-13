@@ -62,9 +62,9 @@ div.col-md-9 img {
 
 code {
     padding: 1px 3px;
-    background: #f5f5f5;
+    background: #ecf0f1;
     border: solid 1px #ccc;
-    color: #333;
+    color: #7b8a8b;
 }
 
 pre code {
@@ -73,7 +73,7 @@ pre code {
 }
 
 a > code {
-    color: #3399f3;
+    color: #18bc9c;
 }
 
 /*

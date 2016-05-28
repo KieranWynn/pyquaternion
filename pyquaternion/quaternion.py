@@ -681,14 +681,17 @@ class Quaternion:
         """
         self._fast_normalise()
         rate = self._validate_number_sequence(rate, 3)
-        rate_norm = np.linalg.norm(rate)
-        if rate_norm > 0:
-            normalised_rate = rate / rate_norm
-        else:
-            normalised_rate = rate
-        half_step = timestep / 2.0
-        theta = rate_norm * half_step
-        self.q = np.hstack([cos(theta), normalised_rate * sin(theta)])
+
+        rotation_vector = rate * timestep
+        rotation_norm = np.linalg.norm(rotation_vector)
+        if rotation_norm > 0:
+            axis = rotation_vector / rotation_norm
+            angle = rotation_norm
+            q2 = Quaternion(axis=axis, angle=angle)
+            self.q = (self * q2).q
+            self._fast_normalise()
+
+
 
     def rotation_matrix(self):
         """Get the 3x3 rotation matrix equivalent of the quaternion rotation.

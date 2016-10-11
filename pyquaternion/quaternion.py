@@ -110,7 +110,7 @@ class Quaternion:
                 self.q = np.array([1.0, 0.0, 0.0, 0.0])
         elif s is 1:
             # Single positional argument supplied
-            if isinstance(args[0], self.__class__):
+            if isinstance(args[0], Quaternion):
                 self.q = args[0].q
                 return
             if args[0] is None:
@@ -338,7 +338,7 @@ class Quaternion:
         """Returns true if the following is true for each element:
         `absolute(a - b) <= (atol + rtol * absolute(b))`
         """
-        if isinstance(other, self.__class__):
+        if isinstance(other, Quaternion):
             r_tol = 1.0e-13
             a_tol = 1.0e-14
             try:
@@ -354,7 +354,7 @@ class Quaternion:
 
     # Addition
     def __add__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, Quaternion):
             return self.__class__(array=self.q + other.q)
         return self + self.__class__(other)
 
@@ -376,7 +376,7 @@ class Quaternion:
 
     # Multiplication
     def __mul__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, Quaternion):
             return self.__class__(array=np.dot(self._q_matrix(), other.q))
         return self * self.__class__(other)
     
@@ -388,7 +388,7 @@ class Quaternion:
 
     # Division
     def __div__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, Quaternion):
             if other == self.__class__(0.0):
                 raise ZeroDivisionError("Quaternion divisor must be non-zero")
             return self * other.inverse()
@@ -571,7 +571,7 @@ class Quaternion:
             ValueError: if `vector` cannot be interpreted as a 3-vector or a Quaternion object.
 
         """
-        if isinstance(vector, self.__class__):
+        if isinstance(vector, Quaternion):
             return self._rotate_quaternion(vector)
         q = Quaternion(vector=vector)
         a = self._rotate_quaternion(q).vector()

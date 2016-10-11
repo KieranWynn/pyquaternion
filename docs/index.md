@@ -207,9 +207,8 @@ The sequential elements `a, b, c, d` of the sequence correspond the the real, an
 * `TypeError`  if any of the sequence contents cannot be converted to a real number.
 * `ValueError` if the sequence contains less/more than 4 elements
 
-## Using named parameters:
 
-### Explicitly by element
+## Explicitly by element
 > **`Quaternion(a=w, b=x, c=y, d=z)`**
 
 Specify each element, using any sequence of ordered labels
@@ -227,7 +226,7 @@ q8a = Quaternion(q1=1.0, q2=0.0, q3=0.0, q4=0.0)
 
 **Rasises:** Exception behaviour is the same as initialisation by element as described above.
 
-### Explicitly by component
+## Explicitly by component
 > **`Quaternion(scalar=s, vector=v)` or `Quaternion(real=r, imaginary=i)`**
 
 Specify the scalar (real) and vector (imaginary) parts of the desired quaternion.
@@ -249,7 +248,7 @@ Either component (but not both) may be absent, `None` or empty, and will be assu
 
 **Raises:** `ValueError` if the `vector` or `imaginary` component contains less/more than 3 elements
 
-### Explicitly by rotation parameters
+## Explicitly by rotation parameters
 > **`Quaternion(axis=ax, angle=theta)`**
 
 Specify the angle (in radians) for a rotation about an axis vector [x, y, z] to be described by the quaternion object.
@@ -270,7 +269,7 @@ Both `axis` and `angle` must be provided to describe a meaningful rotation.
 * `ValueError` if `axis` contains less/more than 3 elements
 * `ZeroDivisionError` if `axis` has 0 length.
 
-### Explicitly by rotation or transformation matrix
+## Explicitly by rotation or transformation matrix
 > **`Quaternion(matrix=R)` or `Quaternion(matrix=T)`**
 
 Specify the 3x3 rotation matrix (`R`) or 4x4 transformation matrix (`T`) from which the quaternion's rotation should be created.
@@ -296,7 +295,7 @@ This code uses a modification of the algorithm described in [Converting a Rotati
 * `ValueError` if the matrix is not 3x3 or 4x4 or if the matrix is not special orthogonal.
 * `TypeError` if the matrix is of the wrong type
 
-### Explicitly by a numpy array
+## Explicitly by a numpy array
 > **`Quaternion(array=a)`**
 
 Specify a numpy 4-array of quaternion elements to be assigned directly to the internal vector representation of the quaternion object.

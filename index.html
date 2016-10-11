@@ -120,7 +120,15 @@
         
             <li><a href="#from-a-sequence">From a sequence</a></li>
         
-            <li><a href="#using-named-parameters">Using named parameters:</a></li>
+            <li><a href="#explicitly-by-element">Explicitly by element</a></li>
+        
+            <li><a href="#explicitly-by-component">Explicitly by component</a></li>
+        
+            <li><a href="#explicitly-by-rotation-parameters">Explicitly by rotation parameters</a></li>
+        
+            <li><a href="#explicitly-by-rotation-or-transformation-matrix">Explicitly by rotation or transformation matrix</a></li>
+        
+            <li><a href="#explicitly-by-a-numpy-array">Explicitly by a numpy array</a></li>
         
     
         <li class="main "><a href="#quaternion-features">Quaternion Features</a></li>
@@ -365,8 +373,7 @@ q7 = Quaternion([a, b, c, d]) // from list of 4
 <li><code>TypeError</code>  if any of the sequence contents cannot be converted to a real number.</li>
 <li><code>ValueError</code> if the sequence contains less/more than 4 elements</li>
 </ul>
-<h2 id="using-named-parameters">Using named parameters:</h2>
-<h3 id="explicitly-by-element">Explicitly by element</h3>
+<h2 id="explicitly-by-element">Explicitly by element</h2>
 <blockquote>
 <p><strong><code>Quaternion(a=w, b=x, c=y, d=z)</code></strong></p>
 </blockquote>
@@ -382,7 +389,7 @@ q8a = Quaternion(q1=1.0, q2=0.0, q3=0.0, q4=0.0)
 </code></pre>
 
 <p><strong>Rasises:</strong> Exception behaviour is the same as initialisation by element as described above.</p>
-<h3 id="explicitly-by-component">Explicitly by component</h3>
+<h2 id="explicitly-by-component">Explicitly by component</h2>
 <blockquote>
 <p><strong><code>Quaternion(scalar=s, vector=v)</code> or <code>Quaternion(real=r, imaginary=i)</code></strong></p>
 </blockquote>
@@ -402,7 +409,7 @@ q8b = Quaternion(real=None, imaginary=[1.0, 0.0, 0.0]) // Using list
 q8b = Quaternion(imaginary=numpy.array([1.0, 0.0, 0.0])) // Using Numpy 3-array
 </code></pre>
 <p><strong>Raises:</strong> <code>ValueError</code> if the <code>vector</code> or <code>imaginary</code> component contains less/more than 3 elements</p>
-<h3 id="explicitly-by-rotation-parameters">Explicitly by rotation parameters</h3>
+<h2 id="explicitly-by-rotation-parameters">Explicitly by rotation parameters</h2>
 <blockquote>
 <p><strong><code>Quaternion(axis=ax, angle=theta)</code></strong></p>
 </blockquote>
@@ -421,7 +428,7 @@ q8c = Quaternion(angle=math.pi/2, axis=numpy.array([1.0, 0.0, 0.0])) // Using Nu
 <li><code>ValueError</code> if <code>axis</code> contains less/more than 3 elements</li>
 <li><code>ZeroDivisionError</code> if <code>axis</code> has 0 length.</li>
 </ul>
-<h3 id="explicitly-by-rotation-or-transformation-matrix">Explicitly by rotation or transformation matrix</h3>
+<h2 id="explicitly-by-rotation-or-transformation-matrix">Explicitly by rotation or transformation matrix</h2>
 <blockquote>
 <p><strong><code>Quaternion(matrix=R)</code> or <code>Quaternion(matrix=T)</code></strong></p>
 </blockquote>
@@ -444,7 +451,7 @@ q8d = Quaternion(matrix=transformation) // Using 4x4 transformation matrix
 <li><code>ValueError</code> if the matrix is not 3x3 or 4x4 or if the matrix is not special orthogonal.</li>
 <li><code>TypeError</code> if the matrix is of the wrong type</li>
 </ul>
-<h3 id="explicitly-by-a-numpy-array">Explicitly by a numpy array</h3>
+<h2 id="explicitly-by-a-numpy-array">Explicitly by a numpy array</h2>
 <blockquote>
 <p><strong><code>Quaternion(array=a)</code></strong></p>
 </blockquote>

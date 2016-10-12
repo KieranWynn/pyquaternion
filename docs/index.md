@@ -249,24 +249,29 @@ Either component (but not both) may be absent, `None` or empty, and will be assu
 **Raises:** `ValueError` if the `vector` or `imaginary` component contains less/more than 3 elements
 
 ## Explicitly by rotation parameters
-> **`Quaternion(axis=ax, angle=theta)`**
+> **`Quaternion(axis=ax, radians=rad)`** or **`Quaternion(axis=ax, degrees=deg)`** or **`Quaternion(axis=ax, angle=theta)`**
 
-Specify the angle (in radians) for a rotation about an axis vector [x, y, z] to be described by the quaternion object.
+Specify the angle (qualified as radians or degrees) for a rotation about an axis vector [x, y, z] to be described by the quaternion object.
 
 **Params**
-* `angle=theta` can be a real number, or a string representing a real number.
 * `axis=ax` can be a sequence or numpy array containing 3 real numbers. It can have any magnitude except `0`.
+* `radians=rad` [optional] a real number, or a string representing a real number in radians.
+* `degrees=deg` [optional] a real number, or a string representing a real number in degrees.
+* `angle=theta` [optional] a real number, or a string representing a real number in radians.
 
-Both `axis` and `angle` must be provided to describe a meaningful rotation.
+The `angle` (radians/degrees/angle) keyword may be absent, `None` or empty, and will be assumed to be zero in that case,
+but the `axis` keyword must be provided to describe a meaningful rotation.
 
-    q8c = Quaternion(angle=math.pi/2, axis=(1.0, 0.0, 0.0)) // Using 3-tuple
-    q8c = Quaternion(angle=math.pi/2, axis=[1.0, 0.0, 0.0]) // Using list
-    q8c = Quaternion(angle=math.pi/2, axis=numpy.array([1.0, 0.0, 0.0])) // Using Numpy 3-array
+
+    q8c = Quaternion(axis=(1.0, 0.0, 0.0), radians=math.pi/2) // Using radians asnd a 3-tuple
+    q8c = Quaternion(axis=[1.0, 0.0, 0.0], degrees=90) // Using degrees and a list
+    q8c = Quaternion(axis=numpy.array([1.0, 0.0, 0.0]), angle=math.pi/2) // Using radians and a Numpy 3-array
 
 **Raises:**
 
-* `ValueError` if either `angle` or `axis` is missing
+* `ValueError` if `axis` is missing
 * `ValueError` if `axis` contains less/more than 3 elements
+* `TypeError` if `radians/degrees/angle` cannot be interpreted as a real number
 * `ZeroDivisionError` if `axis` has 0 length.
 
 ## Explicitly by rotation or transformation matrix

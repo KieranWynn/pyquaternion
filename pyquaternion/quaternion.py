@@ -84,14 +84,15 @@ class Quaternion:
                     imaginary = self._validate_number_sequence(imaginary, 3)
 
                     self.q = np.hstack((real, imaginary))
-                elif ("axis" in kwargs) or ("angle" in kwargs):
+                elif ("axis" in kwargs) or ("radians" in kwargs) or ("degrees" in kwargs) or ("angle" in kwargs):
                     try:
                         axis = self._validate_number_sequence(kwargs["axis"], 3)
-                        angle = float(kwargs["angle"])
                     except KeyError:
-                        raise ValueError("Both 'axis' and 'angle' must be provided to describe a meaningful rotation.")
-                    else:
-                        self.q = Quaternion._from_axis_angle(axis, angle).q
+                        raise ValueError(
+                            "A valid rotation 'axis' parameter must be provided to describe a meaningful rotation."
+                        )
+                    angle = kwargs.get('radians') or self.to_radians(kwargs.get('degrees')) or kwargs.get('angle') or 0.0
+                    self.q = Quaternion._from_axis_angle(axis, angle).q
                 elif "array" in kwargs:
                     self.q = self._validate_number_sequence(kwargs["array"], 4)
                 elif "matrix" in kwargs:
@@ -849,8 +850,10 @@ class Quaternion:
 
     @staticmethod
     def to_degrees(angle_rad):
-        return float(angle_rad) / pi * 180.0
+        if angle_rad is not None:
+            return float(angle_rad) / pi * 180.0
 
     @staticmethod
     def to_radians(angle_deg):
-        return float(angle_deg) / 180.0 * pi
+        if angle_deg is not None:
+            return float(angle_deg) / 180.0 * pi

@@ -102,7 +102,9 @@ class TestQuaternionInitialisation(unittest.TestCase):
             q = Quaternion(None, b, c, d)
         with self.assertRaises(ValueError):
             q = Quaternion(a, b, "String", d)
+        with self.assertRaises(ValueError):
             q = Quaternion(a, b, c)
+        with self.assertRaises(ValueError):
             q = Quaternion(a, b, c, d, random())
         
     def test_init_from_array(self):
@@ -113,7 +115,9 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertEqual(q, Quaternion(*r))
         with self.assertRaises(ValueError):
             q = Quaternion(a[1:4])            # 3-vector
+        with self.assertRaises(ValueError):
             q = Quaternion(np.hstack((a, a))) # 8-vector
+        with self.assertRaises(ValueError):
             q = Quaternion(np.array([a, a]))  # 2x4-
         with self.assertRaises(TypeError):
             q = Quaternion(np.array([None, None, None, None]))
@@ -125,7 +129,9 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertEqual(q, Quaternion(*t))
         with self.assertRaises(ValueError):
             q = Quaternion(t[1:4])  # 3-tuple
+        with self.assertRaises(ValueError):
             q = Quaternion(t + t)   # 8-tuple
+        with self.assertRaises(ValueError):
             q = Quaternion((t, t))  # 2x4-tuple
         with self.assertRaises(TypeError):
             q = Quaternion((None, None, None, None))
@@ -138,7 +144,9 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertEqual(q, Quaternion(*l))
         with self.assertRaises(ValueError):
             q = Quaternion(l[1:4])  # 3-list
+        with self.assertRaises(ValueError):
             q = Quaternion(l + l)   # 8-list
+        with self.assertRaises(ValueError):
             q = Quaternion((l, l))  # 2x4-list
         with self.assertRaises(TypeError):
             q = Quaternion([None, None, None, None])
@@ -161,7 +169,9 @@ class TestQuaternionInitialisation(unittest.TestCase):
             q = Quaternion(a=None, b=e2, c=e3, d=e4)
         with self.assertRaises(ValueError):
             q = Quaternion(a=e1, b=e2, c="String", d=e4)
+        with self.assertRaises(ValueError):
             q = Quaternion(w=e1, x=e2)
+        with self.assertRaises(ValueError):
             q = Quaternion(a=e1, b=e2, c=e3, d=e4, e=e1)
 
     def test_init_from_explicit_component(self):
@@ -188,6 +198,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertEqual(q5, q6)
         with self.assertRaises(ValueError):
             q = Quaternion(real=a, imaginary=[b, c])
+        with self.assertRaises(ValueError):
             q = Quaternion(real=a, imaginary=(b, c, d, d))
 
         # Using 'scalar' & 'vector' notation
@@ -211,6 +222,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertEqual(q5, q6)
         with self.assertRaises(ValueError):
             q = Quaternion(scalar=a, vector=[b, c])
+        with self.assertRaises(ValueError):
             q = Quaternion(scalar=a, vector=(b, c, d, d))
 
     def test_init_from_explicit_rotation_params(self):
@@ -224,8 +236,8 @@ class TestQuaternionInitialisation(unittest.TestCase):
         v3 = np.array(v2) # array format
         
         q1 = Quaternion(axis=v1, angle=theta)
-        q2 = Quaternion(axis=v2, angle=theta)
-        q3 = Quaternion(axis=v3, angle=theta)
+        q2 = Quaternion(axis=v2, radians=theta)
+        q3 = Quaternion(axis=v3, degrees=theta / pi * 180)
 
         # normalise v to a unit vector
         v3 = v3 / np.linalg.norm(v3)
@@ -246,6 +258,10 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertEqual(q2, truth)
         self.assertEqual(q3, truth)
         self.assertEqual(q4, truth)
+        self.assertEqual(Quaternion(axis=v3, angle=0), Quaternion())
+        self.assertEqual(Quaternion(axis=v3, radians=0), Quaternion())
+        self.assertEqual(Quaternion(axis=v3, degrees=0), Quaternion())
+        self.assertEqual(Quaternion(axis=v3), Quaternion())
 
         # Result should be a versor (Unit Quaternion)
         self.assertAlmostEqual(q1.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
@@ -253,10 +269,12 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertAlmostEqual(q3.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
         self.assertAlmostEqual(q4.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
 
+
         with self.assertRaises(ValueError):
             q = Quaternion(angle=theta)
-            q = Quaternion(axis=v1)
+        with self.assertRaises(ValueError):
             q = Quaternion(axis=[b, c], angle=theta)
+        with self.assertRaises(ValueError):
             q = Quaternion(axis=(b, c, d, d), angle=theta)
         with self.assertRaises(ZeroDivisionError):
             q = Quaternion(axis=[0., 0., 0.], angle=theta)
@@ -308,7 +326,9 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertEqual(q, Quaternion(*r))
         with self.assertRaises(ValueError):
             q = Quaternion(array=a[1:4])            # 3-vector
+        with self.assertRaises(ValueError):
             q = Quaternion(array=np.hstack((a, a))) # 8-vector
+        with self.assertRaises(ValueError):
             q = Quaternion(array=np.array([a, a]))  # 2x4-matrix
         with self.assertRaises(TypeError):
             q = Quaternion(array=np.array([None, None, None, None]))
@@ -428,6 +448,7 @@ class TestQuaternionArithmetic(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             q1 += n
+        with self.assertRaises(TypeError):
             n += q1
 
     def test_subtract(self):
@@ -448,6 +469,7 @@ class TestQuaternionArithmetic(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             q1 -= n
+        with self.assertRaises(TypeError):
             n -= q1
 
     def test_multiplication_of_bases(self):
@@ -489,7 +511,9 @@ class TestQuaternionArithmetic(unittest.TestCase):
             a = q * None
         with self.assertRaises(ValueError):
             b = q * [1, 1, 1, 1, 1]
+        with self.assertRaises(ValueError):
             c = q * np.array([[1, 2, 3], [4, 5, 6]])
+        with self.assertRaises(ValueError):
             d = q * 's'
 
     def test_divide(self):
@@ -508,7 +532,9 @@ class TestQuaternionArithmetic(unittest.TestCase):
             q / None
         with self.assertRaises(ValueError):
             q / [1, 1, 1, 1, 1]
+        with self.assertRaises(ValueError):
             q / np.array([[1, 2, 3], [4, 5, 6]])
+        with self.assertRaises(ValueError):
             q / 's'
 
     def test_division_of_bases(self):
@@ -713,6 +739,7 @@ class TestQuaternionFeatures(unittest.TestCase):
             q[None]
         with self.assertRaises(IndexError):
             q[4]
+        with self.assertRaises(IndexError):
             q[-5]
 
     def test_element_assignment(self):

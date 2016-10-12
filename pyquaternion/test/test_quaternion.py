@@ -70,7 +70,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
     def test_init_random(self): 
         r1 = Quaternion.random()
         r2 = Quaternion.random()
-        self.assertAlmostEqual(r1.norm(), 1.0, ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual(r1.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
         self.assertIsInstance(r1, Quaternion)
         #self.assertNotEqual(r1, r2) #TODO, this *may* fail at random 
 
@@ -248,10 +248,10 @@ class TestQuaternionInitialisation(unittest.TestCase):
         self.assertEqual(q4, truth)
 
         # Result should be a versor (Unit Quaternion)
-        self.assertAlmostEqual(q1.norm(), 1.0, ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(q2.norm(), 1.0, ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(q3.norm(), 1.0, ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(q4.norm(), 1.0, ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual(q1.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual(q2.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual(q3.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual(q4.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
 
         with self.assertRaises(ValueError):
             q = Quaternion(angle=theta)
@@ -541,7 +541,7 @@ class TestQuaternionArithmetic(unittest.TestCase):
             q3 = q1
             self.assertEqual(q1 / s, q2)
             if q1:
-                self.assertEqual(s / q1, q2.inverse())
+                self.assertEqual(s / q1, q2.inverse)
             else:
                 with self.assertRaises(ZeroDivisionError):
                     s / q1
@@ -574,7 +574,7 @@ class TestQuaternionArithmetic(unittest.TestCase):
         q2 **= 4
         self.assertEqual(q2, q1 * q1 * q1 * q1)
         self.assertEqual((q1 ** 0.5) * (q1 ** 0.5), q1)
-        self.assertEqual(q1 ** -1, q1.inverse())
+        self.assertEqual(q1 ** -1, q1.inverse)
         self.assertEqual(4 ** Quaternion(2), Quaternion(16))
         with self.assertRaises(TypeError):
             q1 ** None
@@ -600,61 +600,61 @@ class TestQuaternionFeatures(unittest.TestCase):
         a, b, c, d = randomElements()
         q1 = Quaternion(a, b, c, d)
         q2 = Quaternion.random()
-        self.assertEqual(q1.conjugate(), Quaternion(a, -b, -c, -d))
+        self.assertEqual(q1.conjugate, Quaternion(a, -b, -c, -d))
 
-        self.assertEqual((q1 * q2).conjugate(), q2.conjugate() * q1.conjugate())
-        self.assertEqual((q1 + q1.conjugate()) / 2, Quaternion(scalar=q1.scalar()))
-        self.assertEqual((q1 - q1.conjugate()) / 2, Quaternion(vector=q1.vector()))
+        self.assertEqual((q1 * q2).conjugate, q2.conjugate * q1.conjugate)
+        self.assertEqual((q1 + q1.conjugate) / 2, Quaternion(scalar=q1.scalar))
+        self.assertEqual((q1 - q1.conjugate) / 2, Quaternion(vector=q1.vector))
     
     def test_double_conjugate(self):
         q = Quaternion.random()
-        self.assertEqual(q, q.conjugate().conjugate())
+        self.assertEqual(q, q.conjugate.conjugate)
 
     def test_norm(self):
         r = randomElements()
         q1 = Quaternion(*r)
         q2 = Quaternion.random()  
-        self.assertEqual(q1.norm(), np.linalg.norm(np.array(r)))
-        self.assertEqual(q1.magnitude(), np.linalg.norm(np.array(r)))
+        self.assertEqual(q1.norm, np.linalg.norm(np.array(r)))
+        self.assertEqual(q1.magnitude, np.linalg.norm(np.array(r)))
         # Multiplicative norm
-        self.assertAlmostEqual((q1 * q2).norm(), q1.norm() * q2.norm(), ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual((q1 * q2).norm, q1.norm * q2.norm, ALMOST_EQUAL_TOLERANCE)
         # Scaled norm
         for s in [30.0, 0.3, -2, -4.7]:
-            self.assertAlmostEqual((q1 * s).norm(), q1.norm() * abs(s), ALMOST_EQUAL_TOLERANCE)
+            self.assertAlmostEqual((q1 * s).norm, q1.norm * abs(s), ALMOST_EQUAL_TOLERANCE)
 
     def test_inverse(self):
         q1 = Quaternion(randomElements())
         q2 = Quaternion.random()
         if q1:
-            self.assertEqual(q1 * q1.inverse(), Quaternion(1.0, 0.0, 0.0, 0.0))
+            self.assertEqual(q1 * q1.inverse, Quaternion(1.0, 0.0, 0.0, 0.0))
         else:
             with self.assertRaises(ZeroDivisionError):
-                q1 * q1.inverse()
+                q1 * q1.inverse
 
-        self.assertEqual(q2 * q2.inverse(), Quaternion(1.0, 0.0, 0.0, 0.0))
+        self.assertEqual(q2 * q2.inverse, Quaternion(1.0, 0.0, 0.0, 0.0))
 
     def test_normalisation(self): # normalise to unit quaternion
         r = randomElements()
         q1 = Quaternion(*r)
-        v = q1.unit()
-        n = q1.normalised()
+        v = q1.unit
+        n = q1.normalised
 
         if q1 == Quaternion(0): # small chance with random generation
             return # a 0 quaternion does not normalise
 
         # Test normalised objects are unit quaternions
-        np.testing.assert_almost_equal(v.q, q1.elements() / q1.norm(), decimal=ALMOST_EQUAL_TOLERANCE)
-        np.testing.assert_almost_equal(n.q, q1.elements() / q1.norm(), decimal=ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(v.norm(), 1.0, ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(n.norm(), 1.0, ALMOST_EQUAL_TOLERANCE)
+        np.testing.assert_almost_equal(v.q, q1.elements / q1.norm, decimal=ALMOST_EQUAL_TOLERANCE)
+        np.testing.assert_almost_equal(n.q, q1.elements / q1.norm, decimal=ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual(v.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual(n.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
         # Test axis and angle remain the same
-        np.testing.assert_almost_equal(q1.axis(), v.axis(), decimal=ALMOST_EQUAL_TOLERANCE)
-        np.testing.assert_almost_equal(q1.axis(), n.axis(), decimal=ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(q1.angle(), v.angle(), ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(q1.angle(), n.angle(), ALMOST_EQUAL_TOLERANCE)
+        np.testing.assert_almost_equal(q1.axis, v.axis, decimal=ALMOST_EQUAL_TOLERANCE)
+        np.testing.assert_almost_equal(q1.axis, n.axis, decimal=ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual(q1.angle, v.angle, ALMOST_EQUAL_TOLERANCE)
+        self.assertAlmostEqual(q1.angle, n.angle, ALMOST_EQUAL_TOLERANCE)
         # Test special case where q is zero
         q2 = Quaternion(0)
-        self.assertEqual(q2, q2.normalised())
+        self.assertEqual(q2, q2.normalised)
 
     def test_is_unit(self):
         q1 = Quaternion()
@@ -687,18 +687,18 @@ class TestQuaternionFeatures(unittest.TestCase):
         a, b, c, d = randomElements()
         q = Quaternion(a, b, c, d)
         # Test scalar
-        self.assertEqual(q.scalar(), a)
-        self.assertEqual(q.real(), a)
+        self.assertEqual(q.scalar, a)
+        self.assertEqual(q.real, a)
         # Test vector
-        self.assertTrue(np.array_equal(q.vector(), [b, c, d]))
-        self.assertTrue(np.array_equal(q.imaginary(), [b, c, d]))
-        self.assertEqual(tuple(q.vector()), (b, c, d))
-        self.assertEqual(list(q.imaginary()), [b, c, d])
+        self.assertTrue(np.array_equal(q.vector, [b, c, d]))
+        self.assertTrue(np.array_equal(q.imaginary, [b, c, d]))
+        self.assertEqual(tuple(q.vector), (b, c, d))
+        self.assertEqual(list(q.imaginary), [b, c, d])
 
     def test_output_of_elements(self):
         r = randomElements()
         q = Quaternion(*r)
-        self.assertEqual(tuple(q.elements()), r)
+        self.assertEqual(tuple(q.elements), r)
 
     def test_element_access(self):
         r = randomElements()
@@ -746,21 +746,21 @@ class TestQuaternionFeatures(unittest.TestCase):
 
     def test_conversion_to_matrix(self):
         q = Quaternion.random()
-        a, b, c, d = tuple(q.elements())
+        a, b, c, d = tuple(q.elements)
         R = np.array([
             [a**2 + b**2 - c**2 - d**2, 2 * (b * c - a * d), 2 * (a * c + b * d)],
             [2 * (b * c + a * d), a**2 - b**2 + c**2 - d**2, 2 * (c * d - a * b)],
             [2 * (b * d - a * c), 2 * (a * b + c * d), a**2 - b**2 - c**2 + d**2]])
         t = np.array([[0],[0],[0]])
         T = np.vstack([np.hstack([R,t]), np.array([0,0,0,1])])
-        np.testing.assert_almost_equal(R, q.rotation_matrix(), decimal=ALMOST_EQUAL_TOLERANCE)
-        np.testing.assert_almost_equal(T, q.transformation_matrix(), decimal=ALMOST_EQUAL_TOLERANCE)
+        np.testing.assert_almost_equal(R, q.rotation_matrix, decimal=ALMOST_EQUAL_TOLERANCE)
+        np.testing.assert_almost_equal(T, q.transformation_matrix, decimal=ALMOST_EQUAL_TOLERANCE)
 
         # Test no scaling of rotated vectors
         v1 = np.array([1, 0, 0])
         v2 = np.hstack((np.random.uniform(-10, 10, 3), 1.0))
-        v1_ = np.dot(q.rotation_matrix(), v1)
-        v2_ = np.dot(q.transformation_matrix(), v2)
+        v1_ = np.dot(q.rotation_matrix, v1)
+        v2_ = np.dot(q.transformation_matrix, v2)
         self.assertAlmostEqual(np.linalg.norm(v1_), 1.0, ALMOST_EQUAL_TOLERANCE)
         self.assertAlmostEqual(np.linalg.norm(v2_), np.linalg.norm(v2), ALMOST_EQUAL_TOLERANCE)
 
@@ -773,7 +773,7 @@ class TestQuaternionFeatures(unittest.TestCase):
 
         for i in range(10):
             q0 = Quaternion.random()
-            R  = q0.rotation_matrix()
+            R  = q0.rotation_matrix
             q1 = Quaternion(matrix=R)
             np.testing.assert_almost_equal(q0.rotate(v), np.dot(R, v), decimal=ALMOST_EQUAL_TOLERANCE)
             np.testing.assert_almost_equal(q0.rotate(v), q1.rotate(v), decimal=ALMOST_EQUAL_TOLERANCE)
@@ -797,8 +797,8 @@ class TestQuaternionFeatures(unittest.TestCase):
 
         q = Quaternion(angle=theta, axis=v)
 
-        v_ = q.axis()
-        theta_ = q.angle()
+        v_ = q.axis
+        theta_ = q.angle
         
         if theta == 0.0: # axis is irrelevant (check defaults to x=y=z)
             np.testing.assert_almost_equal(theta_, 0.0, decimal=ALMOST_EQUAL_TOLERANCE)

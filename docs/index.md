@@ -20,9 +20,9 @@ Go into the pyquaternion repository root directory (the one with setup.py and RE
 
     $ workon <my_environment>
 
-Now run the install script to install *pyquaternion* and its dependencies
+Now use pip to install *pyquaternion* and its dependencies
 
-    $ python setup.py install
+    $ pip install .
 
 > Note: pyquaternion requires [Numpy](http://www.numpy.org) for the representation of arrays and matrices.
 Chances are if you're needing quaternions, you've been dealing with numerical computation and you're already familiar with numpy.
@@ -322,7 +322,7 @@ The code examples below assume the existence of a Quaternion object. You can rec
 	my_quaternion = Quaternion.random()
 
 ## Norm
-> **`norm()` or `magnitude()`**
+> **`norm` or `magnitude`**
 
 L2 norm of the quaternion 4-vector
 
@@ -330,8 +330,8 @@ This should be 1.0 for a unit quaternion (versor)
 
 **Returns:** a scalar real number representing the square root of the sum of the squares of the elements of the quaternion.
 
-	my_quaternion.norm()
-	my_quaternion.magnitude()
+	my_quaternion.norm
+	my_quaternion.magnitude
 
 > **`is_unit(tolerance=1e-14)`**
 
@@ -343,7 +343,7 @@ This should be 1.0 for a unit quaternion (versor)
 
 
 ## Inversion
-> **`inverse()`**
+> **`inverse`**
 
 Inverse of the quaternion object
 
@@ -351,10 +351,10 @@ For a unit quaternion, this is the inverse rotation, i.e. when combined with the
 
 **Returns:** a new Quaternion object representing the inverse of this object
 
-	inv_quaternion = my_quaternion.inverse()
+	inv_quaternion = my_quaternion.inverse
 
 ## Conjugation
-> **`conjugate()`**
+> **`conjugate`**
 
 Quaternion conjugate
 
@@ -362,21 +362,21 @@ For a unit quaternion, this is the same as the inverse.
 
 **Returns:** a new Quaternion object clone with its vector part negated
 
-	conj_quaternion = my_quaternion.conjugate()
+	conj_quaternion = my_quaternion.conjugate
 
 ## Normalisation
-> **`normalised()` or `unit()`**
+> **`normalised` or `unit`**
 
 Get a unit quaternion (versor) copy of this Quaternion object.
 
-A unit quaternion has a `norm()` of 1.0
+A unit quaternion has a `norm` of 1.0
 
 **Note:** A Quaternion representing zero i.e. `Quaternion(0, 0, 0, 0)` cannot be normalised. In this case, the returned object will remain zero.
 
 **Returns:** a new Quaternion object clone that is guaranteed to be a unit quaternion *unless* the original object was zero, in which case the norm will remain zero.
 
-	unit_quaternion = my_quaternion.normalised()
-	unit_quaternion = my_quaternion.unit()
+	unit_quaternion = my_quaternion.normalised
+	unit_quaternion = my_quaternion.unit
 
 
 ## Rotation
@@ -496,33 +496,37 @@ The Quaternion object will be modified to its future value. It is guaranteed to 
 * `TypeError`  if any of `rate` contents cannot be converted to a real number.
 * `ValueError` if `rate` contains less/more than 3 elements
 
-## Conversion to matrix form
-> **`rotation_matrix()` & `transformation_matrix()`**
+## Accessing matrix form
+> **`rotation_matrix` & `transformation_matrix`**
 
 Get the 3x3 rotation or 4x4 homogeneous transformation matrix equivalent of the quaternion rotation.
 
 **Returns:**
 
-* `Quaternion.rotation_matrix()` : a 3x3 orthogonal rotation matrix as a 3x3 Numpy array
-* `Quaternion.transformation_matrix()` : a 4x4 homogeneous transformation matrix as a 4x4 Numpy array
+* `Quaternion.rotation_matrix` : a 3x3 orthogonal rotation matrix as a 3x3 Numpy array
+* `Quaternion.transformation_matrix` : a 4x4 homogeneous transformation matrix as a 4x4 Numpy array
 
 **Note 1:** This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
 
 **Note 2:** Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.
 
-	R = my_quaternion.rotation_matrix() 		# 3x3 rotation matrix
-	T = my_quaternion.transformation_matrix()   # 4x4 transformation matrix
+	R = my_quaternion.rotation_matrix 		  # 3x3 rotation matrix
+	T = my_quaternion.transformation_matrix   # 4x4 transformation matrix
 
 ## Accessing rotation axis
-> **`axis(undefined=[0,0,0])`**
+> **`axis`** or **`get_axis(undefined=[0,0,0])`**
 
 Get the axis or vector about which the quaternion rotation occurs
 
 For a null rotation (a purely real quaternion), the rotation angle will always be `0`, but the rotation axis is undefined. It is by default assumed to be `[0, 0, 0]`.
 
+**Note:** In the case of a null rotation, retrieving the axis is geometrically meaningless, as it could be any of an infinite set of vectors.
+By default, (`[0, 0, 0]`) is returned in this instance, but should this causes undesired behaviour, please use the
+alternative `get_axis()` form, specifying the `undefined` keyword to return a vector of your choice.
+
 **Params:**
 
-* `undefined` - [optional] - specify the axis vector that should define a null rotation. This is geometrically meaningless, and could be any of an infinite set of vectors, but can be specified if the default (`[0, 0, 0]`) causes undesired behaviour.
+* `undefined` - [optional] - specify the axis vector that should define a null rotation. 
 
 **Returns:** a Numpy unit 3-vector describing the Quaternion object's axis of rotation.
 
@@ -530,11 +534,12 @@ For a null rotation (a purely real quaternion), the rotation angle will always b
 
 **Note 2:** Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence to axis/angle representation, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.
 
-	u = my_quaternion.axis() # Unit vector about which rotation occurs
+	u = my_quaternion.axis # Unit vector about which rotation occurs  #or 
+	u = my_quaternion.get_axis(undefined=[1, 0, 0]) # Prefers a custom axis vector in the case of undefined result
 
 
 ## Accessing rotation angle
-> **`angle()`**
+> **`angle`**, **`degrees`** or **`radians`**
 
 Get the angle (in radians) describing the magnitude of the quaternion rotation about its rotation axis. This is guaranteed to be within the range (-pi:pi) with the direction of rotation indicated by the sign.
 
@@ -547,11 +552,13 @@ When a particular rotation describes a 180 degree rotation about an arbitrary ax
 **Note 2:** Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence to axis/angle representation, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.
 
 
-	theta = my_quaternion.angle() # Magnitude of rotation about the prescribed axis
+	theta = my_quaternion.angle # Magnitude of rotation about the prescribed axis, in radians
+	theta = my_quaternion.radians # Equivalent, but explicit
+	theta = my_quaternion.degrees # The same, but in degrees
 
 
 ## Accessing real components
-> **`scalar()` or `real()`**
+> **`scalar` or `real`**
 
 Get the real or scalar component of the Quaternion object
 
@@ -560,15 +567,15 @@ A quaternion can be described in terms of a scalar and vector part, q = [r, **v*
 * r is the scalar coefficient of the real part of the quaternion i.e. **a** in a + b*i* + c*j* + d*k*
 * **v** is the 3-vector of coefficients to the imaginary parts of the quaternion i.e. [b, c, d] in a + b*i* + c*j* + d*k*
 
-This method returns r
+This property returns r
 
 **Returns** the scalar, real valued element of the Quaternion object
 
-	r = my_quaternion.scalar()
-	r = my_quaternion.real()
+	r = my_quaternion.scalar
+	r = my_quaternion.real
 
 ## Accessing imaginary components
-> **`vector()` or `imaginary()`**
+> **`vector` or `imaginary`**
 
 Get the imaginary or vector component of the Quaternion object. This can be used, for example, to extract the stored vector when a pure-imaginary quaternion object is used to describe a vector within the three-dimensional vector space.
 
@@ -577,21 +584,21 @@ A quaternion can be described in terms of a scalar and vector part, q = [r, **v*
 * r is the scalar coefficient of the real part of the quaternion i.e. **a** in a + b*i* + c*j* + d*k*
 * **v** is the 3-vector of coefficients to the imaginary parts of the quaternion i.e. [b, c, d] in a + b*i* + c*j* + d*k*
 
-This method returns **v**
+This property returns **v**
 
 **Returns** Numpy 3-array of the 3 imaginary elements of the Quaternion object
 
-	v = my_quaternion.vector()
-	v = my_quaternion.imaginary()
+	v = my_quaternion.vector
+	v = my_quaternion.imaginary
 
 ## Accessing individual elements
-> **`elements()`**
+> **`elements`**
 
 Return all four elements of the quaternion object. Result is not guaranteed to be a unit 4-vector.
 
 **Returns:** a numpy 4-array of real numbered coefficients.
 
-	>>> a = my_quaternion.elements()
+	>>> a = my_quaternion.elements
 	>>> print("{} + {}i + {}j + {}k".format(a[0], a[1], a[2], a[3]))
 	    -0.6753741977725701 + 0.4624451782281068i + -0.059197245808339134j + 0.5714103921047806k
 

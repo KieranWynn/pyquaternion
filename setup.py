@@ -20,8 +20,8 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version='0.9.0',
 
-    description='A fully featured python package for quaternion representation, manipulation, 3D rotation and animation.',
-    long_description="A fully featured python package for quaternion representation, manipulation, 3D rotation and animation.",
+    description='A fully featured, pythonic library for representing and using quaternions.',
+    long_description="A fully featured, pythonic library for quaternion representation, manipulation, 3D animation and geometry.",
 
     # The project's main homepage.
     download_url='https://github.com/KieranWynn/pyquaternion',

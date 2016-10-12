@@ -7,10 +7,10 @@ python:
   - "nightly"
 
 # command to install dependencies
-install: python setup.py install
+install: pip install .
 
 # command to run tests
-script: python pyquaternion/test/test_quaternion.py
+script: python setup.py test
 
 # build and deploy docs
 after_script:

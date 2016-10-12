@@ -18,16 +18,17 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.0.0',
+    version='0.9.0',
 
     description='A fully featured python package for quaternion representation, manipulation, 3D rotation and animation.',
     long_description="A fully featured python package for quaternion representation, manipulation, 3D rotation and animation.",
 
     # The project's main homepage.
-    url='https://github.com/KieranWynn/pyquaternion',
+    download_url='https://github.com/KieranWynn/pyquaternion',
+    url='http://kieranwynn.github.io/pyquaternion/',
 
     # Author details
-    author='KieranWynn',
+    author='Kieran Wynn',
     author_email='KieranWynn@users.noreply.github.com',
 
     # Choose your license
@@ -39,12 +40,16 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Embedded Systems',
-        'Topic :: Scientific/Engineering :: Mathematics'
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Scientific/Engineering :: Mathematics',
+        'Topic :: Scientific/Engineering :: Physics',
+        'Topic :: Scientific/Engineering :: Visualization',
+
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
@@ -64,15 +69,15 @@ setup(
         
 
     # What does your project relate to?
-    keywords='quaternion math development visualisation animation',
+    keywords='quaternion math physics development visualisation animation',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=find_packages(),
+    packages=['pyquaternion'],
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
-    py_modules=["quaternion"],
+    #py_modules=["quaternion"],
 
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's
@@ -103,4 +108,10 @@ setup(
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # pip to create the appropriate form of executable for the target platform.
     entry_points={},
+
+    # Use nose to discover all tests in the module
+    test_suite='nose.collector',
+
+    # Set Nose as a requirement for running tests
+    tests_require=['nose'],
 )

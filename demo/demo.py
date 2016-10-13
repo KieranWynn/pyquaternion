@@ -1,26 +1,3 @@
-# pyquaternion
-
-[![Build Status](https://travis-ci.org/KieranWynn/pyquaternion.svg?branch=master)](https://travis-ci.org/KieranWynn/pyquaternion)
-
-A fully featured, pythonic library for quaternion representation, manipulation, 3D animation and geometry.
-
-Please visit the **[pyquaternion homepage](http://kieranwynn.github.io/pyquaternion/)** for full information and the latest documentation.
-
-**Designed for Python 2.7+ and 3.0+**
-
-![demo](./demo.gif)
-
-> Example: Smooth animation with interpolation between random orientations using the pyquaternion module.
-
-## Quickstart
-
-Clone or download, then install via [pip](https://pypi.python.org/pypi/pyquaternion/0.9.0)
-
-```$ pip install <path-to-repo>```
-
-Run the following for a basic overview. A copy of this example can be found in [demo.py](./demo/demo.py).
-
-```python
 import pyquaternion
 
 
@@ -49,7 +26,5 @@ for q in pyquaternion.Quaternion.intermediates(null_quaternion, my_quaternion, 9
     print('My Interpolated Point: {point}\t(after rotation of {angle} deg about {axis})'.format(
         point=my_interpolated_point, angle=round(q.degrees, 4), axis=q.axis
     ))
-    
-print('Done!')
-````
 
+print('Done!')

@@ -96,7 +96,8 @@ A Quaternion object can be created in the following ways:
 ## Default
 > **`Quaternion()`**
 
-Creates a unit quaternion `1 + 0i + 0j + 0k`: the quaternion representation of the real number 1.0.
+Creates a unit quaternion `1 + 0i + 0j + 0k`: the quaternion representation of the real number 1.0, 
+and the representation of a null rotation.
 
     q1 = Quaternion()
 

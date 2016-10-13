@@ -82,7 +82,7 @@ Quaternions are used extensively in animation to describe smooth transitions bet
 In the code above, the expression `Quaternion.intermediates(q0, q1, 8, include_endpoints=True)` returns an iterator over a sequence of Quaternion objects describing a set of 10 (8 + 2) rotations between `q0` and `q1`. The printed output is then the path of the point originally at [0, 0, 1] as it is rotated through 120 degrees about x=y=z to end up at [1, 0, 0].
 This could easily be plugged into a visualisation framework to show smooth animated rotation sequences. Read the full documentation on interpolation features [here](#quaternion-features).
 
-For a full demonstration of 3D interpolation and animation, run the `demo.py` script included in the pyquaternion package. This will require some elements of the full [SciPy](http://www.scipy.org/about.html) package that are not required for pyquaternion itself.
+For a full demonstration of 3D interpolation and animation, run the `demo2.py` script included in the pyquaternion package. This will require some elements of the full [SciPy](http://www.scipy.org/about.html) package that are not required for pyquaternion itself.
 
 
 # Object Initialisation

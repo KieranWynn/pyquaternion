@@ -14,9 +14,9 @@ Please visit the **[pyquaternion homepage](http://kieranwynn.github.io/pyquatern
 
 ## Quickstart
 
-Clone or download, then install via [pip](https://pypi.python.org/pypi/pyquaternion/0.9.0)
+Install from [PyPI](https://pypi.python.org/pypi/pyquaternion/0.9.0)
 
-```$ pip install <path-to-repo>```
+```$ pip install pyquaternion```
 
 Run the following for a basic overview. A copy of this example can be found in [demo.py](./demo/demo.py).
 

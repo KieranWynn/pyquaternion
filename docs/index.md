@@ -12,17 +12,13 @@ If you want to learn more about quaternions and how they apply to certain proble
 ## Installation
 To start, you will need to install *pyquaternion* into your environment.
 
-Go into the pyquaternion repository root directory (the one with setup.py and README.md):
-
-    $ cd <path_to_repo>
-
 > [Optional] If you are using virtual environments, switch to or create your environment of choice now:
-
-    $ workon <my_environment>
+>
+>    ```$ workon <my_environment>```
 
 Now use pip to install *pyquaternion* and its dependencies
 
-    $ pip install .
+    $ pip install pyquaternion
 
 > Note: pyquaternion requires [Numpy](http://www.numpy.org) for the representation of arrays and matrices.
 Chances are if you're needing quaternions, you've been dealing with numerical computation and you're already familiar with numpy.

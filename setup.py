@@ -24,7 +24,7 @@ setup(
     long_description="A fully featured, pythonic library for quaternion representation, manipulation, 3D animation and geometry.",
 
     # The project's main homepage.
-    download_url='https://github.com/KieranWynn/pyquaternion',
+    download_url='https://github.com/KieranWynn/pyquaternion/tarball/0.9.0',
     url='http://kieranwynn.github.io/pyquaternion/',
 
     # Author details
@@ -69,7 +69,9 @@ setup(
         
 
     # What does your project relate to?
-    keywords='quaternion math physics development visualisation animation',
+    keywords=[
+        'quaternion', 'math', 'maths', 'physics', 'orientation', 'pose', 'geometry', 'visualisation', 'animation'
+    ],
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().

@@ -53,3 +53,28 @@ for q in pyquaternion.Quaternion.intermediates(null_quaternion, my_quaternion, 9
 print('Done!')
 ````
 
+Example output:
+
+```
+Basic Rotation
+--------------
+My Vector: [0, 0, 4]
+Performing rotation of 90.0 deg about [ 0.  1.  0.]
+My Rotated Vector: [4.0, 0.0, 7.9869384701709571e-16]
+
+Interpolated Rotation
+---------------------
+My Interpolated Point: [0.0, 0.0, 4.0]	(after rotation of 0.0 deg about [ 0.  0.  0.])
+My Interpolated Point: [0.62573786016092348, 0.0, 3.9507533623805511]	(after rotation of 9.0 deg about [ 0.  1.  0.])
+My Interpolated Point: [1.2360679774997898, 0.0, 3.8042260651806146]	(after rotation of 18.0 deg about [ 0.  1.  0.])
+My Interpolated Point: [1.8159619989581872, 0.0, 3.5640260967534712]	(after rotation of 27.0 deg about [ 0.  1.  0.])
+My Interpolated Point: [2.3511410091698921, 0.0, 3.2360679774997894]	(after rotation of 36.0 deg about [ 0.  1.  0.])
+My Interpolated Point: [2.8284271247461903, 0.0, 2.8284271247461898]	(after rotation of 45.0 deg about [ 0.  1.  0.])
+My Interpolated Point: [3.2360679774997894, 0.0, 2.3511410091698921]	(after rotation of 54.0 deg about [ 0.  1.  0.])
+My Interpolated Point: [3.5640260967534712, 0.0, 1.8159619989581879]	(after rotation of 63.0 deg about [ 0.  1.  0.])
+My Interpolated Point: [3.8042260651806146, 0.0, 1.2360679774997898]	(after rotation of 72.0 deg about [ 0.  1.  0.])
+My Interpolated Point: [3.9507533623805515, 0.0, 0.62573786016092403]	(after rotation of 81.0 deg about [ 0.  1.  0.])
+My Interpolated Point: [4.0, 0.0, 7.9869384701709571e-16]	(after rotation of 90.0 deg about [ 0.  1.  0.])
+Done!
+````
+

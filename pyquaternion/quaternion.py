@@ -729,6 +729,28 @@ class Quaternion:
         Rt = np.hstack([self.rotation_matrix, t])
         return np.vstack([Rt, np.array([0.0, 0.0, 0.0, 1.0])])
 
+    @property
+    def yaw_pitch_roll(self):
+        """Get the equivalent yaw-pitch-roll angles aka. intrinsic Tait-Bryan angles following the z-y'-x'' convention
+        
+        Returns:
+            yaw:    rotation angle around the z-axis in radians, in the range `[-pi, pi]`
+            pitch:  rotation angle around the y'-axis in radians, in the range `[-pi/2, -pi/2]`
+            roll:   rotation angle around the x''-axis in radians, in the range `[-pi, pi]` 
+            
+        Note: 
+            This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+        """
+        
+        self._normalise()
+        yaw = np.arctan2(2*(self.q[0]*self.q[3] + self.q[1]*self.q[2]), 
+            1 - 2*(self.q[2]**2 + self.q[3]**2))
+        pitch = np.arcsin(2*(self.q[0]*self.q[2] - self.q[3]*self.q[1]))
+        roll = np.arctan2(2*(self.q[0]*self.q[1] + self.q[2]*self.q[3]), 
+            1 - 2*(self.q[1]**2 + self.q[2]**2))
+
+        return yaw, pitch, roll         
+
     def _wrap_angle(self, theta):
         """Helper method: Wrap any angle to lie between -pi and pi 
 

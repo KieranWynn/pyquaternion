@@ -795,6 +795,40 @@ class TestQuaternionFeatures(unittest.TestCase):
         np.testing.assert_almost_equal(v1_, q.rotate(v1), decimal=ALMOST_EQUAL_TOLERANCE)
         np.testing.assert_almost_equal(v2_[0:3], q.rotate(v2[0:3]), decimal=ALMOST_EQUAL_TOLERANCE)
 
+    def test_conversion_to_ypr(self):
+    
+        def R_x(theta):
+            c = cos(theta)
+            s = sin(theta)
+            return np.array([
+                [1, 0, 0],
+                [0, c,-s],
+                [0, s, c]])
+    
+        def R_y(theta):
+            c = cos(theta)
+            s = sin(theta)
+            return np.array([
+                [ c, 0, s],
+                [ 0, 1, 0],
+                [-s, 0, c]])
+    
+        def R_z(theta):
+            c = cos(theta)
+            s = sin(theta)
+            return np.array([
+                [ c,-s, 0],
+                [ s, c, 0],
+                [ 0, 0, 1]])
+
+        q = Quaternion.random()
+        yaw, pitch, roll = q.yaw_pitch_roll
+
+        # build rotation matrix, R = R_z(yaw)*R_y(pitch)*R_x(roll)
+        R = np.dot(np.dot(R_z(yaw), R_y(pitch)), R_x(roll))
+        
+        np.testing.assert_almost_equal(R, q.rotation_matrix, decimal=ALMOST_EQUAL_TOLERANCE)
+
     def test_matrix_io(self):
         v = np.random.uniform(-100, 100, 3)
 

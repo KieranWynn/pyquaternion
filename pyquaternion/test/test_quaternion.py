@@ -821,13 +821,19 @@ class TestQuaternionFeatures(unittest.TestCase):
                 [ s, c, 0],
                 [ 0, 0, 1]])
 
+        p = np.random.randn(3)
         q = Quaternion.random()
         yaw, pitch, roll = q.yaw_pitch_roll
 
+        p_q = q.rotate(p)
+        R_q = q.rotation_matrix
+
         # build rotation matrix, R = R_z(yaw)*R_y(pitch)*R_x(roll)
-        R = np.dot(np.dot(R_z(yaw), R_y(pitch)), R_x(roll))
+        R_ypr = np.dot(R_x(roll), np.dot(R_y(pitch), R_z(yaw)))
+        p_ypr = np.dot(R_ypr, p)
         
-        np.testing.assert_almost_equal(R, q.rotation_matrix, decimal=ALMOST_EQUAL_TOLERANCE)
+        np.testing.assert_almost_equal(p_q , p_ypr, decimal=ALMOST_EQUAL_TOLERANCE)
+        np.testing.assert_almost_equal(R_q , R_ypr, decimal=ALMOST_EQUAL_TOLERANCE)
 
     def test_matrix_io(self):
         v = np.random.uniform(-100, 100, 3)

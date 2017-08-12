@@ -606,6 +606,12 @@ class TestQuaternionArithmetic(unittest.TestCase):
             q1 ** None
         with self.assertRaises(ValueError):
             q1 ** 's'
+        q3 = Quaternion()
+        self.assertEqual(q3 ** 0.5, q3) # Identity behaves as an identity
+        self.assertEqual(q3 ** 5, q3)
+        self.assertEqual(q3 ** 3.4, q3)
+        q4 = Quaternion(scalar=5) # real number behaves as any other real number would
+        self.assertEqual(q4 ** 4, Quaternion(scalar=5 ** 4))
 
     def test_distributive(self):
         q1 = Quaternion.random()

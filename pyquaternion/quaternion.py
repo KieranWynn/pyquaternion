@@ -34,7 +34,7 @@ quaternion.py - This file defines the core Quaternion class
 
 from __future__ import absolute_import, division, print_function # Add compatibility for Python 2.7+
 
-from math import sqrt, pi, sin, cos, asin, acos, atan2 
+from math import sqrt, pi, sin, cos, asin, acos, atan2
 import numpy as np # Numpy is required for many vector operations
 
 
@@ -413,14 +413,17 @@ class Quaternion:
 
     # Exponentiation
     def __pow__(self, exponent):
+        # source: https://en.wikipedia.org/wiki/Quaternion#Exponential.2C_logarithm.2C_and_power
         exponent = float(exponent) # Explicitly reject non-real exponents
         norm = self.norm
         if norm > 0.0:
-            theta = acos(self.scalar / self.norm)
-            n = self.vector / np.linalg.norm(self.vector)
+            try:
+                n, theta = self.polar_decomposition
+            except ZeroDivisionError:
+                # quaternion is a real number (no vector or imaginary part)
+                return Quaternion(scalar=self.scalar ** exponent)
             return (self.norm ** exponent) * Quaternion(scalar=cos(exponent * theta), vector=(n * sin(exponent * theta)))
-        else:
-            return Quaternion(self)
+        return Quaternion(self)
 
     def __ipow__(self, other):
         return self ** other
@@ -516,6 +519,28 @@ class Quaternion:
         q = Quaternion(self)
         q._normalise()
         return q
+
+    @property
+    def polar_unit_vector(self):
+        vector_length = np.linalg.norm(self.vector)
+        if vector_length <= 0.0:
+            raise ZeroDivisionError('Quaternion is pure real and does not have a unique unit vector')
+        return self.vector / vector_length
+
+    @property
+    def polar_angle(self):
+         return acos(self.scalar / self.norm)
+
+    @property
+    def polar_decomposition(self):
+        """
+        Returns the unit vector and angle of a non-scalar quaternion according to the following decomposition
+
+        q =  q.norm() * (e ** (q.polar_unit_vector * q.polar_angle))
+
+        source: https://en.wikipedia.org/wiki/Polar_decomposition#Quaternion_polar_decomposition
+        """
+        return self.polar_unit_vector, self.polar_angle
 
     @property
     def unit(self):

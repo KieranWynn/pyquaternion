@@ -34,7 +34,7 @@ quaternion.py - This file defines the core Quaternion class
 
 from __future__ import absolute_import, division, print_function # Add compatibility for Python 2.7+
 
-from math import sqrt, pi, sin, cos, asin, acos, atan2
+from math import sqrt, pi, sin, cos, asin, acos, atan2, exp, log
 import numpy as np # Numpy is required for many vector operations
 
 
@@ -617,6 +617,56 @@ class Quaternion:
         else:
             return a
 
+    @classmethod
+    def exp(cls, q):
+        """Quaternion Exponential.
+           
+        Find the exponential of a quaternion amount.
+
+        Params:
+             q: the input quaternion/argument as a Quaternion object.
+
+        Returns:
+             A quaternion amount representing the exp(q). See [Source](https://math.stackexchange.com/questions/1030737/exponential-function-of-quaternion-derivation for more information and mathematical background).
+           
+        Note:
+             The method can compute the exponential of any quaternion.
+        """
+        tolerance = 1e-17
+        v_norm = np.linalg.norm(q.vector)
+        vec = q.vector
+        if v_norm > tolerance:
+            vec = vec / v_norm
+        magnitude = exp(q.scalar)
+        return Quaternion(scalar = magnitude * cos(v_norm), vector = magnitude * sin(v_norm) * vec)
+
+    @classmethod
+    def log(cls, q):
+        """Quaternion Logarithm.
+
+        Find the logarithm of a quaternion amount.
+
+        Params:
+             q: the input quaternion/argument as a Quaternion object.
+
+        Returns:
+             A quaternion amount representing log(q) := (log(|q|), v/|v|acos(w/|q|)).
+
+        Note:
+            The method computes the logarithm of general quaternions. See [Source](https://math.stackexchange.com/questions/2552/the-logarithm-of-quaternion/2554#2554) for more details.
+        """
+        v_norm = np.linalg.norm(q.vector)
+        q_norm = q.norm
+        tolerance = 1e-17
+        if q_norm < tolerance:
+            # 0 quaternion - undefined
+            return Quaternion(scalar=-float('inf'), vector=float('nan')*q.vector)
+        if v_norm < tolerance:
+            # real quaternions - no imaginary part
+            return Quaternion(scalar=log(q_norm), vector=[0,0,0])
+        vec = q.vector / v_norm
+        return Quaternion(scalar=log(q_norm), vector=acos(q.scalar/q_norm)*vec)
+    
     @classmethod
     def slerp(cls, q0, q1, amount=0.5):
         """Spherical Linear Interpolation between quaternions.

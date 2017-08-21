@@ -911,8 +911,19 @@ class TestQuaternionFeatures(unittest.TestCase):
             v /= np.linalg.norm(v)
             theta = float(np.random.uniform(-2,2, 1)) * pi
             self.validate_axis_angle(v, theta)
+            
+    def test_exp(self):
+        from math import exp
+        q = Quaternion(axis=[1,0,0], angle=pi)
+        exp_q = Quaternion.exp(q)
+        self.assertEqual(exp_q, exp(0) * Quaternion(scalar=cos(1.0), vector=[sin(1.0), 0,0]))
 
-
+    def test_log(self):
+        from math import log
+        q = Quaternion(axis=[1,0,0], angle=pi)
+        log_q = Quaternion.log(q)
+        self.assertEqual(log_q, Quaternion(scalar=0, vector=[pi/2,0,0]))
+        
     def test_slerp(self):
         q1 = Quaternion(axis=[1, 0, 0], angle=0.0)
         q2 = Quaternion(axis=[1, 0, 0], angle=pi/2)

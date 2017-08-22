@@ -666,6 +666,72 @@ class Quaternion:
             return Quaternion(scalar=log(q_norm), vector=[0,0,0])
         vec = q.vector / v_norm
         return Quaternion(scalar=log(q_norm), vector=acos(q.scalar/q_norm)*vec)
+
+    @classmethod
+    def exp_map(cls, q, eta):
+        """Quaternion exponential map.
+
+        Find the exponential map on the Riemannian manifold described
+        by the quaternion space.
+
+        Params:
+             q: the base point of the exponential map, i.e. a Quaternion object
+           eta: the argument of the exponential map, a tangent vector, i.e. a Quaternion object
+
+        Returns:
+            A quaternion p such that p is the endpoint of the geodesic starting at q
+            in the direction of eta, having the length equal to the magnitude of eta.
+
+        Note:
+            The exponential map plays an important role in integrating orientation
+            variations (e.g. angular velocities). This is done by projecting
+            quaternion tangent vectors onto the quaternion manifold.
+        """
+        return q * Quaternion.exp(eta)
+    
+    @classmethod
+    def sym_exp_map(cls, q, eta):
+        """Quaternion symmetrized exponential map.
+
+        Find the symmetrized exponential map on the quaternion Riemannian
+        manifold.
+
+        Params:
+             q: the base point as a Quaternion object
+           eta: the tangent vector argument of the exponential map
+                as a Quaternion object
+
+        Returns:
+            A quaternion p.
+
+        Note:
+            The symmetrized exponential formulation is akin to the exponential
+            formulation for symmetric positive definite tensors [Source](http://www.academia.edu/7656761/On_the_Averaging_of_Symmetric_Positive-Definite_Tensors)
+        """
+        sqrt_q = q ** 0.5
+        return sqrt_q * Quaternion.exp(eta) * sqrt_q
+
+    @classmethod
+    def log_map(cls, q, p):
+        """Quaternion logarithm map.
+
+        Find the logarithm map on the quaternion Riemannian manifold.
+
+        Params:
+             q: the base point at which the logarithm is computed, i.e.
+                a Quaternion object
+             p: the argument of the quaternion map, a Quaternion object
+
+        Returns:
+            A tangent vector having the length and direction given by the
+            geodesic joining q and p.
+        """
+        return Quaternion.log(q.inverse * p)
+
+    @classmethod
+    def sym_log_map(cls, q, p):
+        inv_sqrt_q = q ** (-0.5)
+        return Quaternion.log(inv_sqrt_q * p * inv_sqrt_q)
     
     @classmethod
     def slerp(cls, q0, q1, amount=0.5):

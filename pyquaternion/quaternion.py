@@ -730,8 +730,29 @@ class Quaternion:
 
     @classmethod
     def sym_log_map(cls, q, p):
-        inv_sqrt_q = q ** (-0.5)
+        inv_sqrt_q = (q ** (-0.5))
         return Quaternion.log(inv_sqrt_q * p * inv_sqrt_q)
+
+    @classmethod
+    def absolute_distance(cls, q0, q1):
+        q0_minus_q1 = q0 - q1
+        q0_plus_q1  = q0 + q1
+        d_minus = q0_minus_q1.norm
+        d_plus  = q0_plus_q1.norm
+        if (d_minus < d_plus):
+            return d_minus
+        else:
+            return d_plus
+
+    @classmethod
+    def distance(cls, q0, q1):
+        q = Quaternion.log_map(q0, q1)
+        return q.norm
+    
+    @classmethod
+    def sym_distance(cls, q0, q1):
+        q = Quaternion.sym_log_map(q0, q1)
+        return q.norm
     
     @classmethod
     def slerp(cls, q0, q1, amount=0.5):

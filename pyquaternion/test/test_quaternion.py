@@ -923,7 +923,52 @@ class TestQuaternionFeatures(unittest.TestCase):
         q = Quaternion(axis=[1,0,0], angle=pi)
         log_q = Quaternion.log(q)
         self.assertEqual(log_q, Quaternion(scalar=0, vector=[pi/2,0,0]))
-        
+
+    def test_distance(self):
+        q = Quaternion(scalar=0, vector=[1,0,0])
+        p = Quaternion(scalar=0, vector=[0,1,0])
+        self.assertEqual(pi/2, Quaternion.distance(q,p))
+        q = Quaternion(angle=pi/2, axis=[1,0,0])
+        p = Quaternion(angle=pi/2, axis=[0,1,0])
+        self.assertEqual(pi/3, Quaternion.distance(q,p))
+        q = Quaternion(scalar=1, vector=[1,1,1])
+        p = Quaternion(scalar=-1, vector=[-1,-1,-1])
+        p._normalise()
+        q._normalise()
+        self.assertAlmostEqual(0, Quaternion.distance(q,p), places=8)
+
+    def test_absolute_distance(self):
+        q = Quaternion(scalar=0, vector=[1,0,0])
+        p = Quaternion(scalar=0, vector=[0,1,0])
+        self.assertEqual((q-p).norm, Quaternion.absolute_distance(q,p))
+        q = Quaternion(angle=pi/2, axis=[1,0,0])
+        p = Quaternion(angle=pi/2, axis=[0,1,0])
+        self.assertEqual((q-p).norm, Quaternion.absolute_distance(q,p))
+        q = Quaternion(scalar=0, vector=[1,0,0])
+        p = Quaternion(scalar=-1, vector=[0,-1,0])
+        self.assertEqual((q+p).norm, Quaternion.absolute_distance(q,p))
+        q = Quaternion(scalar=1, vector=[1,1,1])
+        p = Quaternion(scalar=-1, vector=[-1,-1,-1])
+        p._normalise()
+        q._normalise()
+        self.assertAlmostEqual(0, Quaternion.absolute_distance(q,p), places=8)
+
+    def test_sym_distance(self):
+        q = Quaternion(scalar=0, vector=[1,0,0])
+        p = Quaternion(scalar=0, vector=[0,1,0])
+        self.assertEqual(pi/2, Quaternion.sym_distance(q,p))
+        q = Quaternion(angle=pi/2, axis=[1,0,0])
+        p = Quaternion(angle=pi/2, axis=[0,1,0])
+        self.assertAlmostEqual(pi/3, Quaternion.sym_distance(q,p), places=6)
+        q = Quaternion(scalar=0, vector=[1,0,0])
+        p = Quaternion(scalar=0, vector=[0,-1,0])
+        self.assertEqual(pi/2, Quaternion.sym_distance(q,p))
+        q = Quaternion(scalar=1, vector=[1,1,1])
+        p = Quaternion(scalar=-1, vector=[-1,-1,-1])
+        p._normalise()
+        q._normalise()
+        self.assertAlmostEqual(pi, Quaternion.sym_distance(q,p), places=8)
+                
     def test_slerp(self):
         q1 = Quaternion(axis=[1, 0, 0], angle=0.0)
         q2 = Quaternion(axis=[1, 0, 0], angle=pi/2)

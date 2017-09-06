@@ -730,11 +730,43 @@ class Quaternion:
 
     @classmethod
     def sym_log_map(cls, q, p):
+        """Quaternion symmetrized logarithm map.
+
+        Find the symmetrized logarithm map on the quaternion Riemannian manifold.
+
+        Params:
+             q: the base point at which the logarithm is computed, i.e.
+                a Quaternion object
+             p: the argument of the quaternion map, a Quaternion object
+
+        Returns:
+            A tangent vector corresponding to the symmetrized geodesic curve formulation.
+
+        Note:
+            Information on the symmetrized formulations given in [Source](https://www.researchgate.net/publication/267191489_Riemannian_L_p_Averaging_on_Lie_Group_of_Nonzero_Quaternions).
+        """
         inv_sqrt_q = (q ** (-0.5))
         return Quaternion.log(inv_sqrt_q * p * inv_sqrt_q)
 
     @classmethod
     def absolute_distance(cls, q0, q1):
+        """Quaternion absolute distance.
+
+        Find the distance between two quaternions accounting for the sign ambiguity.
+
+        Params:
+            q0: the first quaternion
+            q1: the second quaternion
+
+        Returns:
+           A positive scalar corresponding to the chord of the shortest path/arc that
+           connects q0 to q1.
+
+        Note:
+           This function does not measure the distance on the hypersphere, but
+           it takes into account the fact that q and -q encode the same rotation.
+           It is thus a good indicator for rotation similarities.
+        """
         q0_minus_q1 = q0 - q1
         q0_plus_q1  = q0 + q1
         d_minus = q0_minus_q1.norm
@@ -746,11 +778,48 @@ class Quaternion:
 
     @classmethod
     def distance(cls, q0, q1):
+        """Quaternion intrinsic distance.
+
+        Find the intrinsic geodesic distance between q0 and q1.
+
+        Params:
+            q0: the first quaternion
+            q1: the second quaternion
+
+        Returns:
+           A positive amount corresponding to the length of the geodesic arc
+           connecting q0 to q1.
+
+        Note:
+           Although the q0^(-1)*q1 != q1^(-1)*q0, the length of the path joining
+           them is given by the logarithm of those product quaternions, the norm
+           of which is the same.
+        """
         q = Quaternion.log_map(q0, q1)
         return q.norm
     
     @classmethod
     def sym_distance(cls, q0, q1):
+        """Quaternion symmetrized distance.
+
+        Find the intrinsic symmetrized geodesic distance between q0 and q1.
+
+        Params:
+            q0: the first quaternion
+            q1: the second quaternion
+
+        Returns:
+           A positive amount corresponding to the length of the symmetrized
+           geodesic curve connecting q0 to q1.
+
+        Note:
+           This formulation is more numerically stable when performing
+           iterative gradient descent on the Riemannian quaternion manifold.
+           However, the distance between q and -q is equal to pi, rendering this
+           formulation not useful for measuring rotation similarities when the
+           samples are spread over a "solid" angle of more than pi/2 radians
+           (the spread refers to quaternions as point samples on the unit hypersphere).
+        """
         q = Quaternion.sym_log_map(q0, q1)
         return q.norm
     

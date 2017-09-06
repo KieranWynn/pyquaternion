@@ -421,7 +421,7 @@ Quaternion Logarithm.
 
 **Params:**
 
-*`q` - the input quaternion/argument as a Quaternion object.
+* `q` - the input quaternion/argument as a Quaternion object.
 
 **Returns:** A quaternion amount representing `log(q) := (log(|q|), v/|v|acos(w/|q|))`.
 
@@ -434,8 +434,8 @@ Find the exponential map on the Riemannian manifold described by the quaternion 
 
 **Params:**
 
-*`q` - the base point of the exponential map, i.e. a Quaternion object
-*`eta` -  the argument of the exponential map, a tangent vector, i.e. a Quaternion object
+* `q` - the base point of the exponential map, i.e. a Quaternion object
+* `eta` -  the argument of the exponential map, a tangent vector, i.e. a Quaternion object
 
 **Returns:** A quaternion p such that p is the endpoint of the geodesic starting at q in the direction of eta, having the length equal to the magnitude of eta.
 
@@ -449,8 +449,8 @@ Find the symmetrized exponential map on the quaternion Riemannian manifold.
 
 **Params:**
              
-*`q` - the base point as a Quaternion object
-*`eta` - the tangent vector argument of the exponential map as a Quaternion object
+* `q` - the base point as a Quaternion object
+* `eta` - the tangent vector argument of the exponential map as a Quaternion object
 
 **Returns:** A quaternion p.
 
@@ -464,8 +464,8 @@ Find the logarithm map on the quaternion Riemannian manifold.
 
 **Params:**
 
-*`q` - the base point at which the logarithm is computed, i.e. a Quaternion object
-*`p` - the argument of the quaternion map, a Quaternion object
+* `q` - the base point at which the logarithm is computed, i.e. a Quaternion object
+* `p` - the argument of the quaternion map, a Quaternion object
 
 **Returns:** A tangent vector having the length and direction given by the geodesic joining q and p.
 
@@ -478,8 +478,8 @@ Find the symmetrized logarithm map on the quaternion Riemannian manifold.
 
 **Params:**
              
-*`q` - the base point at which the logarithm is computed, i.e. a Quaternion object
-*`p` - the argument of the quaternion map, a Quaternion object
+* `q` - the base point at which the logarithm is computed, i.e. a Quaternion object
+* `p` - the argument of the quaternion map, a Quaternion object
 
 **Returns:** A tangent vector corresponding to the symmetrized geodesic curve formulation.
 

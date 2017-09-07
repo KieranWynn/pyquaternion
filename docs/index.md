@@ -402,7 +402,139 @@ Rotate a 3D vector by the rotation stored in the Quaternion object
 * `TypeError` if any of the vector elements cannot be converted to a real number.
 * `ValueError` if `vector` cannot be interpreted as a 3-vector or a Quaternion object.
 
+## Exp and Log Maps
+> **`Quaternion.exp(q)`** - *class method*
 
+Quaternion Exponential.
+
+**Params:**
+
+* `q` - the input quaternion/argument as a Quaternion object.
+
+**Returns:** A quaternion amount representing the exp(q). See [Source](https://math.stackexchange.com/questions/1030737/exponential-function-of-quaternion-derivation for more information and mathematical background).
+           
+**Note:** The method can compute the exponential of any quaternion.
+
+> **`Quaternion.log(q)`** - *class method*
+
+Quaternion Logarithm.
+
+**Params:**
+
+* `q` - the input quaternion/argument as a Quaternion object.
+
+**Returns:** A quaternion amount representing `log(q) := (log(|q|), v/|v|acos(w/|q|))`.
+
+**Note:** The method computes the logarithm of general quaternions. See [Source](https://math.stackexchange.com/questions/2552/the-logarithm-of-quaternion/2554#2554) for more details.
+        
+> **`Quaternion.exp_map(q, eta)`** - *class method*
+
+Quaternion exponential map.
+
+Find the exponential map on the Riemannian manifold described by the quaternion space.
+
+**Params:**
+
+* `q` - the base point of the exponential map, i.e. a Quaternion object
+* `eta` -  the argument of the exponential map, a tangent vector, i.e. a Quaternion object
+
+**Returns:** A quaternion p such that p is the endpoint of the geodesic starting at q in the direction of eta, having the length equal to the magnitude of eta.
+
+**Note:** The exponential map plays an important role in integrating orientation variations (e.g. angular velocities). This is done by projecting quaternion tangent vectors onto the quaternion manifold.
+
+> **`Quaternion.sym_exp_map(q, eta)`** - *class method*
+
+Quaternion symmetrized exponential map.
+
+Find the symmetrized exponential map on the quaternion Riemannian manifold.
+
+**Params:**
+             
+* `q` - the base point as a Quaternion object
+* `eta` - the tangent vector argument of the exponential map as a Quaternion object
+
+**Returns:** A quaternion p.
+
+**Note:** The symmetrized exponential formulation is akin to the exponential formulation for symmetric positive definite tensors [Source](http://www.academia.edu/7656761/On_the_Averaging_of_Symmetric_Positive-Definite_Tensors)
+
+> **`Quaternion.log_map(q, p)`** - *class method*
+
+Quaternion logarithm map.
+
+Find the logarithm map on the quaternion Riemannian manifold.
+
+**Params:**
+
+* `q` - the base point at which the logarithm is computed, i.e. a Quaternion object
+* `p` - the argument of the quaternion map, a Quaternion object
+
+**Returns:** A tangent vector having the length and direction given by the geodesic joining q and p.
+
+
+> **`Quaternion.sym_log_map(q, p)`** - *class method*
+
+Quaternion symmetrized logarithm map.
+
+Find the symmetrized logarithm map on the quaternion Riemannian manifold.
+
+**Params:**
+             
+* `q` - the base point at which the logarithm is computed, i.e. a Quaternion object
+* `p` - the argument of the quaternion map, a Quaternion object
+
+**Returns:** A tangent vector corresponding to the symmetrized geodesic curve formulation.
+
+**Note:** Information on the symmetrized formulations given in [Source](https://www.researchgate.net/publication/267191489_Riemannian_L_p_Averaging_on_Lie_Group_of_Nonzero_Quaternions).
+        
+## Distance computation
+
+> **`Quaternion.absolute_distance(q0, q1)`** - *class method*
+
+Quaternion absolute distance.
+
+Find the distance between two quaternions accounting for the sign ambiguity.
+
+**Params:**
+
+* `q0` - the first quaternion
+* `q1` - the second quaternion
+
+**Returns:**  A positive scalar corresponding to the chord of the shortest path/arc that connects q0 to q1.
+
+**Note:** This function does not measure the distance on the hypersphere, but it takes into account the fact that q and -q encode the same rotation. It is thus a good indicator for rotation similarities.
+
+> **`Quaternion.distance(q0, q1)`** - *class method*
+
+Quaternion intrinsic distance.
+
+Find the intrinsic geodesic distance between q0 and q1.
+
+**Params:**
+            
+* `q0` - the first quaternion
+* `q1` - the second quaternion
+
+**Returns:** A positive amount corresponding to the length of the geodesic arc connecting q0 to q1.
+
+**Note:** Although `q0^(-1)*q1 != q1^(-1)*q0`, the length of the path joining them is given by the logarithm of those product quaternions, the norm of which is the same.
+       
+> **`Quaternion.sym_distance(q0, q1)`** - *class method*
+
+Quaternion symmetrized distance.
+
+Find the intrinsic symmetrized geodesic distance between q0 and q1.
+
+**Params:**
+
+* `q0` - the first quaternion
+* `q1` - the second quaternion
+
+**Returns:** A positive amount corresponding to the length of the symmetrized geodesic curve connecting q0 to q1.
+
+**Note:** This formulation is more numerically stable when performing iterative gradient descent on the Riemannian quaternion manifold.
+However, the distance between q and -q is equal to pi, rendering this formulation not useful for measuring rotation similarities when the samples are spread over a "solid" angle of more than pi/2 radians (the spread refers to quaternions as point samples on the unit hypersphere).
+
+    
 ## Interpolation
 
 > **`Quaternion.slerp(q0, q1, amount=0.5)`** - *class method*

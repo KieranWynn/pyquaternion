@@ -34,7 +34,7 @@ quaternion.py - This file defines the core Quaternion class
 
 from __future__ import absolute_import, division, print_function # Add compatibility for Python 2.7+
 
-from math import sqrt, pi, sin, cos, asin, acos, atan2
+from math import sqrt, pi, sin, cos, asin, acos, atan2, exp, log
 import numpy as np # Numpy is required for many vector operations
 
 
@@ -617,6 +617,212 @@ class Quaternion:
         else:
             return a
 
+    @classmethod
+    def exp(cls, q):
+        """Quaternion Exponential.
+           
+        Find the exponential of a quaternion amount.
+
+        Params:
+             q: the input quaternion/argument as a Quaternion object.
+
+        Returns:
+             A quaternion amount representing the exp(q). See [Source](https://math.stackexchange.com/questions/1030737/exponential-function-of-quaternion-derivation for more information and mathematical background).
+           
+        Note:
+             The method can compute the exponential of any quaternion.
+        """
+        tolerance = 1e-17
+        v_norm = np.linalg.norm(q.vector)
+        vec = q.vector
+        if v_norm > tolerance:
+            vec = vec / v_norm
+        magnitude = exp(q.scalar)
+        return Quaternion(scalar = magnitude * cos(v_norm), vector = magnitude * sin(v_norm) * vec)
+
+    @classmethod
+    def log(cls, q):
+        """Quaternion Logarithm.
+
+        Find the logarithm of a quaternion amount.
+
+        Params:
+             q: the input quaternion/argument as a Quaternion object.
+
+        Returns:
+             A quaternion amount representing log(q) := (log(|q|), v/|v|acos(w/|q|)).
+
+        Note:
+            The method computes the logarithm of general quaternions. See [Source](https://math.stackexchange.com/questions/2552/the-logarithm-of-quaternion/2554#2554) for more details.
+        """
+        v_norm = np.linalg.norm(q.vector)
+        q_norm = q.norm
+        tolerance = 1e-17
+        if q_norm < tolerance:
+            # 0 quaternion - undefined
+            return Quaternion(scalar=-float('inf'), vector=float('nan')*q.vector)
+        if v_norm < tolerance:
+            # real quaternions - no imaginary part
+            return Quaternion(scalar=log(q_norm), vector=[0,0,0])
+        vec = q.vector / v_norm
+        return Quaternion(scalar=log(q_norm), vector=acos(q.scalar/q_norm)*vec)
+
+    @classmethod
+    def exp_map(cls, q, eta):
+        """Quaternion exponential map.
+
+        Find the exponential map on the Riemannian manifold described
+        by the quaternion space.
+
+        Params:
+             q: the base point of the exponential map, i.e. a Quaternion object
+           eta: the argument of the exponential map, a tangent vector, i.e. a Quaternion object
+
+        Returns:
+            A quaternion p such that p is the endpoint of the geodesic starting at q
+            in the direction of eta, having the length equal to the magnitude of eta.
+
+        Note:
+            The exponential map plays an important role in integrating orientation
+            variations (e.g. angular velocities). This is done by projecting
+            quaternion tangent vectors onto the quaternion manifold.
+        """
+        return q * Quaternion.exp(eta)
+    
+    @classmethod
+    def sym_exp_map(cls, q, eta):
+        """Quaternion symmetrized exponential map.
+
+        Find the symmetrized exponential map on the quaternion Riemannian
+        manifold.
+
+        Params:
+             q: the base point as a Quaternion object
+           eta: the tangent vector argument of the exponential map
+                as a Quaternion object
+
+        Returns:
+            A quaternion p.
+
+        Note:
+            The symmetrized exponential formulation is akin to the exponential
+            formulation for symmetric positive definite tensors [Source](http://www.academia.edu/7656761/On_the_Averaging_of_Symmetric_Positive-Definite_Tensors)
+        """
+        sqrt_q = q ** 0.5
+        return sqrt_q * Quaternion.exp(eta) * sqrt_q
+
+    @classmethod
+    def log_map(cls, q, p):
+        """Quaternion logarithm map.
+
+        Find the logarithm map on the quaternion Riemannian manifold.
+
+        Params:
+             q: the base point at which the logarithm is computed, i.e.
+                a Quaternion object
+             p: the argument of the quaternion map, a Quaternion object
+
+        Returns:
+            A tangent vector having the length and direction given by the
+            geodesic joining q and p.
+        """
+        return Quaternion.log(q.inverse * p)
+
+    @classmethod
+    def sym_log_map(cls, q, p):
+        """Quaternion symmetrized logarithm map.
+
+        Find the symmetrized logarithm map on the quaternion Riemannian manifold.
+
+        Params:
+             q: the base point at which the logarithm is computed, i.e.
+                a Quaternion object
+             p: the argument of the quaternion map, a Quaternion object
+
+        Returns:
+            A tangent vector corresponding to the symmetrized geodesic curve formulation.
+
+        Note:
+            Information on the symmetrized formulations given in [Source](https://www.researchgate.net/publication/267191489_Riemannian_L_p_Averaging_on_Lie_Group_of_Nonzero_Quaternions).
+        """
+        inv_sqrt_q = (q ** (-0.5))
+        return Quaternion.log(inv_sqrt_q * p * inv_sqrt_q)
+
+    @classmethod
+    def absolute_distance(cls, q0, q1):
+        """Quaternion absolute distance.
+
+        Find the distance between two quaternions accounting for the sign ambiguity.
+
+        Params:
+            q0: the first quaternion
+            q1: the second quaternion
+
+        Returns:
+           A positive scalar corresponding to the chord of the shortest path/arc that
+           connects q0 to q1.
+
+        Note:
+           This function does not measure the distance on the hypersphere, but
+           it takes into account the fact that q and -q encode the same rotation.
+           It is thus a good indicator for rotation similarities.
+        """
+        q0_minus_q1 = q0 - q1
+        q0_plus_q1  = q0 + q1
+        d_minus = q0_minus_q1.norm
+        d_plus  = q0_plus_q1.norm
+        if (d_minus < d_plus):
+            return d_minus
+        else:
+            return d_plus
+
+    @classmethod
+    def distance(cls, q0, q1):
+        """Quaternion intrinsic distance.
+
+        Find the intrinsic geodesic distance between q0 and q1.
+
+        Params:
+            q0: the first quaternion
+            q1: the second quaternion
+
+        Returns:
+           A positive amount corresponding to the length of the geodesic arc
+           connecting q0 to q1.
+
+        Note:
+           Although the q0^(-1)*q1 != q1^(-1)*q0, the length of the path joining
+           them is given by the logarithm of those product quaternions, the norm
+           of which is the same.
+        """
+        q = Quaternion.log_map(q0, q1)
+        return q.norm
+    
+    @classmethod
+    def sym_distance(cls, q0, q1):
+        """Quaternion symmetrized distance.
+
+        Find the intrinsic symmetrized geodesic distance between q0 and q1.
+
+        Params:
+            q0: the first quaternion
+            q1: the second quaternion
+
+        Returns:
+           A positive amount corresponding to the length of the symmetrized
+           geodesic curve connecting q0 to q1.
+
+        Note:
+           This formulation is more numerically stable when performing
+           iterative gradient descent on the Riemannian quaternion manifold.
+           However, the distance between q and -q is equal to pi, rendering this
+           formulation not useful for measuring rotation similarities when the
+           samples are spread over a "solid" angle of more than pi/2 radians
+           (the spread refers to quaternions as point samples on the unit hypersphere).
+        """
+        q = Quaternion.sym_log_map(q0, q1)
+        return q.norm
+    
     @classmethod
     def slerp(cls, q0, q1, amount=0.5):
         """Spherical Linear Interpolation between quaternions.

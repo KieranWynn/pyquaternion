@@ -15,4 +15,5 @@ script: python setup.py test
 # build and deploy docs
 after_script:
    - pip install mkdocs
+   - pip install mkdocs-bootswatch
    - mkdocs gh-deploy --clean

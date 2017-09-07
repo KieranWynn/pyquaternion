@@ -14,10 +14,10 @@ script: python setup.py test
 
 # build and deploy docs
 after_script:
-    - git config user.name ${GITHUB_USERNAME}
-    - git config user.email ${GITHUB_EMAIL}
+    - git config user.name "${GITHUB_USERNAME}"
+    - git config user.email "${GITHUB_EMAIL}"
     - git remote add gh-token "https://${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/pyquaternion.git";
-    - git fetch gh-token && git fetch gh-token gh-pages:gh-pages;
+    - git fetch gh-token && git pull gh-token gh-pages:gh-pages;
     - pip install mkdocs
     - pip install mkdocs-bootswatch
     - mkdocs gh-deploy -v --clean --remote-name gh-token;

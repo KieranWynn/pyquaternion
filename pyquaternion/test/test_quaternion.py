@@ -1019,6 +1019,15 @@ class TestQuaternionFeatures(unittest.TestCase):
             q.integrate([pi, 0, 0], 0.001)
         self.assertTrue(q.is_unit())
 
+    def test_deep_copy(self):
+        from copy import deepcopy
+        q = Quaternion.random()
+        q2 = deepcopy(q)
+        self.assertEqual(q, q2)
+        self.assertFalse(q is q2)
+        self.assertFalse(q.q is q2.q)
+
+
  
 if __name__ == '__main__':
     unittest.main()

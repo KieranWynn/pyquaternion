@@ -35,6 +35,7 @@ quaternion.py - This file defines the core Quaternion class
 from __future__ import absolute_import, division, print_function # Add compatibility for Python 2.7+
 
 from math import sqrt, pi, sin, cos, asin, acos, atan2, exp, log
+from copy import deepcopy
 import numpy as np # Numpy is required for many vector operations
 
 
@@ -1100,8 +1101,15 @@ class Quaternion:
         index = int(index)
         self.q[index] = float(value)
 
-    def __deepcopy__(self):
-        return self.__class__(self)
+    def __copy__(self):
+        new = type(self)()
+        new.__dict__.update(self.__dict__)
+        return new
+
+    def __deepcopy__(self, memo=None):
+        new = type(self)()
+        new.q = deepcopy(self.q, memo)
+        return new
 
     @staticmethod
     def to_degrees(angle_rad):

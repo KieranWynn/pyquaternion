@@ -1106,10 +1106,12 @@ class Quaternion:
         new.__dict__.update(self.__dict__)
         return new
 
-    def __deepcopy__(self, memo=None):
-        new = type(self)()
-        new.q = deepcopy(self.q, memo)
-        return new
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        result.q = deepcopy(self.q, memo)
+        return result
 
     @staticmethod
     def to_degrees(angle_rad):

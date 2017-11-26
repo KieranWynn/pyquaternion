@@ -1107,8 +1107,7 @@ class Quaternion:
         return new
 
     def __deepcopy__(self, memo):
-        cls = self.__class__
-        result = cls.__new__(cls)
+        result = type(self)()
         memo[id(self)] = result
         result.q = deepcopy(self.q, memo)
         return result

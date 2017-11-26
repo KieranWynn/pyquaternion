@@ -1102,12 +1102,11 @@ class Quaternion:
         self.q[index] = float(value)
 
     def __copy__(self):
-        new = type(self)()
-        new.__dict__.update(self.__dict__)
-        return new
+        result = self.__class__(self.q)
+        return result
 
     def __deepcopy__(self, memo):
-        result = type(self)(deepcopy(self.q, memo))
+        result = self.__class__(deepcopy(self.q, memo))
         memo[id(self)] = result
         return result
 

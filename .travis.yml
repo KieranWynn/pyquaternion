@@ -7,13 +7,6 @@ python:
 - nightly
 install: pip install .
 script: python setup.py test
-
-deploy:
-  provider: pypi
-  user: kieranwynn
-  password:
-    secure: cCPH9pIl5Rr3OmJR59+kbEY8BrUV2WmOTRfCn57GOF+stwIQ2He3fYO67DxPLfB/Mb6Kxvza8IqZGLnS+gEOW+LqZmEHJerbVlej6efiJJg2w9Rq/ME6r14yZamP3JFmiWxEA+hW3gpPdQx+39FWPRMB7hTzGcPoayJCg3FeCXNMty3p3c8ZuKTZYJ0HP59WoncfKkVPExBxPxRUwUNcmD3iLLmK/LFiNcNz1pA2HvkuFUEeuuSUMROkKI13V+xM3nulr+ipUAxQM1APlZx1HoGh+Ik+2j7QpLiUXr7PQGiH9JWKVpXP3i35C0Y2CRQLRTKPT96GB7b/Di1yvgTRmsyYQpkCYXxgFxXk0jOH2P4NIAoiZHs6VH3r9UhIkP6tiqdsXU+FbzOQrQiyc5F9CicatDboNszMQU77fyyHHhqeRX/x/KmRNCCulSPz9Vl1BEpuWO58f8v14i6PLcWnBGIpaJ7KYF7ncchiOpcfftWyvcV//d/JCYowjgzQMp9iq99oShLXv2tc5qLPPS6HYEea83/WmmrRwbyeFkMWNcizh597xK6v2+9K9gxgyFjx3dYjuF8Ua6YrtTknHFrndJ2fs/+FQQy7SoudGkxhp36qgjvwGa6AXz9+X7lwRq50TEGUob0VCOGPkjUzkdyS18AvFWb2ATuHl6/Tn4aPYoo=
-
 after_script:
 - git config user.name "${GITHUB_USERNAME}"
 - git config user.email "${GITHUB_EMAIL}"
@@ -22,3 +15,14 @@ after_script:
 - pip install mkdocs
 - pip install mkdocs-bootswatch
 - mkdocs gh-deploy -v --clean --remote-name gh-token;
+
+deploy:
+  provider: releases
+  api_key:
+    secure: o3qasghBy0YtVypuwwERWAY8q1a2ecTU59R2iMR2Zm/bqHtfuObqYeWrLjVDfU3CCtQOwqgAiiH3m0ZT4QYxQZX8w/1ScjU0kwmiS2XVlk0RVKoxp481krv/b1qLmkLl3HAQfJ/eiSGjPpY0nnZZCY327LK+3Wbt7/t4GkCtqZGcaGyCDNLhCpb4zpjFoov4ofJ6C840BCe34DsI2/rd2iiDdBdXdJsrPfc+Gd4w1QQFUuj5912pzLTzwC2P2Rdo4szhpUXv24eFq3ApnCMRPgYCZuwAgibfBtegRjRxKZ0SH3YQN3w6RJfAinmpmC1fiV+E13j3oGlWLR67GEep3qtQMKEah3Hzyycj/IzWm632iO+OyeyU+jJpqCZhkYaw92n9XDos/nt4noaje9zVqsaOhBwABg6GxwI/4w7JhOn50ApJyU79i2WmaRS2DcRuZ1plRkq10M0jrHnp0Rx+bjnbLPTCUbvb59hlqzYUnYyIGKOzDZdetH/sKVgio3W+y34uJJJYLjovK5Su5a3EEPEIqnPBPKS79nCue9FjzICXax29pyGbPtj9mhDrQpNFMdKWBJSxVUkt+MNyQW++a2kot2VFE1QF6KOnz0YklP9uYO7w/b7LJ0wI7xNu19sOD6tNiYNb1XtcQkO6s2xEMvS2jcbc4t09IZb+P8Kapms=
+  skip_cleanup: true
+  file_glob: true
+  file: pyquaternion-*.tar.gz
+  on:
+    repo: KieranWynn/pyquaternion
+    tags: true

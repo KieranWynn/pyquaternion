@@ -15,12 +15,12 @@ deploy:
   file: pyquaternion-*.tar.gz
   on:
     repo: KieranWynn/pyquaternion
-    tags: true
+    #tags: true
   provider: pypi
   user: kieranwynn
   password:
     secure: GuGJeviKCzel4BSjESewUZAGpybybh3+Ng4Y6JZKbJ2T3Phiq4l3ZXsZ0OQhjBb64I0MX1DcMF248UApX8WT19c4hNSL96G5k5uq/v2XnffOqUtGfqOnq7q/oVzsgVX0gzGQ2o3XRrf2M6Ee++MOgwqp/3ZZBm7P0ZXJZBwpdzi42QbYGTLmACKw9UGsGMuKcg4LpoGL0mdfFA+EVBny37YHRRaHxowZInyW2Ah9WY3cSfqXOPeD/GuQIL8g4+Y5w4H0ADUa5s3weA4/fiOGl93sRLSxvS5eOYsl3fAADyL9pu+312sFvVWZmSFE83lUu3/3RIVdkxs3CslDVWem5i8zwpdr9vScJ+jg2iZgEuHz1n2zQQDF6nhLmxoZ4mjGiqim1LCU5NITdr9J4xmeqxNzZbMZQadL4rWFqIKtXyXIkL1a0V0BkAAGgcZp2cddih72PdsHBDAd8EhmVsVvFTluBk0b/B2zpDNpg1CYluMGjiM0JTJiq5JmE2Sg5UWF/a6XNFzbhOrgq9ZXJT9e9g9lJkixTzFSJ2zaEEo1lzeQBG5SkR20+yBq/MujB7MjTrX16aWH5Vpdd++DC3T0hr6baESqPRG8OJmNxWJOJjBeMeTvqyqcEGJXo7v1H2/waJTw8xqPW3WvslxLSvjDVDZnjvElpNPm0IT0/fETWZQ=
   on:
-    tags: true
+    #tags: true
     distributions: sdist bdist_wheel
     repo: KieranWynn/pyquaternion

@@ -23,7 +23,6 @@ deploy:
     tags: true
     distributions: sdist bdist_wheel
     repo: KieranWynn/pyquaternion
-    python: 2.7
   provider: releases
   api_key:
     secure: o3qasghBy0YtVypuwwERWAY8q1a2ecTU59R2iMR2Zm/bqHtfuObqYeWrLjVDfU3CCtQOwqgAiiH3m0ZT4QYxQZX8w/1ScjU0kwmiS2XVlk0RVKoxp481krv/b1qLmkLl3HAQfJ/eiSGjPpY0nnZZCY327LK+3Wbt7/t4GkCtqZGcaGyCDNLhCpb4zpjFoov4ofJ6C840BCe34DsI2/rd2iiDdBdXdJsrPfc+Gd4w1QQFUuj5912pzLTzwC2P2Rdo4szhpUXv24eFq3ApnCMRPgYCZuwAgibfBtegRjRxKZ0SH3YQN3w6RJfAinmpmC1fiV+E13j3oGlWLR67GEep3qtQMKEah3Hzyycj/IzWm632iO+OyeyU+jJpqCZhkYaw92n9XDos/nt4noaje9zVqsaOhBwABg6GxwI/4w7JhOn50ApJyU79i2WmaRS2DcRuZ1plRkq10M0jrHnp0Rx+bjnbLPTCUbvb59hlqzYUnYyIGKOzDZdetH/sKVgio3W+y34uJJJYLjovK5Su5a3EEPEIqnPBPKS79nCue9FjzICXax29pyGbPtj9mhDrQpNFMdKWBJSxVUkt+MNyQW++a2kot2VFE1QF6KOnz0YklP9uYO7w/b7LJ0wI7xNu19sOD6tNiYNb1XtcQkO6s2xEMvS2jcbc4t09IZb+P8Kapms=
@@ -33,4 +32,3 @@ deploy:
   on:
     repo: KieranWynn/pyquaternion
     tags: true
-    python: 2.7

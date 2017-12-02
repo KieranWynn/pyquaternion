@@ -6,19 +6,12 @@ python:
 - '3.4'
 - nightly
 install: pip install .
-
-# command to run tests
 script: python setup.py test
-
 deploy:
   provider: pypi
-  server: https://testpypi.python.org/pypitravis started
-
   user: kieranwynn
   password:
-    secure: t1Z1Y2YU22YlzJJSlfFdYrp4QtccKuCDB0x78COCitDGtOljigjuGx7c5HkfgcGCjW0Nfofjrolc7mYssaMVZjMDQdr3JpyQa9H4/0RM8AUdXV7wtaHq54LAztVMtLqFMTCIUCputJEhzdS+31WWXZExNkUkNXasB8CEJv7Y+mvvhdTwBtulgfUgkWSiZZHDdUH+iVWlXL9KngzHQTwEVXgxUOJ1a9GTAQz3ZYHEFLLA9Ik/IaDdKmbWETMkKRLWg4yyoPMXcCf/uWbhOcmwUBLuTpLQ6vyW478yJEBkm9yYncJjRQo6nVawurlCFXuN4LILeWif1Efd9xvKI8OAQBm1cIXGlkPxNIiQtULQ197qxXMaaFAIKkqZvoxDeYWNp8hE5KVzEIoHUo3jkZjyHlLKQgscpqIfsZu2V8VbmBWrETwKN6Ts6LBOaHUKktk6qZ6kxTEYAkH/HjKi5hHbDBIVBn9MeF3s6GmOlQEf2978YtStcRTQa3siJT/XCgK5LpTYbIeo/dU+0DwMEFv/ZErKeH94Sn7RdrBqMbAmh18znxZTZv302c6vkneB9+8cgTsbQ0rvFZOuhYn69mOwLjCS1HPriy8SqXVo9tZnIUJHUUIpoWrZcHfjzKXgyvkhyw6sdlKPt1UQFs5WnuraAB3L5rFlGCIZqXA2hd/v29o=
-#  on:
-#    tags: true
+    secure: cCPH9pIl5Rr3OmJR59+kbEY8BrUV2WmOTRfCn57GOF+stwIQ2He3fYO67DxPLfB/Mb6Kxvza8IqZGLnS+gEOW+LqZmEHJerbVlej6efiJJg2w9Rq/ME6r14yZamP3JFmiWxEA+hW3gpPdQx+39FWPRMB7hTzGcPoayJCg3FeCXNMty3p3c8ZuKTZYJ0HP59WoncfKkVPExBxPxRUwUNcmD3iLLmK/LFiNcNz1pA2HvkuFUEeuuSUMROkKI13V+xM3nulr+ipUAxQM1APlZx1HoGh+Ik+2j7QpLiUXr7PQGiH9JWKVpXP3i35C0Y2CRQLRTKPT96GB7b/Di1yvgTRmsyYQpkCYXxgFxXk0jOH2P4NIAoiZHs6VH3r9UhIkP6tiqdsXU+FbzOQrQiyc5F9CicatDboNszMQU77fyyHHhqeRX/x/KmRNCCulSPz9Vl1BEpuWO58f8v14i6PLcWnBGIpaJ7KYF7ncchiOpcfftWyvcV//d/JCYowjgzQMp9iq99oShLXv2tc5qLPPS6HYEea83/WmmrRwbyeFkMWNcizh597xK6v2+9K9gxgyFjx3dYjuF8Ua6YrtTknHFrndJ2fs/+FQQy7SoudGkxhp36qgjvwGa6AXz9+X7lwRq50TEGUob0VCOGPkjUzkdyS18AvFWb2ATuHl6/Tn4aPYoo=
 
 after_script:
 - git config user.name "${GITHUB_USERNAME}"

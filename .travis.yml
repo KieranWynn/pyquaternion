@@ -14,16 +14,16 @@ after_script:
 - pip install mkdocs
 - pip install mkdocs-bootswatch
 - mkdocs gh-deploy -v --clean --remote-name gh-token;
-
 deploy:
   provider: pypi
   user: kieranwynn
   password:
-    secure: SJnsqOYXDTMH5VrJefUgfn9gofQ75O/1dhT8ZN/PelyqTP9YD0syxf1NO9iHhcGWp5gdv/tPFAC9zuSP/+sbWfUwiFazZXNNpI/ImuCcAn7D9NwVZwq/EbFhImdI9beOWtlgYyrEfbozbbWuyiODUNb8uSWZJTQbi0g+20H+3306+AdbgNT1wLulzxZwsqL8uYQ1LmVbRBGWSZ/Q5JGGULIhWenG2zmMxSdTPolM3EKVGhkWEi9lijCxY3j8KZ4vi9g+wtvgiEv8FWo7HrwflyP+U/uJyksJCaNa0oc5MvxpMLewP68OxNCDvjAy/ql8LVBuUBkBdjzHTIaWk2ggsVBjIF5Wy/aHsAWdqhDawGIPf5SRUiXE8JZY/K/P+WHUonxw6ddlz+fHlPV6Gq45BYWsn7uQpmDmoyVbH2a1JyqerlIx/sKHtqI0aGtgM02Hywxt2meHzg4E7YkIFbe97d58QW0q6i2FcHMicXmFcC88RtdDGsJ28HM6Wx1Jw8tZulStwcr7obnXyHFqhE1mZDXyjXnBhHhF86Uj8Jd8KaPLlmlnxeUyw2V9fcn94b4ok+EcstWItLW+ugfuR2CFJ6TaiogLt3nOmfELfBtseZ8P+TDrg561yX8tXlhgXa1H+gTcKlukq2O72pKtSJe0NT3YaIJV30gxOb7kD7sISRU=
+    secure: GuGJeviKCzel4BSjESewUZAGpybybh3+Ng4Y6JZKbJ2T3Phiq4l3ZXsZ0OQhjBb64I0MX1DcMF248UApX8WT19c4hNSL96G5k5uq/v2XnffOqUtGfqOnq7q/oVzsgVX0gzGQ2o3XRrf2M6Ee++MOgwqp/3ZZBm7P0ZXJZBwpdzi42QbYGTLmACKw9UGsGMuKcg4LpoGL0mdfFA+EVBny37YHRRaHxowZInyW2Ah9WY3cSfqXOPeD/GuQIL8g4+Y5w4H0ADUa5s3weA4/fiOGl93sRLSxvS5eOYsl3fAADyL9pu+312sFvVWZmSFE83lUu3/3RIVdkxs3CslDVWem5i8zwpdr9vScJ+jg2iZgEuHz1n2zQQDF6nhLmxoZ4mjGiqim1LCU5NITdr9J4xmeqxNzZbMZQadL4rWFqIKtXyXIkL1a0V0BkAAGgcZp2cddih72PdsHBDAd8EhmVsVvFTluBk0b/B2zpDNpg1CYluMGjiM0JTJiq5JmE2Sg5UWF/a6XNFzbhOrgq9ZXJT9e9g9lJkixTzFSJ2zaEEo1lzeQBG5SkR20+yBq/MujB7MjTrX16aWH5Vpdd++DC3T0hr6baESqPRG8OJmNxWJOJjBeMeTvqyqcEGJXo7v1H2/waJTw8xqPW3WvslxLSvjDVDZnjvElpNPm0IT0/fETWZQ=
   on:
     tags: true
     distributions: sdist bdist_wheel
     repo: KieranWynn/pyquaternion
+    python: 2.7
   provider: releases
   api_key:
     secure: o3qasghBy0YtVypuwwERWAY8q1a2ecTU59R2iMR2Zm/bqHtfuObqYeWrLjVDfU3CCtQOwqgAiiH3m0ZT4QYxQZX8w/1ScjU0kwmiS2XVlk0RVKoxp481krv/b1qLmkLl3HAQfJ/eiSGjPpY0nnZZCY327LK+3Wbt7/t4GkCtqZGcaGyCDNLhCpb4zpjFoov4ofJ6C840BCe34DsI2/rd2iiDdBdXdJsrPfc+Gd4w1QQFUuj5912pzLTzwC2P2Rdo4szhpUXv24eFq3ApnCMRPgYCZuwAgibfBtegRjRxKZ0SH3YQN3w6RJfAinmpmC1fiV+E13j3oGlWLR67GEep3qtQMKEah3Hzyycj/IzWm632iO+OyeyU+jJpqCZhkYaw92n9XDos/nt4noaje9zVqsaOhBwABg6GxwI/4w7JhOn50ApJyU79i2WmaRS2DcRuZ1plRkq10M0jrHnp0Rx+bjnbLPTCUbvb59hlqzYUnYyIGKOzDZdetH/sKVgio3W+y34uJJJYLjovK5Su5a3EEPEIqnPBPKS79nCue9FjzICXax29pyGbPtj9mhDrQpNFMdKWBJSxVUkt+MNyQW++a2kot2VFE1QF6KOnz0YklP9uYO7w/b7LJ0wI7xNu19sOD6tNiYNb1XtcQkO6s2xEMvS2jcbc4t09IZb+P8Kapms=
@@ -33,4 +33,4 @@ deploy:
   on:
     repo: KieranWynn/pyquaternion
     tags: true
-    python: 3.5
+    python: 2.7

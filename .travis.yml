@@ -6,15 +6,16 @@ python:
 - nightly
 install: pip install .
 script: python setup.py test
-after_script:
-- git config user.name "${GITHUB_USERNAME}"
-- git config user.email "${GITHUB_EMAIL}"
-- git remote add gh-token "https://${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/pyquaternion.git";
-- git fetch gh-token && git pull gh-token gh-pages:gh-pages;
-- pip install mkdocs
-- pip install mkdocs-bootswatch
-- mkdocs gh-deploy -v --clean --remote-name gh-token;
 deploy:
+  provider: releases
+  api_key:
+    secure: 8Ta+HS6NPUtEQWujLvzJq7cB9tmhFm5TNeIO9SWbbgkxkTOsdq+jR5DiKOX4ZYNakDKhgQOH5zq/qwbg+OLX30VsBeNjgN8vJu9+mTphAJCrKRKau8zgJczwzERrSpFKXU6MmlW1s0mVPeR2SLIfw+VrD+wYvb9yLDYXQUovX9N27V2CwdMYaJ0Ja0fnYhR1N6QCMR+rIVVvXuYhW7o/bWweVQk0xC2zBguDMvs0IyUNieokz1e81e7HRbdE/lcYKfe8W7lV9s++VkOXYZfUd5csX66kyyziZc7v5J5q1LJOwmEFUUo9+Gct0gKYLr/d+nm+/G31E1EdOCQiaVcaxZN3noFR59l/wwKlEsTgMP8mn1Fg2rq1G0uOd661JpgPgSZNHFGamM12IcwVTiV8wfkKni67PJMXxmYhZTLgpwj7f3qg8QPzDI1wTQRu7QstXXDHNpEXfG7tNIGKD+jwFlrGXS3N9UGdRVBuMOOC/v4j2MkjFuS1OowqPZDumTiVEXOgKH/28jlD+MaKJpz8Il2ZJYYKliuGAmZsEuf/4PaYWDwOGGEHjJHrPc+Fub04J0rmPCYdyI6doc3/M/lmWetfizOoyPqnNk2K8AFqgNZhN8f/+Yj9J5GU/4Y7EyT7pvNkmR0nrLIJLwjhvTR9+G3RWooB4kvjP7jzmt2Y5zs=
+  skip_cleanup: true
+  file_glob: true
+  file: pyquaternion-*.tar.gz
+  on:
+    repo: KieranWynn/pyquaternion
+    tags: true
   provider: pypi
   user: kieranwynn
   password:
@@ -23,12 +24,3 @@ deploy:
     tags: true
     distributions: sdist bdist_wheel
     repo: KieranWynn/pyquaternion
-  provider: releases
-  api_key:
-    secure: o3qasghBy0YtVypuwwERWAY8q1a2ecTU59R2iMR2Zm/bqHtfuObqYeWrLjVDfU3CCtQOwqgAiiH3m0ZT4QYxQZX8w/1ScjU0kwmiS2XVlk0RVKoxp481krv/b1qLmkLl3HAQfJ/eiSGjPpY0nnZZCY327LK+3Wbt7/t4GkCtqZGcaGyCDNLhCpb4zpjFoov4ofJ6C840BCe34DsI2/rd2iiDdBdXdJsrPfc+Gd4w1QQFUuj5912pzLTzwC2P2Rdo4szhpUXv24eFq3ApnCMRPgYCZuwAgibfBtegRjRxKZ0SH3YQN3w6RJfAinmpmC1fiV+E13j3oGlWLR67GEep3qtQMKEah3Hzyycj/IzWm632iO+OyeyU+jJpqCZhkYaw92n9XDos/nt4noaje9zVqsaOhBwABg6GxwI/4w7JhOn50ApJyU79i2WmaRS2DcRuZ1plRkq10M0jrHnp0Rx+bjnbLPTCUbvb59hlqzYUnYyIGKOzDZdetH/sKVgio3W+y34uJJJYLjovK5Su5a3EEPEIqnPBPKS79nCue9FjzICXax29pyGbPtj9mhDrQpNFMdKWBJSxVUkt+MNyQW++a2kot2VFE1QF6KOnz0YklP9uYO7w/b7LJ0wI7xNu19sOD6tNiYNb1XtcQkO6s2xEMvS2jcbc4t09IZb+P8Kapms=
-  skip_cleanup: true
-  file_glob: true
-  file: pyquaternion-*.tar.gz
-  on:
-    repo: KieranWynn/pyquaternion
-    tags: true

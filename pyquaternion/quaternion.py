@@ -1085,6 +1085,22 @@ class Quaternion:
         return self.vector
 
     @property
+    def w(self):
+        return self.q[0]
+
+    @property
+    def x(self):
+        return self.q[1]
+
+    @property
+    def y(self):
+        return self.q[2]
+
+    @property
+    def z(self):
+        return self.q[3]
+
+    @property
     def elements(self):
         """ Return all the elements of the quaternion object.
 

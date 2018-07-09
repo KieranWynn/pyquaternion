@@ -726,6 +726,10 @@ class TestQuaternionFeatures(unittest.TestCase):
         self.assertTrue(np.array_equal(q.imaginary, [b, c, d]))
         self.assertEqual(tuple(q.vector), (b, c, d))
         self.assertEqual(list(q.imaginary), [b, c, d])
+        self.assertEqual(q.w, a)
+        self.assertEqual(q.x, b)
+        self.assertEqual(q.y, c)
+        self.assertEqual(q.z, d)
 
     def test_output_of_elements(self):
         r = randomElements()

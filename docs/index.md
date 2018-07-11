@@ -726,6 +726,27 @@ This property returns **v**
 	v = my_quaternion.imaginary
 
 ## Accessing individual elements
+> **`w`**
+
+> **`x`**
+
+> **`y`**
+
+> **`z`**
+
+Get the element of the quaternion object corresponding to the attribute. The quaternion object's elements are represented as `(w, x, y, z)`. Result is not guaranteed to be normalized such that each element comes from a unit 4-vector.
+
+**Returns:** a scalar, real valued element corresponding to the accessed attribute.
+
+	>>> print(my_quaternion.w)
+        -0.6753741977725701
+    >>> print(my_quaternion.x)
+        0.4624451782281068
+    >>> print(my_quaternion.y)
+        -0.059197245808339134
+    >>> print(my_quaternion.z)
+        0.5714103921047806
+	
 > **`elements`**
 
 Return all four elements of the quaternion object. Result is not guaranteed to be a unit 4-vector.

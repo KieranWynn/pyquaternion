@@ -41,6 +41,7 @@ from pyquaternion import Quaternion
 
 from matplotlib import pyplot as plt
 from matplotlib import animation
+from mpl_toolkits.mplot3d import Axes3D
 
 def generate_quaternion():
 	q1 = Quaternion.random()

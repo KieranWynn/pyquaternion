@@ -1044,7 +1044,7 @@ class TestQuaternionUtilities(unittest.TestCase):
 class TestQuaternionHashing(unittest.TestCase):
     def test_equal_quaternions(self):
         q1 = Quaternion(1, 0, 0, 0)
-        q1 = Quaternion(1, 0, 0, 0)
+        q2 = Quaternion(1, 0, 0, 0)
 
         self.assertEqual(hash(q1), hash(q2))
 

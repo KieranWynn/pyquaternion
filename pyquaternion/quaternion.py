@@ -131,6 +131,9 @@ class Quaternion:
             # More than one positional argument supplied
             self.q = self._validate_number_sequence(args, 4)
 
+    def __hash__(self):
+        return hash(tuple(self.q))
+
     def _validate_number_sequence(self, seq, n):
         """Validate a sequence to be of a certain length and ensure it's a numpy array of floats.
 

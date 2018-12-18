@@ -1041,6 +1041,18 @@ class TestQuaternionUtilities(unittest.TestCase):
         self.assertFalse(q is q2)
         self.assertFalse(q.q is q2.q)
 
+class TestQuaternionHashing(unittest.TestCase):
+    def test_equal_quaternions(self):
+        q1 = Quaternion(1, 0, 0, 0)
+        q2 = Quaternion(1, 0, 0, 0)
+
+        self.assertEqual(hash(q1), hash(q2))
+
+    def test_unequal_quaternions(self):
+        q1 = Quaternion(1, 0, 0, 0)
+        q2 = Quaternion(0, 1, 0, 0)
+
+        self.assertNotEqual(hash(q1), hash(q2))
 
  
 if __name__ == '__main__':

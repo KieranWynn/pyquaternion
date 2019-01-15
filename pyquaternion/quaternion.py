@@ -801,7 +801,7 @@ class Quaternion:
         """
         q = Quaternion.log_map(q0, q1)
         return q.norm
-    
+
     @classmethod
     def sym_distance(cls, q0, q1):
         """Quaternion symmetrized distance.
@@ -826,7 +826,7 @@ class Quaternion:
         """
         q = Quaternion.sym_log_map(q0, q1)
         return q.norm
-    
+
     @classmethod
     def slerp(cls, q0, q1, amount=0.5):
         """Spherical Linear Interpolation between quaternions.
@@ -856,8 +856,30 @@ class Quaternion:
         q1._fast_normalise()
         amount = np.clip(amount, 0, 1)
 
-        return ((q1 * q0.inverse) ** amount) * q0
-        
+        dot = np.dot(q0.q, q1.q)
+
+        if (dot < 0.0):
+            q0.q = -q0.q
+            dot = -dot
+
+        # sin_theta_0 can not be zero
+        if (dot > 0.9995):
+            qr = Quaternion(q0.q + amount*(q1.q - q0.q))
+            qr._fast_normalise()
+            return qr
+
+        theta_0 = np.arccos(dot)
+        sin_theta_0 = np.sin(theta_0)
+
+        theta = theta_0*amount
+        sin_theta = np.sin(theta)
+
+        s0 = np.cos(theta) - dot * sin_theta / sin_theta_0
+        s1 = sin_theta / sin_theta_0
+        qr = Quaternion((s0 * q0.q) + (s1 * q1.q))
+        qr._fast_normalise()
+        return qr
+
     @classmethod
     def intermediates(cls, q0, q1, n, include_endpoints=False):
         """Generator method to get an iterable sequence of `n` evenly spaced quaternion 

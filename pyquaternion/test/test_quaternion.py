@@ -51,7 +51,7 @@ def randomElements():
     return tuple(np.random.uniform(-1, 1, 4))
 
 class TestQuaternionInitialisation(unittest.TestCase):
-    
+
     def test_init_default(self):
         q = Quaternion()
         self.assertIsInstance(q, Quaternion)
@@ -66,13 +66,13 @@ class TestQuaternionInitialisation(unittest.TestCase):
             q3 = Quaternion(None)
         with self.assertRaises(ValueError):
             q4 = Quaternion("String")
-    
-    def test_init_random(self): 
+
+    def test_init_random(self):
         r1 = Quaternion.random()
         r2 = Quaternion.random()
         self.assertAlmostEqual(r1.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
         self.assertIsInstance(r1, Quaternion)
-        #self.assertNotEqual(r1, r2) #TODO, this *may* fail at random 
+        #self.assertNotEqual(r1, r2) #TODO, this *may* fail at random
 
     def test_init_from_scalar(self):
         s = random()
@@ -106,7 +106,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
             q = Quaternion(a, b, c)
         with self.assertRaises(ValueError):
             q = Quaternion(a, b, c, d, random())
-        
+
     def test_init_from_array(self):
         r = randomElements()
         a = np.array(r)
@@ -234,7 +234,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
         v1 = (vx, vy, vz) # tuple format
         v2 = [vx, vy, vz] # list format
         v3 = np.array(v2) # array format
-        
+
         q1 = Quaternion(axis=v1, angle=theta)
         q2 = Quaternion(axis=v2, radians=theta)
         q3 = Quaternion(axis=v3, degrees=theta / pi * 180)
@@ -280,7 +280,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
             q = Quaternion(axis=[0., 0., 0.], angle=theta)
 
     def test_init_from_explicit_matrix(self):
-        
+
         def R_z(theta):
             """
             Generate a rotation matrix describing a rotation of theta degrees about the z-axis
@@ -393,7 +393,7 @@ class TestQuaternionTypeConversions(unittest.TestCase):
         self.assertEqual(complex(q), complex(a, b))
 
 
-class TestQuaternionArithmetic(unittest.TestCase): 
+class TestQuaternionArithmetic(unittest.TestCase):
 
     def test_equality(self):
         r = randomElements()
@@ -589,7 +589,7 @@ class TestQuaternionArithmetic(unittest.TestCase):
         k   = Quaternion(0.0, 0.0, 0.0, 1.0)
 
         self.assertEqual(i**2, j**2)
-        self.assertEqual(j**2, k**2) 
+        self.assertEqual(j**2, k**2)
         self.assertEqual(k**2, -one)
 
     def test_power(self):
@@ -637,7 +637,7 @@ class TestQuaternionFeatures(unittest.TestCase):
         self.assertEqual((q1 * q2).conjugate, q2.conjugate * q1.conjugate)
         self.assertEqual((q1 + q1.conjugate) / 2, Quaternion(scalar=q1.scalar))
         self.assertEqual((q1 - q1.conjugate) / 2, Quaternion(vector=q1.vector))
-    
+
     def test_double_conjugate(self):
         q = Quaternion.random()
         self.assertEqual(q, q.conjugate.conjugate)
@@ -645,7 +645,7 @@ class TestQuaternionFeatures(unittest.TestCase):
     def test_norm(self):
         r = randomElements()
         q1 = Quaternion(*r)
-        q2 = Quaternion.random()  
+        q2 = Quaternion.random()
         self.assertEqual(q1.norm, np.linalg.norm(np.array(r)))
         self.assertEqual(q1.magnitude, np.linalg.norm(np.array(r)))
         # Multiplicative norm
@@ -698,7 +698,7 @@ class TestQuaternionFeatures(unittest.TestCase):
     def test_q_matrix(self):
         a, b, c, d = randomElements()
         q = Quaternion(a, b, c, d)
-        M = np.array([   
+        M = np.array([
             [a, -b, -c, -d],
             [b,  a, -d,  c],
             [c,  d,  a, -b],
@@ -708,7 +708,7 @@ class TestQuaternionFeatures(unittest.TestCase):
     def test_q_bar_matrix(self):
         a, b, c, d = randomElements()
         q = Quaternion(a, b, c, d)
-        M = np.array([   
+        M = np.array([
             [a, -b, -c, -d],
             [b,  a,  d, -c],
             [c, -d,  a,  b],
@@ -806,7 +806,7 @@ class TestQuaternionFeatures(unittest.TestCase):
         np.testing.assert_almost_equal(v2_[0:3], q.rotate(v2[0:3]), decimal=ALMOST_EQUAL_TOLERANCE)
 
     def test_conversion_to_ypr(self):
-    
+
         def R_x(theta):
             c = cos(theta)
             s = sin(theta)
@@ -814,7 +814,7 @@ class TestQuaternionFeatures(unittest.TestCase):
                 [1, 0, 0],
                 [0, c,-s],
                 [0, s, c]])
-    
+
         def R_y(theta):
             c = cos(theta)
             s = sin(theta)
@@ -822,7 +822,7 @@ class TestQuaternionFeatures(unittest.TestCase):
                 [ c, 0, s],
                 [ 0, 1, 0],
                 [-s, 0, c]])
-    
+
         def R_z(theta):
             c = cos(theta)
             s = sin(theta)
@@ -841,7 +841,7 @@ class TestQuaternionFeatures(unittest.TestCase):
         # build rotation matrix, R = R_z(yaw)*R_y(pitch)*R_x(roll)
         R_ypr = np.dot(R_x(roll), np.dot(R_y(pitch), R_z(yaw)))
         p_ypr = np.dot(R_ypr, p)
-        
+
         np.testing.assert_almost_equal(p_q , p_ypr, decimal=ALMOST_EQUAL_TOLERANCE)
         np.testing.assert_almost_equal(R_q , R_ypr, decimal=ALMOST_EQUAL_TOLERANCE)
 
@@ -859,9 +859,9 @@ class TestQuaternionFeatures(unittest.TestCase):
             self.assertTrue((q0 == q1) or (q0 == -q1)) # q1 and -q1 are equivalent rotations
 
     def validate_axis_angle(self, axis, angle):
-        
+
         def wrap_angle(theta):
-            """ Wrap any angle to lie between -pi and pi 
+            """ Wrap any angle to lie between -pi and pi
 
             Odd multiples of pi are wrapped to +pi (as opposed to -pi)
             """
@@ -876,15 +876,15 @@ class TestQuaternionFeatures(unittest.TestCase):
 
         v_ = q.axis
         theta_ = q.angle
-        
+
         if theta == 0.0: # axis is irrelevant (check defaults to x=y=z)
             np.testing.assert_almost_equal(theta_, 0.0, decimal=ALMOST_EQUAL_TOLERANCE)
             np.testing.assert_almost_equal(v_, np.zeros(3), decimal=ALMOST_EQUAL_TOLERANCE)
             return
         elif abs(theta) == pi: # rotation in either direction is equivalent
             self.assertTrue(
-                np.isclose(theta, pi) or np.isclose(theta, -pi) 
-                and 
+                np.isclose(theta, pi) or np.isclose(theta, -pi)
+                and
                 np.isclose(v, v_).all() or np.isclose(v, -v_).all()
                 )
         else:
@@ -906,7 +906,7 @@ class TestQuaternionFeatures(unittest.TestCase):
         for v in axes:
             for theta in angles:
                 self.validate_axis_angle(v, theta)
-    
+
 
 
     def test_axis_angle_io(self):
@@ -915,7 +915,7 @@ class TestQuaternionFeatures(unittest.TestCase):
             v /= np.linalg.norm(v)
             theta = float(np.random.uniform(-2,2, 1)) * pi
             self.validate_axis_angle(v, theta)
-            
+
     def test_exp(self):
         from math import exp
         q = Quaternion(axis=[1,0,0], angle=pi)
@@ -972,12 +972,25 @@ class TestQuaternionFeatures(unittest.TestCase):
         p._normalise()
         q._normalise()
         self.assertAlmostEqual(pi, Quaternion.sym_distance(q,p), places=8)
-                
+
     def test_slerp(self):
         q1 = Quaternion(axis=[1, 0, 0], angle=0.0)
         q2 = Quaternion(axis=[1, 0, 0], angle=pi/2)
         q3 = Quaternion.slerp(q1, q2, 0.5)
         self.assertEqual(q3, Quaternion(axis=[1,0,0], angle=pi/4))
+
+    def test_slerp_extensive(self):
+        for axis in [[1, 0, 0], [0, 1, 0], [0, 0, 1]]:
+            q1 = Quaternion(axis=axis, angle=0.0)
+            q2 = Quaternion(axis=axis, angle=pi/2.0)
+            q3 = Quaternion(axis=axis, angle=pi*3.0/2.0)
+            for t in np.arange(0.1, 1, 0.1):
+                q4 = Quaternion.slerp(q1, q2, t)
+                q5 = Quaternion.slerp(q1, q3, t)
+                q6 = Quaternion(axis=axis, angle=t*pi/2)
+                q7 = Quaternion(axis=axis, angle=-t*pi/2)
+                assert q4 == q6 or q4 == -q6
+                assert q5 == q7 or q5 == -q7
 
     def test_interpolate(self):
         q1 = Quaternion(axis=[1, 0, 0], angle=0.0)
@@ -1012,7 +1025,7 @@ class TestQuaternionFeatures(unittest.TestCase):
         for dt in [0, 0.25, 0.5, 0.75, 1, 2, 10, 1e-10, random()*10]: # time step in seconds
             qt = Quaternion() # no rotation
             qt.integrate(rotation_rate, dt)
-            q_truth = Quaternion(axis=[0,0,1], angle=dt*2*pi)   
+            q_truth = Quaternion(axis=[0,0,1], angle=dt*2*pi)
             a = qt.rotate(v)
             b = q_truth.rotate(v)
             np.testing.assert_almost_equal(a, b, decimal=ALMOST_EQUAL_TOLERANCE)
@@ -1054,6 +1067,6 @@ class TestQuaternionHashing(unittest.TestCase):
 
         self.assertNotEqual(hash(q1), hash(q2))
 
- 
+
 if __name__ == '__main__':
     unittest.main()

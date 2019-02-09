@@ -830,6 +830,7 @@ class Quaternion:
     @classmethod
     def slerp(cls, q0, q1, amount=0.5):
         """Spherical Linear Interpolation between quaternions.
+        Implemented as described in https://en.wikipedia.org/wiki/Slerp
 
         Find a valid quaternion rotation at a specified distance along the
         minor arc of a great circle passing through any two existing quaternion
@@ -858,6 +859,9 @@ class Quaternion:
 
         dot = np.dot(q0.q, q1.q)
 
+        # If the dot product is negative, slerp won't take the shorter path.
+        # Note that v1 and -v1 are equivalent when the negation is applied to all four components.
+        # Fix by reversing one quaternion
         if (dot < 0.0):
             q0.q = -q0.q
             dot = -dot
@@ -868,7 +872,7 @@ class Quaternion:
             qr._fast_normalise()
             return qr
 
-        theta_0 = np.arccos(dot)
+        theta_0 = np.arccos(dot)  # Since dot is in range [0, 0.9995], np.arccos() is safe
         sin_theta_0 = np.sin(theta_0)
 
         theta = theta_0*amount

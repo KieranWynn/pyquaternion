@@ -834,7 +834,7 @@ class Quaternion:
 
         Find a valid quaternion rotation at a specified distance along the
         minor arc of a great circle passing through any two existing quaternion
-        endpoints lying on the unit radius hypersphere. [Source](http://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp)
+        endpoints lying on the unit radius hypersphere.
 
         This is a class method and is called as a method of the class itself rather than on a particular instance.
 

@@ -54,9 +54,9 @@ class Quaternion:
         """Initialise a new Quaternion object.
 
         See Object Initialisation docs for complete behaviour:
- 
+
         http://kieranwynn.github.io/pyquaternion/initialisation/
- 
+
         """
         s = len(args)
         if s is 0:
@@ -167,14 +167,14 @@ class Quaternion:
             shape = matrix.shape
         except AttributeError:
             raise TypeError("Invalid matrix type: Input must be a 3x3 or 4x4 numpy array or matrix")
- 
+
         if shape == (3, 3):
             R = matrix
         elif shape == (4,4):
             R = matrix[:-1][:,:-1] # Upper left 3x3 sub-matrix
         else:
             raise ValueError("Invalid matrix shape: Input must be a 3x3 or 4x4 numpy array or matrix")
- 
+
         # Check matrix properties
         if not np.allclose(np.dot(R, R.conj().transpose()), np.eye(3)):
             raise ValueError("Matrix must be orthogonal, i.e. its transpose should be its inverse")
@@ -207,7 +207,7 @@ class Quaternion:
             https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
             which is itself based on the method described here:
             http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
- 
+
             Altered to work with the column vector convention instead of row vectors
             """
             m = matrix.conj().transpose() # This method assumes row-vector and postmultiplication of that vector
@@ -289,7 +289,7 @@ class Quaternion:
     def __format__(self, formatstr):
         """Inserts a customisable, nicely printable string representation of the Quaternion object
 
-        The syntax for `format_spec` mirrors that of the built in format specifiers for floating point types. 
+        The syntax for `format_spec` mirrors that of the built in format specifiers for floating point types.
         Check out the official Python [format specification mini-language](https://docs.python.org/3.4/library/string.html#formatspec) for details.
         """
         if formatstr.strip() == '': # Defualt behaviour mirrors self.__str__()
@@ -505,7 +505,7 @@ class Quaternion:
             if (mag_squared == 0):
                 return
             if (abs(1.0 - mag_squared) < 2.107342e-08):
-                mag =  ((1.0 + mag_squared) / 2.0) # More efficient. Pade approximation valid if error is small 
+                mag =  ((1.0 + mag_squared) / 2.0) # More efficient. Pade approximation valid if error is small
             else:
                 mag =  sqrt(mag_squared) # Error is too big, take the performance hit to calculate the square root properly
 
@@ -826,14 +826,15 @@ class Quaternion:
         """
         q = Quaternion.sym_log_map(q0, q1)
         return q.norm
- 
+
     @classmethod
     def slerp(cls, q0, q1, amount=0.5):
         """Spherical Linear Interpolation between quaternions.
+        Implemented as described in https://en.wikipedia.org/wiki/Slerp
 
         Find a valid quaternion rotation at a specified distance along the
         minor arc of a great circle passing through any two existing quaternion
-        endpoints lying on the unit radius hypersphere. [Source](http://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp)
+        endpoints lying on the unit radius hypersphere.
 
         This is a class method and is called as a method of the class itself rather than on a particular instance.
 
@@ -856,8 +857,33 @@ class Quaternion:
         q1._fast_normalise()
         amount = np.clip(amount, 0, 1)
 
-        return ((q1 * q0.inverse) ** amount) * q0
- 
+        dot = np.dot(q0.q, q1.q)
+
+        # If the dot product is negative, slerp won't take the shorter path.
+        # Note that v1 and -v1 are equivalent when the negation is applied to all four components.
+        # Fix by reversing one quaternion
+        if (dot < 0.0):
+            q0.q = -q0.q
+            dot = -dot
+
+        # sin_theta_0 can not be zero
+        if (dot > 0.9995):
+            qr = Quaternion(q0.q + amount*(q1.q - q0.q))
+            qr._fast_normalise()
+            return qr
+
+        theta_0 = np.arccos(dot)  # Since dot is in range [0, 0.9995], np.arccos() is safe
+        sin_theta_0 = np.sin(theta_0)
+
+        theta = theta_0*amount
+        sin_theta = np.sin(theta)
+
+        s0 = np.cos(theta) - dot * sin_theta / sin_theta_0
+        s1 = sin_theta / sin_theta_0
+        qr = Quaternion((s0 * q0.q) + (s1 * q1.q))
+        qr._fast_normalise()
+        return qr
+
     @classmethod
     def intermediates(cls, q0, q1, n, include_endpoints=False):
         """Generator method to get an iterable sequence of `n` evenly spaced quaternion

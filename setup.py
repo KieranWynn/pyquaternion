@@ -18,7 +18,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.9.4',
+    version='0.9.5',
 
     description='A fully featured, pythonic library for representing and using quaternions.',
     long_description="A fully featured, pythonic library for quaternion representation, manipulation, 3D animation and geometry.",

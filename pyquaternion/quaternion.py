@@ -1006,10 +1006,10 @@ class Quaternion:
         """
 
         self._normalise()
-        yaw = np.arctan2(2*(self.q[0]*self.q[3] - self.q[1]*self.q[2]),
+        yaw = np.arctan2(2*(self.q[0]*self.q[3] + self.q[1]*self.q[2]),
             1 - 2*(self.q[2]**2 + self.q[3]**2))
-        pitch = np.arcsin(2*(self.q[0]*self.q[2] + self.q[3]*self.q[1]))
-        roll = np.arctan2(2*(self.q[0]*self.q[1] - self.q[2]*self.q[3]),
+        pitch = np.arcsin(2*(self.q[0]*self.q[2] - self.q[3]*self.q[1]))
+        roll = np.arctan2(2*(self.q[0]*self.q[1] + self.q[2]*self.q[3]),
             1 - 2*(self.q[1]**2 + self.q[2]**2))
 
         return yaw, pitch, roll

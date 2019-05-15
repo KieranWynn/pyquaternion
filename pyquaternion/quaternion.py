@@ -97,7 +97,7 @@ class Quaternion:
                 elif "array" in kwargs:
                     self.q = self._validate_number_sequence(kwargs["array"], 4)
                 elif "matrix" in kwargs:
-                    self.q = Quaternion._from_matrix(kwargs["matrix"]).q
+                    self.q = Quaternion._from_matrix(kwargs["matrix"], force_imperfect=kwargs.get("force_imperfect", False)).q
                 else:
                     keys = sorted(kwargs.keys())
                     elements = [kwargs[kw] for kw in keys]
@@ -156,7 +156,7 @@ class Quaternion:
 
     # Initialise from matrix
     @classmethod
-    def _from_matrix(cls, matrix):
+    def _from_matrix(cls, matrix, force_imperfect=False):
         """Initialise from matrix representation
 
         Create a Quaternion by specifying the 3x3 rotation or 4x4 transformation matrix
@@ -175,11 +175,12 @@ class Quaternion:
         else:
             raise ValueError("Invalid matrix shape: Input must be a 3x3 or 4x4 numpy array or matrix")
 
-        # Check matrix properties
-        if not np.allclose(np.dot(R, R.conj().transpose()), np.eye(3)):
-            raise ValueError("Matrix must be orthogonal, i.e. its transpose should be its inverse")
-        if not np.isclose(np.linalg.det(R), 1.0):
-            raise ValueError("Matrix must be special orthogonal i.e. its determinant must be +1.0")
+        if not force_imperfect:
+            # Check matrix properties
+            if not np.allclose(np.dot(R, R.conj().transpose()), np.eye(3)):
+                raise ValueError("Matrix must be orthogonal, i.e. its transpose should be its inverse")
+            if not np.isclose(np.linalg.det(R), 1.0):
+                raise ValueError("Matrix must be special orthogonal i.e. its determinant must be +1.0")
 
         def decomposition_method(matrix):
             """ Method supposedly able to deal with non-orthogonal matrices - NON-FUNCTIONAL!

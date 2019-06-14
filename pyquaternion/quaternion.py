@@ -1074,7 +1074,7 @@ class Quaternion:
             else:
                 roll = 0
                 pitch = atan2(g, e)
-        elif "XZY":
+        elif convention == "XZY":
             yaw = asin(-f)
             if .99999 > fabs(f):
                 roll = atan2(n, k)
@@ -1082,6 +1082,8 @@ class Quaternion:
             else:
                 roll = atan2(-l, e)
                 pitch = 0
+        else:
+            raise ValueError("unkknow convention name")
 
         return yaw, pitch, roll
 

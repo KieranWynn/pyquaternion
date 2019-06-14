@@ -34,7 +34,7 @@ quaternion.py - This file defines the core Quaternion class
 
 from __future__ import absolute_import, division, print_function # Add compatibility for Python 2.7+
 
-from math import sqrt, pi, sin, cos, asin, acos, atan2, exp, log
+from math import sqrt, pi, sin, cos, asin, acos, atan2, exp, log, fabs
 from copy import deepcopy
 import numpy as np # Numpy is required for many vector operations
 
@@ -1011,6 +1011,77 @@ class Quaternion:
         pitch = np.arcsin(2*(self.q[0]*self.q[2] + self.q[3]*self.q[1]))
         roll = np.arctan2(2*(self.q[0]*self.q[1] - self.q[2]*self.q[3]),
             1 - 2*(self.q[1]**2 + self.q[2]**2))
+
+        return yaw, pitch, roll
+
+    def euler_angles(self, convention="XYZ"):
+        """ 
+        return yaw, pitch, roll according to convention to be used
+        source from https://www.andre-gaschler.com/rotationconverter/
+        """
+        self._normalise()
+        s = self.transformation_matrix
+        a=s[0, 0]
+        f=s[0, 1]
+        g=s[0, 2]
+        h=s[1, 0]
+        k=s[1, 1]
+        l=s[1, 2]
+        m=s[2, 0]
+        n=s[2, 1]
+        e=s[2, 2]
+
+        yaw = 0
+        pitch = 0
+        roll = 0
+        if convention == "XYZ":
+            pitch = asin(g)
+            if .99999 > fabs(g):
+                roll = atan2(-l, e)
+                yaw = atan2(-f, a)
+            else:
+                roll = atan2(n, k),
+                yaw = 0
+        elif convention == "YXZ":
+            roll = asin(-l)
+            if .99999 > fabs(l):
+                pitch = atan2(g, e)
+                yaw = atan2(h, k)
+            else:
+                pitch = atan2(-m, a)
+                yaw = 0
+        elif convention == "ZXY":
+            roll = asin(n)
+            if .99999 > fabs(n):
+                pitch = atan2(-m, e)
+                yaw = atan2(-f, k)
+            else:
+                pitch = 0
+                yaw = atan2(h, a)
+        elif convention == "ZYX":
+            pitch = asin(-m)
+            if .99999 > fabs(m):
+                roll = atan2(n, e)
+                yaw = atan2(h, a)
+            else:
+                roll = 0
+                yaw = atan2(-f, k)
+        elif convention == "YZX":
+            yaw = asin(h)
+            if .99999 > fabs(h):
+                roll = atan2(-l, k)
+                pitch = atan2(-m, a)
+            else:
+                roll = 0
+                pitch = atan2(g, e)
+        elif "XZY":
+            yaw = asin(-f)
+            if .99999 > fabs(f):
+                roll = atan2(n, k)
+                pitch = atan2(g, a)
+            else:
+                roll = atan2(-l, e)
+                pitch = 0
 
         return yaw, pitch, roll
 

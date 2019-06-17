@@ -1040,7 +1040,7 @@ class Quaternion:
                 roll = atan2(-l, e)
                 yaw = atan2(-f, a)
             else:
-                roll = atan2(n, k),
+                roll = atan2(n, k)
                 yaw = 0
         elif convention == "YXZ":
             roll = asin(-l)

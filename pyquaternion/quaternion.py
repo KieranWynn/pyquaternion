@@ -588,8 +588,8 @@ class Quaternion:
         Returns:
             A Quaternion object representing the rotated vector in quaternion from (0 + xi + yj + kz)
         """
-        self._normalise()
-        return self * q * self.conjugate
+        p = self.normalised()
+        return p * q * p.conjugate
 
     def rotate(self, vector):
         """Rotate a 3D vector by the rotation stored in the Quaternion object.
@@ -972,8 +972,8 @@ class Quaternion:
             This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
 
         """
-        self._normalise()
-        product_matrix = np.dot(self._q_matrix(), self._q_bar_matrix().conj().transpose())
+        p = self.normalised()
+        product_matrix = np.dot(p._q_matrix(), p._q_bar_matrix().conj().transpose())
         return product_matrix[1:][:,1:]
 
     @property

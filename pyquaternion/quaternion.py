@@ -318,7 +318,7 @@ class Quaternion:
         Truncates the Quaternion object by only considering the real
         component.
         """
-        return self.q[0]
+        return float(self.q[0])
 
     def __complex__(self):
         """Implements type conversion to complex.

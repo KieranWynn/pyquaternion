@@ -59,9 +59,9 @@ class Quaternion:
 
         """
         s = len(args)
-        if s is 0:
+        if s == 0:
             # No positional arguments supplied
-            if len(kwargs) > 0:
+            if kwargs:
                 # Keyword arguments provided
                 if ("scalar" in kwargs) or ("vector" in kwargs):
                     scalar = kwargs.get("scalar", 0.0)
@@ -101,7 +101,7 @@ class Quaternion:
                 else:
                     keys = sorted(kwargs.keys())
                     elements = [kwargs[kw] for kw in keys]
-                    if len(elements) is 1:
+                    if len(elements) == 1:
                         r = float(elements[0])
                         self.q = np.array([r, 0.0, 0.0, 0.0])
                     else:
@@ -110,13 +110,13 @@ class Quaternion:
             else:
                 # Default initialisation
                 self.q = np.array([1.0, 0.0, 0.0, 0.0])
-        elif s is 1:
+        elif s == 1:
             # Single positional argument supplied
             if isinstance(args[0], Quaternion):
                 self.q = args[0].q
                 return
             if args[0] is None:
-                raise TypeError("Object cannot be initialised from " + str(type(args[0])))
+                raise TypeError("Object cannot be initialised from {}".format(type(args[0])))
             try:
                 r = float(args[0])
                 self.q = np.array([r, 0.0, 0.0, 0.0])
@@ -142,17 +142,17 @@ class Quaternion:
         """
         if seq is None:
             return np.zeros(n)
-        if len(seq) is n:
+        if len(seq) == n:
             try:
                 l = [float(e) for e in seq]
             except ValueError:
-                raise ValueError("One or more elements in sequence <" + repr(seq) + "> cannot be interpreted as a real number")
+                raise ValueError("One or more elements in sequence <{!r}> cannot be interpreted as a real number".format(seq))
             else:
                 return np.asarray(l)
-        elif len(seq) is 0:
+        elif len(seq) == 0:
             return np.zeros(n)
         else:
-            raise ValueError("Unexpected number of elements in sequence. Got: " + str(len(seq)) + ", Expected: " + str(n) + ".")
+            raise ValueError("Unexpected number of elements in sequence. Got: {}, Expected: {}.".format(len(seq), n))
 
     # Initialise from matrix
     @classmethod
@@ -170,7 +170,7 @@ class Quaternion:
 
         if shape == (3, 3):
             R = matrix
-        elif shape == (4,4):
+        elif shape == (4, 4):
             R = matrix[:-1][:,:-1] # Upper left 3x3 sub-matrix
         else:
             raise ValueError("Invalid matrix shape: Input must be a 3x3 or 4x4 numpy array or matrix")
@@ -227,7 +227,7 @@ class Quaternion:
                     q = [t,  m[1, 2]-m[2, 1],  m[2, 0]-m[0, 2],  m[0, 1]-m[1, 0]]
 
             q = np.array(q)
-            q *= 0.5 / sqrt(t);
+            q *= 0.5 / sqrt(t)
             return q
 
         return cls(array=trace_method(R))
@@ -284,7 +284,7 @@ class Quaternion:
         This is a string representation of a valid Python expression that could be used
         to recreate an object with the same value (given an appropriate environment)
         """
-        return "Quaternion({}, {}, {}, {})".format(repr(self.q[0]), repr(self.q[1]), repr(self.q[2]), repr(self.q[3]))
+        return "Quaternion({!r}, {!r}, {!r}, {!r})".format(self.q[0], self.q[1], self.q[2], self.q[3])
 
     def __format__(self, formatstr):
         """Inserts a customisable, nicely printable string representation of the Quaternion object
@@ -451,7 +451,7 @@ class Quaternion:
         Returns:
             A new Quaternion object clone with its vector part negated
         """
-        return self.__class__(scalar=self.scalar, vector= -self.vector)
+        return self.__class__(scalar=self.scalar, vector=-self.vector)
 
     @property
     def inverse(self):
@@ -667,7 +667,7 @@ class Quaternion:
             return Quaternion(scalar=-float('inf'), vector=float('nan')*q.vector)
         if v_norm < tolerance:
             # real quaternions - no imaginary part
-            return Quaternion(scalar=log(q_norm), vector=[0,0,0])
+            return Quaternion(scalar=log(q_norm), vector=[0, 0, 0])
         vec = q.vector / v_norm
         return Quaternion(scalar=log(q_norm), vector=acos(q.scalar/q_norm)*vec)
 
@@ -775,7 +775,7 @@ class Quaternion:
         q0_plus_q1  = q0 + q1
         d_minus = q0_minus_q1.norm
         d_plus  = q0_plus_q1.norm
-        if (d_minus < d_plus):
+        if d_minus < d_plus:
             return d_minus
         else:
             return d_plus
@@ -862,20 +862,20 @@ class Quaternion:
         # If the dot product is negative, slerp won't take the shorter path.
         # Note that v1 and -v1 are equivalent when the negation is applied to all four components.
         # Fix by reversing one quaternion
-        if (dot < 0.0):
+        if dot < 0.0:
             q0.q = -q0.q
             dot = -dot
 
         # sin_theta_0 can not be zero
-        if (dot > 0.9995):
-            qr = Quaternion(q0.q + amount*(q1.q - q0.q))
+        if dot > 0.9995:
+            qr = Quaternion(q0.q + amount * (q1.q - q0.q))
             qr._fast_normalise()
             return qr
 
         theta_0 = np.arccos(dot)  # Since dot is in range [0, 0.9995], np.arccos() is safe
         sin_theta_0 = np.sin(theta_0)
 
-        theta = theta_0*amount
+        theta = theta_0 * amount
         sin_theta = np.sin(theta)
 
         s0 = np.cos(theta) - dot * sin_theta / sin_theta_0
@@ -974,7 +974,7 @@ class Quaternion:
         """
         self._normalise()
         product_matrix = np.dot(self._q_matrix(), self._q_bar_matrix().conj().transpose())
-        return product_matrix[1:][:,1:]
+        return product_matrix[1:][:, 1:]
 
     @property
     def transformation_matrix(self):
@@ -1006,11 +1006,11 @@ class Quaternion:
         """
 
         self._normalise()
-        yaw = np.arctan2(2*(self.q[0]*self.q[3] - self.q[1]*self.q[2]),
-            1 - 2*(self.q[2]**2 + self.q[3]**2))
-        pitch = np.arcsin(2*(self.q[0]*self.q[2] + self.q[3]*self.q[1]))
-        roll = np.arctan2(2*(self.q[0]*self.q[1] - self.q[2]*self.q[3]),
-            1 - 2*(self.q[1]**2 + self.q[2]**2))
+        yaw = np.arctan2(2 * (self.q[0] * self.q[3] - self.q[1] * self.q[2]),
+            1 - 2 * (self.q[2] ** 2 + self.q[3] ** 2))
+        pitch = np.arcsin(2 * (self.q[0] * self.q[2] + self.q[3] * self.q[1]))
+        roll = np.arctan2(2 * (self.q[0] * self.q[1] - self.q[2] * self.q[3]),
+            1 - 2 * (self.q[1] ** 2 + self.q[2] ** 2))
 
         return yaw, pitch, roll
 
@@ -1019,8 +1019,9 @@ class Quaternion:
 
         Odd multiples of pi are wrapped to +pi (as opposed to -pi)
         """
-        result = ((theta + pi) % (2*pi)) - pi
-        if result == -pi: result = pi
+        result = ((theta + pi) % (2 * pi)) - pi
+        if result == -pi:
+            result = pi
         return result
 
     def get_axis(self, undefined=np.zeros(3)):
@@ -1077,7 +1078,7 @@ class Quaternion:
         """
         self._normalise()
         norm = np.linalg.norm(self.vector)
-        return self._wrap_angle(2.0 * atan2(norm,self.scalar))
+        return self._wrap_angle(2.0 * atan2(norm, self.scalar))
 
     @property
     def degrees(self):

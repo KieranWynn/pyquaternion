@@ -358,6 +358,10 @@ class Quaternion:
     def __neg__(self):
         return self.__class__(array= -self.q)
 
+    # Absolute value
+    def __abs__(self):
+        return self.norm
+
     # Addition
     def __add__(self, other):
         if isinstance(other, Quaternion):
@@ -391,6 +395,17 @@ class Quaternion:
 
     def __rmul__(self, other):
         return self.__class__(other) * self
+
+    def __matmul__(self, other):
+        if isinstance(other, Quaternion):
+            return self.q.__matmul__(other.q)
+        return self.__matmul__(self.__class__(other))
+
+    def __imatmul__(self, other):
+        return self.__matmul__(other)
+
+    def __rmatmul__(self, other):
+        return self.__class__(other).__matmul__(self)
 
     # Division
     def __div__(self, other):

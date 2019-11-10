@@ -4,24 +4,46 @@ python:
 - 3.4
 - 3.5
 - nightly
-install: pip install .
+install: pip install .[dev,test]
 script: python setup.py test
+before_deploy:
+    - mkdocs build --verbose --clean --strict # Build a local version of the docs
+
 deploy:
-  # provider: releases
-  # api_key:
-  #   secure: 8Ta+HS6NPUtEQWujLvzJq7cB9tmhFm5TNeIO9SWbbgkxkTOsdq+jR5DiKOX4ZYNakDKhgQOH5zq/qwbg+OLX30VsBeNjgN8vJu9+mTphAJCrKRKau8zgJczwzERrSpFKXU6MmlW1s0mVPeR2SLIfw+VrD+wYvb9yLDYXQUovX9N27V2CwdMYaJ0Ja0fnYhR1N6QCMR+rIVVvXuYhW7o/bWweVQk0xC2zBguDMvs0IyUNieokz1e81e7HRbdE/lcYKfe8W7lV9s++VkOXYZfUd5csX66kyyziZc7v5J5q1LJOwmEFUUo9+Gct0gKYLr/d+nm+/G31E1EdOCQiaVcaxZN3noFR59l/wwKlEsTgMP8mn1Fg2rq1G0uOd661JpgPgSZNHFGamM12IcwVTiV8wfkKni67PJMXxmYhZTLgpwj7f3qg8QPzDI1wTQRu7QstXXDHNpEXfG7tNIGKD+jwFlrGXS3N9UGdRVBuMOOC/v4j2MkjFuS1OowqPZDumTiVEXOgKH/28jlD+MaKJpz8Il2ZJYYKliuGAmZsEuf/4PaYWDwOGGEHjJHrPc+Fub04J0rmPCYdyI6doc3/M/lmWetfizOoyPqnNk2K8AFqgNZhN8f/+Yj9J5GU/4Y7EyT7pvNkmR0nrLIJLwjhvTR9+G3RWooB4kvjP7jzmt2Y5zs=
-  # skip_cleanup: true
-  # file_glob: true
-  # file: pyquaternion-*.tar.gz
-  # on:
-  #   repo: KieranWynn/pyquaternion
-  #   tags: true
-  #   python: 3.5
   provider: pypi
-  user: kieranwynn
+  edge: true # opt in to dpl v2
+  username: "__token__"
   password:
-    secure: GuGJeviKCzel4BSjESewUZAGpybybh3+Ng4Y6JZKbJ2T3Phiq4l3ZXsZ0OQhjBb64I0MX1DcMF248UApX8WT19c4hNSL96G5k5uq/v2XnffOqUtGfqOnq7q/oVzsgVX0gzGQ2o3XRrf2M6Ee++MOgwqp/3ZZBm7P0ZXJZBwpdzi42QbYGTLmACKw9UGsGMuKcg4LpoGL0mdfFA+EVBny37YHRRaHxowZInyW2Ah9WY3cSfqXOPeD/GuQIL8g4+Y5w4H0ADUa5s3weA4/fiOGl93sRLSxvS5eOYsl3fAADyL9pu+312sFvVWZmSFE83lUu3/3RIVdkxs3CslDVWem5i8zwpdr9vScJ+jg2iZgEuHz1n2zQQDF6nhLmxoZ4mjGiqim1LCU5NITdr9J4xmeqxNzZbMZQadL4rWFqIKtXyXIkL1a0V0BkAAGgcZp2cddih72PdsHBDAd8EhmVsVvFTluBk0b/B2zpDNpg1CYluMGjiM0JTJiq5JmE2Sg5UWF/a6XNFzbhOrgq9ZXJT9e9g9lJkixTzFSJ2zaEEo1lzeQBG5SkR20+yBq/MujB7MjTrX16aWH5Vpdd++DC3T0hr6baESqPRG8OJmNxWJOJjBeMeTvqyqcEGJXo7v1H2/waJTw8xqPW3WvslxLSvjDVDZnjvElpNPm0IT0/fETWZQ=
+    secure: VSWLrLFGA+foPaHq/iA9Of64RfoxAx5Jy18sy5hTVPY/iI3UiSjylbc8Mpa8grOimz6o4kUUaF+6D3sYJP33GvAFymUdoTMrXwflGUnVCV42qZnDaIKMhHLMqoROFsXrCpPLTM09MXhnIIWMtW0oFaA+9u4IebtgSkqFmIulsvjACq4f6ZkDRmh4DzDUtMHnC5Css+YuLlFHQAIqLedj/v9lhc76BfjXaFbo+8ZB8KhvnvfNOfJOpgt/CHoqwBGkZGHP1pTR61nRrLoMTZsNPc6Mmj+vo7sSy6F9GMj3q5Fxdw5YuDRqRPfmn5ARj3fGCVLIWjTzvKext7dBZ9//X2uLiPN4YUepHRJREmKSdBEN4T7w14a6IvT+1absyFUNIZOz3CsBf/fHLmbJ7eYsUBboxXoYbL79VRjcLikPMtwuCphb0gIIO1oZPFvSMbqJLNczoHrqgTscGk58lH4J1qRPuyLNXTekXjjGThpgaUWaDGF3Pk0OWjqqI7w30FDy9S6EHmyerzpBThEWCmM5CybTQcOhbWMXnBhuw0t4lHuQY1VQdFxldP8GFToBvOlHOj0CdrbLQUrBWiaZFGM+o/eSpeLopNE8fzNOZdgN03dzGw3oTFxZds87zy4PR4WpEGsynz9TfOQSnBjqt1FPFGqVcpOb50LthHZAMKXk31w=
   skip_existing: true
   distributions: sdist bdist_wheel
   on:
     tags: true
+#   - provider: releases
+#     api_key:
+#       secure: 8Ta+HS6NPUtEQWujLvzJq7cB9tmhFm5TNeIO9SWbbgkxkTOsdq+jR5DiKOX4ZYNakDKhgQOH5zq/qwbg+OLX30VsBeNjgN8vJu9+mTphAJCrKRKau8zgJczwzERrSpFKXU6MmlW1s0mVPeR2SLIfw+VrD+wYvb9yLDYXQUovX9N27V2CwdMYaJ0Ja0fnYhR1N6QCMR+rIVVvXuYhW7o/bWweVQk0xC2zBguDMvs0IyUNieokz1e81e7HRbdE/lcYKfe8W7lV9s++VkOXYZfUd5csX66kyyziZc7v5J5q1LJOwmEFUUo9+Gct0gKYLr/d+nm+/G31E1EdOCQiaVcaxZN3noFR59l/wwKlEsTgMP8mn1Fg2rq1G0uOd661JpgPgSZNHFGamM12IcwVTiV8wfkKni67PJMXxmYhZTLgpwj7f3qg8QPzDI1wTQRu7QstXXDHNpEXfG7tNIGKD+jwFlrGXS3N9UGdRVBuMOOC/v4j2MkjFuS1OowqPZDumTiVEXOgKH/28jlD+MaKJpz8Il2ZJYYKliuGAmZsEuf/4PaYWDwOGGEHjJHrPc+Fub04J0rmPCYdyI6doc3/M/lmWetfizOoyPqnNk2K8AFqgNZhN8f/+Yj9J5GU/4Y7EyT7pvNkmR0nrLIJLwjhvTR9+G3RWooB4kvjP7jzmt2Y5zs=
+#     skip_cleanup: true
+#     file_glob: true
+#     file: pyquaternion-*.tar.gz
+#     on:
+#       repo: KieranWynn/pyquaternion
+#       tags: true
+#       python: 3.5
+#  - provider: pypi
+#    user: kieranwynn
+#    password:
+#      secure: GuGJeviKCzel4BSjESewUZAGpybybh3+Ng4Y6JZKbJ2T3Phiq4l3ZXsZ0OQhjBb64I0MX1DcMF248UApX8WT19c4hNSL96G5k5uq/v2XnffOqUtGfqOnq7q/oVzsgVX0gzGQ2o3XRrf2M6Ee++MOgwqp/3ZZBm7P0ZXJZBwpdzi42QbYGTLmACKw9UGsGMuKcg4LpoGL0mdfFA+EVBny37YHRRaHxowZInyW2Ah9WY3cSfqXOPeD/GuQIL8g4+Y5w4H0ADUa5s3weA4/fiOGl93sRLSxvS5eOYsl3fAADyL9pu+312sFvVWZmSFE83lUu3/3RIVdkxs3CslDVWem5i8zwpdr9vScJ+jg2iZgEuHz1n2zQQDF6nhLmxoZ4mjGiqim1LCU5NITdr9J4xmeqxNzZbMZQadL4rWFqIKtXyXIkL1a0V0BkAAGgcZp2cddih72PdsHBDAd8EhmVsVvFTluBk0b/B2zpDNpg1CYluMGjiM0JTJiq5JmE2Sg5UWF/a6XNFzbhOrgq9ZXJT9e9g9lJkixTzFSJ2zaEEo1lzeQBG5SkR20+yBq/MujB7MjTrX16aWH5Vpdd++DC3T0hr6baESqPRG8OJmNxWJOJjBeMeTvqyqcEGJXo7v1H2/waJTw8xqPW3WvslxLSvjDVDZnjvElpNPm0IT0/fETWZQ=
+#    skip_existing: true
+#    distributions: sdist bdist_wheel
+#    on:
+#      tags: true
+#  - provider: pages:git
+#    token:  # TODO
+#    edge: true # opt in to dpl v2
+#    on:
+#      tags: true
+#  - provider: releases
+#    token: <encrypted token>
+#    file: <file>
+#    on:
+#      tags: true

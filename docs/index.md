@@ -251,6 +251,7 @@ Either component (but not both) may be absent, `None` or empty, and will be assu
 Specify the angle (qualified as radians or degrees) for a rotation about an axis vector [x, y, z] to be described by the quaternion object.
 
 **Params**
+
 * `axis=ax` can be a sequence or numpy array containing 3 real numbers. It can have any magnitude except `0`.
 * `radians=rad` [optional] a real number, or a string representing a real number in radians.
 * `degrees=deg` [optional] a real number, or a string representing a real number in degrees.
@@ -379,6 +380,22 @@ A unit quaternion has a `norm` of 1.0
 
 	unit_quaternion = my_quaternion.normalised
 	unit_quaternion = my_quaternion.unit
+	
+> **`fast_normalised`**
+
+Get a unit quaternion (versor) copy of this Quaternion object.
+
+A unit quaternion has a `norm` of 1.0
+
+For performance, this method may use a Pade approximation to estimate the magnitude of the quaternion, avoiding a costly `sqrt()` calculation.
+The approximation is only performed where the it is most accurate (when the object to be normalise is already approximately of unit length), 
+otherwise, a full normalisation is performed.
+
+**Note:** A Quaternion representing zero i.e. `Quaternion(0, 0, 0, 0)` cannot be normalised. In this case, the returned object will remain zero.
+
+**Returns:** a new Quaternion object clone that is guaranteed to be very close to a unit quaternion *unless* the original object was zero, in which case the norm will remain zero.
+
+	unit_quaternion = my_quaternion.fast_normalised
 
 
 ## Rotation

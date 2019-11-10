@@ -658,7 +658,7 @@ class Quaternion:
         else:
             return a
 
-    @classmethod
+    @classmethodf
     def exp(cls, q):
         """Quaternion Exponential.
 

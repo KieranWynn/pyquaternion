@@ -40,10 +40,7 @@ from random import random
 
 import numpy as np
 
-import pyquaternion
-
-Quaternion = pyquaternion.Quaternion
-
+from pyquaternion import Quaternion
 
 ALMOST_EQUAL_TOLERANCE = 13
 
@@ -307,7 +304,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
 
             np.testing.assert_almost_equal(v_prime_q2, v_prime_r, decimal=ALMOST_EQUAL_TOLERANCE)
 
-        R = np.matrix(np.eye(3))
+        R = np.eye(3)
         q3 = Quaternion(matrix=R)
         v_prime_q3 = q3.rotate(v)
         np.testing.assert_almost_equal(v, v_prime_q3, decimal=ALMOST_EQUAL_TOLERANCE)
@@ -1024,16 +1021,16 @@ class TestQuaternionFeatures(unittest.TestCase):
         v = [1, 0, 0] # test vector
         for dt in [0, 0.25, 0.5, 0.75, 1, 2, 10, 1e-10, random()*10]: # time step in seconds
             qt = Quaternion() # no rotation
-            qt.integrate(rotation_rate, dt)
+            qt_i = qt.integrate(rotation_rate, dt)
             q_truth = Quaternion(axis=[0,0,1], angle=dt*2*pi)
-            a = qt.rotate(v)
+            a = qt_i.rotate(v)
             b = q_truth.rotate(v)
             np.testing.assert_almost_equal(a, b, decimal=ALMOST_EQUAL_TOLERANCE)
-            self.assertTrue(qt.is_unit())
+            self.assertTrue(qt_i.is_unit())
         # Check integrate() is norm-preserving over many calls
         q = Quaternion()
         for i in range(1000):
-            q.integrate([pi, 0, 0], 0.001)
+            q = q.integrate([pi, 0, 0], 0.001)
         self.assertTrue(q.is_unit())
 
 

@@ -633,25 +633,27 @@ Get the instantaneous quaternion derivative representing a quaternion rotating a
 ## Integration
 > **`integrate(rate, timestep)`**
 
-Advance a time varying quaternion to its value at a time `timestep` in the future.
+Return a copy of a time varying quaternion at its value at a time `timestep` in the future.
 
-The Quaternion object will be modified to its future value. It is guaranteed to remain a unit quaternion.
 
 **Params:**
 
 * `rate` - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.
 * `timestep` - interval over which to integrate into the future. Assuming *now* is `T=0`, the integration occurs over the interval `T=0` to `T=timestep`. Smaller intervals are more accurate when `rate` changes over time.
 
+**Returns:** A unit quaternion describing the rotation rate
+
 **Note 1:** 
 This feature only makes sense when referring to a unit quaternion.
 Calling this method will use a normalised copy of the stored quaternion to perform the operation
+The returned object will also be normalised to unit length
 
 
 **Note 2:** The solution is in closed form given the assumption that `rate` is constant over the interval of length `timestep`. This algorithm is not an exact solution to the differential equation over any interval where the angular rates are not constant. It is a second order approximation, meaning the integral error contains terms proportional to `timestep ** 3` and higher powers.
 
 	>>> q = Quaternion() # null rotation
-	>>> q.integrate([2*pi, 0, 0], 0.25) # Rotate about x at 1 rotation per second
-	>>> q == Quaternion(axis=[1, 0, 0], angle=(pi/2))
+	>>> p = q.integrate([2*pi, 0, 0], 0.25) # Rotate about x at 1 rotation per second
+	>>> p == Quaternion(axis=[1, 0, 0], angle=(pi/2))
 	True
 	>>>
 

@@ -945,10 +945,8 @@ class Quaternion:
         return 0.5 * self * Quaternion(vector=rate)
 
     def integrate(self, rate, timestep):
-        """Advance a time varying quaternion to its value at a time `timestep` in the future.
-
-        The Quaternion object will be modified to its future value.
-        It is guaranteed to remain a unit quaternion.
+        """
+        Return a copy of a time varying quaternion at its value at a time `timestep` in the future.
 
         Params:
 
@@ -959,11 +957,12 @@ class Quaternion:
             `T=0` to `T=timestep`. Smaller intervals are more accurate when
             `rate` changes over time.
 
+        return: A unit Quaternion object describing the rotation at a time `timestep` in the future.
+
         Note:
             The solution is closed form given the assumption that `rate` is constant
             over the interval of length `timestep`.
         """
-        # TODO modify API to return a copy Quaternion object rather than mutate - this is a breaking change
         copy = self.fast_normalised
         rate = self.validate_number_sequence(rate, 3)
 
@@ -973,9 +972,10 @@ class Quaternion:
             axis = rotation_vector / rotation_norm
             angle = rotation_norm
             q2 = Quaternion(axis=axis, angle=angle)
-            self.q = (copy * q2).q
-            self._fast_normalise()
+            result = copy * q2
+            return result.fast_normalised
 
+        return Quaternion(copy.q)
 
     @property
     def rotation_matrix(self):

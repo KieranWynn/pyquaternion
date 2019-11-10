@@ -71,7 +71,7 @@ class Quaternion:
                         scalar = float(scalar)
 
                     vector = kwargs.get("vector", [])
-                    vector = self._validate_number_sequence(vector, 3)
+                    vector = self.validate_number_sequence(vector, 3)
 
                     self.q = np.hstack((scalar, vector))
                 elif ("real" in kwargs) or ("imaginary" in kwargs):
@@ -82,12 +82,12 @@ class Quaternion:
                         real = float(real)
 
                     imaginary = kwargs.get("imaginary", [])
-                    imaginary = self._validate_number_sequence(imaginary, 3)
+                    imaginary = self.validate_number_sequence(imaginary, 3)
 
                     self.q = np.hstack((real, imaginary))
                 elif ("axis" in kwargs) or ("radians" in kwargs) or ("degrees" in kwargs) or ("angle" in kwargs):
                     try:
-                        axis = self._validate_number_sequence(kwargs["axis"], 3)
+                        axis = self.validate_number_sequence(kwargs["axis"], 3)
                     except KeyError:
                         raise ValueError(
                             "A valid rotation 'axis' parameter must be provided to describe a meaningful rotation."
@@ -95,7 +95,7 @@ class Quaternion:
                     angle = kwargs.get('radians') or self.to_radians(kwargs.get('degrees')) or kwargs.get('angle') or 0.0
                     self.q = Quaternion._from_axis_angle(axis, angle).q
                 elif "array" in kwargs:
-                    self.q = self._validate_number_sequence(kwargs["array"], 4)
+                    self.q = self.validate_number_sequence(kwargs["array"], 4)
                 elif "matrix" in kwargs:
                     self.q = Quaternion._from_matrix(kwargs["matrix"]).q
                 else:
@@ -105,7 +105,7 @@ class Quaternion:
                         r = float(elements[0])
                         self.q = np.array([r, 0.0, 0.0, 0.0])
                     else:
-                        self.q = self._validate_number_sequence(elements, 4)
+                        self.q = self.validate_number_sequence(elements, 4)
 
             else:
                 # Default initialisation
@@ -124,35 +124,15 @@ class Quaternion:
             except TypeError:
                 pass  # If the single argument is not scalar, it should be a sequence
 
-            self.q = self._validate_number_sequence(args[0], 4)
+            self.q = self.validate_number_sequence(args[0], 4)
             return
 
         else:
             # More than one positional argument supplied
-            self.q = self._validate_number_sequence(args, 4)
+            self.q = self.validate_number_sequence(args, 4)
 
     def __hash__(self):
         return hash(tuple(self.q))
-
-    def _validate_number_sequence(self, seq, n):
-        """Validate a sequence to be of a certain length and ensure it's a numpy array of floats.
-
-        Raises:
-            ValueError: Invalid length or non-numeric value
-        """
-        if seq is None:
-            return np.zeros(n)
-        if len(seq) == n:
-            try:
-                l = [float(e) for e in seq]
-            except ValueError:
-                raise ValueError("One or more elements in sequence <{!r}> cannot be interpreted as a real number".format(seq))
-            else:
-                return np.asarray(l)
-        elif len(seq) == 0:
-            return np.zeros(n)
-        else:
-            raise ValueError("Unexpected number of elements in sequence. Got: {}, Expected: {}.".format(len(seq), n))
 
     # Initialise from matrix
     @classmethod
@@ -568,7 +548,7 @@ class Quaternion:
 
     @property
     def polar_angle(self):
-         return acos(self.scalar / self.norm)
+        return acos(self.scalar / self.norm)
 
     @property
     def polar_decomposition(self):
@@ -658,7 +638,7 @@ class Quaternion:
         else:
             return a
 
-    @classmethodf
+    @classmethod
     def exp(cls, q):
         """Quaternion Exponential.
 
@@ -961,7 +941,7 @@ class Quaternion:
         Returns:
             A unit quaternion describing the rotation rate
         """
-        rate = self._validate_number_sequence(rate, 3)
+        rate = self.validate_number_sequence(rate, 3)
         return 0.5 * self * Quaternion(vector=rate)
 
     def integrate(self, rate, timestep):
@@ -985,7 +965,7 @@ class Quaternion:
         """
         # TODO modify API to return a copy Quaternion object rather than mutate - this is a breaking change
         copy = self.fast_normalised
-        rate = self._validate_number_sequence(rate, 3)
+        rate = self.validate_number_sequence(rate, 3)
 
         rotation_vector = rate * timestep
         rotation_norm = np.linalg.norm(rotation_vector)
@@ -1181,6 +1161,28 @@ class Quaternion:
         result = self.__class__(deepcopy(self.q, memo))
         memo[id(self)] = result
         return result
+
+    @staticmethod
+    def validate_number_sequence(seq, n):
+        """Validate a sequence to be of a certain length and ensure it's a numpy array of floats.
+
+        Raises:
+            ValueError: Invalid length or non-numeric value
+        """
+        if seq is None:
+            return np.zeros(n)
+        if len(seq) == n:
+            try:
+                l = [float(e) for e in seq]
+            except ValueError:
+                raise ValueError(
+                    "One or more elements in sequence <{!r}> cannot be interpreted as a real number".format(seq))
+            else:
+                return np.asarray(l)
+        elif len(seq) == 0:
+            return np.zeros(n)
+        else:
+            raise ValueError("Unexpected number of elements in sequence. Got: {}, Expected: {}.".format(len(seq), n))
 
     @staticmethod
     def wrap_angle(theta):

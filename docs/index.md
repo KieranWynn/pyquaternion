@@ -392,6 +392,11 @@ Rotate a 3D vector by the rotation stored in the Quaternion object
 
 **Returns:** the rotated vector returned as the same type it was specified at input.
 
+**Note:** 
+This feature only makes sense when referring to a unit quaternion.
+Calling this method will use a normalised copy of the stored quaternion to perform the operation
+
+
 	rotated_tuple 		= my_quaternion.rotate((1, 0, 0)) # Returns a tuple
 	rotated_list  		= my_quaternion.rotate([1.0, 0.0, 0.0]) # Returns a list
 	rotated_array 		= my_quaternion.rotate(numpy.array([1.0, 0.0, 0.0])) # Returns a Numpy 3-array
@@ -552,7 +557,9 @@ This is a class method and is called as a method of the class itself rather than
 **Returns:**
 a new Quaternion object representing the interpolated rotation. This is guaranteed to be a unit quaternion.
 
-**Note:** This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
+**Note:** 
+This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere).
+Calling this method will use normalised copies of the the endpoints quaternions to perform the operation
 
 	q0 = Quaternion(axis=[1, 1, 1], angle=0.0)
 	q1 = Quaternion(axis=[1, 1, 1], angle=3.141592)
@@ -575,7 +582,10 @@ This is a class method and is called as a method of the class itself rather than
 **Yields:**
 a generator object iterating over a sequence of intermediate quaternion objects.
 
-**Note:** This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere). Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
+**Note:** 
+This feature only makes sense when referring to a unit quaternion.
+Calling this method will use a normalised copy of the stored quaternion to perform the operation
+
 
 	q0 = Quaternion(axis=[1, 1, 1], angle=0.0)
 	q1 = Quaternion(axis=[1, 1, 1], angle=2 * 3.141592 / 3)
@@ -615,7 +625,10 @@ The Quaternion object will be modified to its future value. It is guaranteed to 
 * `rate` - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.
 * `timestep` - interval over which to integrate into the future. Assuming *now* is `T=0`, the integration occurs over the interval `T=0` to `T=timestep`. Smaller intervals are more accurate when `rate` changes over time.
 
-**Note 1:** This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one. Many quaternion integration algorithms will have unwanted scaling effects leading a quaternion object to become non-unit over time, thus the object is re-normalised with each call to `integrate()`. Because this method is often called very frequently (every `timestep` for realtime simulation) an optimised re-normalisation is performed. See `_fast_normalise()` for more info.
+**Note 1:** 
+This feature only makes sense when referring to a unit quaternion.
+Calling this method will use a normalised copy of the stored quaternion to perform the operation
+
 
 **Note 2:** The solution is in closed form given the assumption that `rate` is constant over the interval of length `timestep`. This algorithm is not an exact solution to the differential equation over any interval where the angular rates are not constant. It is a second order approximation, meaning the integral error contains terms proportional to `timestep ** 3` and higher powers.
 
@@ -640,7 +653,10 @@ Get the 3x3 rotation or 4x4 homogeneous transformation matrix equivalent of the 
 * `Quaternion.rotation_matrix` : a 3x3 orthogonal rotation matrix as a 3x3 Numpy array
 * `Quaternion.transformation_matrix` : a 4x4 homogeneous transformation matrix as a 4x4 Numpy array
 
-**Note 1:** This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+**Note 1:** 
+This feature only makes sense when referring to a unit quaternion.
+Calling this method will use a normalised copy of the stored quaternion to perform the operation
+
 
 **Note 2:** Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.
 
@@ -664,7 +680,10 @@ alternative `get_axis()` form, specifying the `undefined` keyword to return a ve
 
 **Returns:** a Numpy unit 3-vector describing the Quaternion object's axis of rotation.
 
-**Note 1:** This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+**Note 1:** 
+This feature only makes sense when referring to a unit quaternion.
+Calling this method will use a normalised copy of the stored quaternion to perform the operation
+
 
 **Note 2:** Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence to axis/angle representation, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.
 
@@ -681,7 +700,9 @@ When a particular rotation describes a 180 degree rotation about an arbitrary ax
 
 **Returns:** a real number in the range (-pi:pi) describing the angle of rotation in radians about a Quaternion object's axis of rotation.
 
-**Note 1:** This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+**Note 1:** 
+This feature only makes sense when referring to a unit quaternion.
+Calling this method will use a normalised copy of the stored quaternion to perform the operation
 
 **Note 2:** Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence to axis/angle representation, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.
 

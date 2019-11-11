@@ -157,7 +157,7 @@ class Quaternion:
 
     # Initialise from matrix
     @classmethod
-    def _from_matrix(cls, matrix, **kwargs):
+    def _from_matrix(cls, matrix, rtol=1e-05, atol=1e-08):
         """Initialise from matrix representation
 
         Create a Quaternion by specifying the 3x3 rotation or 4x4 transformation matrix
@@ -177,9 +177,9 @@ class Quaternion:
             raise ValueError("Invalid matrix shape: Input must be a 3x3 or 4x4 numpy array or matrix")
 
         # Check matrix properties
-        if not np.allclose(np.dot(R, R.conj().transpose()), np.eye(3), **kwargs):
+        if not np.allclose(np.dot(R, R.conj().transpose()), np.eye(3), rtol=rtol, atol=atol):
             raise ValueError("Matrix must be orthogonal, i.e. its transpose should be its inverse")
-        if not np.isclose(np.linalg.det(R), 1.0, **kwargs):
+        if not np.isclose(np.linalg.det(R), 1.0, rtol=rtol, atol=atol):
             raise ValueError("Matrix must be special orthogonal i.e. its determinant must be +1.0")
 
         def decomposition_method(matrix):

@@ -92,7 +92,7 @@ A Quaternion object can be created in the following ways:
 ## Default
 > **`Quaternion()`**
 
-Creates a unit quaternion `1 + 0i + 0j + 0k`: the quaternion representation of the real number 1.0, 
+Creates a unit quaternion `1 + 0i + 0j + 0k`: the quaternion representation of the real number 1.0,
 and the representation of a null rotation.
 
     q1 = Quaternion()
@@ -279,7 +279,18 @@ Specify the 3x3 rotation matrix (`R`) or 4x4 transformation matrix (`T`) from wh
 **Params:**
 
 * `matrix=R` can be a 3x3 numpy array or matrix
-* `matrix=T` can be a 4x4 numpy array or matrix. In this case, the translation part will be ignored, and only the rotational component of the matrix will be encoded within the quaternion.
+* `matrix=T` can be a 4x4 numpy array or matrix. In this case, the translation part will be ignored, and only the rotational
+
+
+**Optional Params:**
+
+When initializing a Quaternion explicitly from a matrix, an assertion is raised if it is not special orthogoal. Numpy's [allclose](https://docs.scipy.org/doc/numpy/reference/generated/numpy.allclose.html) function is used as part of this operation. The default relative and absolute tolerance values used are 1.e-5 and 1.e-8 respectively. These can be optionally overwritten when initializing a Quaternion as follows:
+
+> **`Quaternion(matrix=R, atol=atol, rtol=rtol)`**
+> e.g. **`Quaternion(matrix=R, atol=1e-07, rtol=1e-07)`**
+
+* `rtol=rtol` The relative tolerance parameter. [See Notes](https://docs.scipy.org/doc/numpy/reference/generated/numpy.allclose.html)
+* `atol=atol` The absolute tolerance parameter.[See Notes](https://docs.scipy.org/doc/numpy/reference/generated/numpy.allclose.html)
 
 **Important:** The rotation component of the provided matrix must be a pure rotation i.e. [special orthogonal](http://mathworld.wolfram.com/SpecialOrthogonalMatrix.html).
 
@@ -412,7 +423,7 @@ Quaternion Exponential.
 * `q` - the input quaternion/argument as a Quaternion object.
 
 **Returns:** A quaternion amount representing the exp(q). See [Source](https://math.stackexchange.com/questions/1030737/exponential-function-of-quaternion-derivation for more information and mathematical background).
-           
+
 **Note:** The method can compute the exponential of any quaternion.
 
 > **`Quaternion.log(q)`** - *class method*
@@ -426,7 +437,7 @@ Quaternion Logarithm.
 **Returns:** A quaternion amount representing `log(q) := (log(|q|), v/|v|acos(w/|q|))`.
 
 **Note:** The method computes the logarithm of general quaternions. See [Source](https://math.stackexchange.com/questions/2552/the-logarithm-of-quaternion/2554#2554) for more details.
-        
+
 > **`Quaternion.exp_map(q, eta)`** - *class method*
 
 Quaternion exponential map.
@@ -449,7 +460,7 @@ Quaternion symmetrized exponential map.
 Find the symmetrized exponential map on the quaternion Riemannian manifold.
 
 **Params:**
-             
+
 * `q` - the base point as a Quaternion object
 * `eta` - the tangent vector argument of the exponential map as a Quaternion object
 
@@ -478,14 +489,14 @@ Quaternion symmetrized logarithm map.
 Find the symmetrized logarithm map on the quaternion Riemannian manifold.
 
 **Params:**
-             
+
 * `q` - the base point at which the logarithm is computed, i.e. a Quaternion object
 * `p` - the argument of the quaternion map, a Quaternion object
 
 **Returns:** A tangent vector corresponding to the symmetrized geodesic curve formulation.
 
 **Note:** Information on the symmetrized formulations given in [Source](https://www.researchgate.net/publication/267191489_Riemannian_L_p_Averaging_on_Lie_Group_of_Nonzero_Quaternions).
-        
+
 ## Distance computation
 
 > **`Quaternion.absolute_distance(q0, q1)`** - *class method*
@@ -510,14 +521,14 @@ Quaternion intrinsic distance.
 Find the intrinsic geodesic distance between q0 and q1.
 
 **Params:**
-            
+
 * `q0` - the first quaternion
 * `q1` - the second quaternion
 
 **Returns:** A positive amount corresponding to the length of the geodesic arc connecting q0 to q1.
 
 **Note:** Although `q0^(-1)*q1 != q1^(-1)*q0`, the length of the path joining them is given by the logarithm of those product quaternions, the norm of which is the same.
-       
+
 > **`Quaternion.sym_distance(q0, q1)`** - *class method*
 
 Quaternion symmetrized distance.
@@ -534,7 +545,7 @@ Find the intrinsic symmetrized geodesic distance between q0 and q1.
 **Note:** This formulation is more numerically stable when performing iterative gradient descent on the Riemannian quaternion manifold.
 However, the distance between q and -q is equal to pi, rendering this formulation not useful for measuring rotation similarities when the samples are spread over a "solid" angle of more than pi/2 radians (the spread refers to quaternions as point samples on the unit hypersphere).
 
-    
+
 ## Interpolation
 
 > **`Quaternion.slerp(q0, q1, amount=0.5)`** - *class method*
@@ -660,7 +671,7 @@ alternative `get_axis()` form, specifying the `undefined` keyword to return a ve
 
 **Params:**
 
-* `undefined` - [optional] - specify the axis vector that should define a null rotation. 
+* `undefined` - [optional] - specify the axis vector that should define a null rotation.
 
 **Returns:** a Numpy unit 3-vector describing the Quaternion object's axis of rotation.
 
@@ -668,7 +679,7 @@ alternative `get_axis()` form, specifying the `undefined` keyword to return a ve
 
 **Note 2:** Both matrices and quaternions avoid the singularities and discontinuities involved with rotation in 3 dimensions by adding extra dimensions. This has the effect that different values could represent the same rotation, for example quaternion q and -q represent the same rotation. It is therefore possible that, when converting a rotation sequence to axis/angle representation, the output may jump between different but equivalent forms. This could cause problems where subsequent operations such as differentiation are done on this data. Programmers should be aware of this issue.
 
-	u = my_quaternion.axis # Unit vector about which rotation occurs  #or 
+	u = my_quaternion.axis # Unit vector about which rotation occurs  #or
 	u = my_quaternion.get_axis(undefined=[1, 0, 0]) # Prefers a custom axis vector in the case of undefined result
 
 
@@ -746,7 +757,7 @@ Get the element of the quaternion object corresponding to the attribute. The qua
         -0.059197245808339134
     >>> print(my_quaternion.z)
         0.5714103921047806
-	
+
 > **`elements`**
 
 Return all four elements of the quaternion object. Result is not guaranteed to be a unit 4-vector.

@@ -317,6 +317,29 @@ class TestQuaternionInitialisation(unittest.TestCase):
         with self.assertRaises(ValueError):
             q4 = Quaternion(matrix=R)
 
+    def test_init_from_explicit_matrix_with_optional_tolerance_arguments(self):
+        """
+            The matrix defined in this test is orthogonal was carefully crafted
+            such that it's orthogonal to a precision of 1e-07, but not to a precision
+            of 1e-08. The default value for numpy's atol function is 1e-08, but
+            developers should have the option to use a lower precision if they choose
+            to.
+
+            Reference: https://docs.scipy.org/doc/numpy/reference/generated/numpy.allclose.html
+        """
+        m = [[ 0.73297226, -0.16524626, -0.65988294, -0.07654548],
+             [ 0.13108627,  0.98617666, -0.10135052, -0.04878795],
+             [ 0.66750896, -0.01221443,  0.74450167, -0.05474513],
+             [ 0,          0,          0,          1,        ]]
+        npm = np.matrix(m)
+
+        with self.assertRaises(ValueError):
+            Quaternion(matrix=npm)
+
+        try:
+            Quaternion(matrix=npm, atol=1e-07)
+        except ValueError:
+            self.fail("Quaternion() raised ValueError unexpectedly!")
 
     def test_init_from_explicit_arrray(self):
         r = randomElements()

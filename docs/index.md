@@ -51,11 +51,13 @@ A cool feature of quaternions is that they can be intuitively chained together t
 
 	>>> q1 = Quaternion(axis=[1, 0, 0], angle=3.14159265) # Rotate 180 about X
 	>>> q2 = Quaternion(axis=[0, 1, 0], angle=3.14159265 / 2) # Rotate 90 about Y
-	>>> q3 = q1 * q2 # Composite rotation of q1 then q2 expressed as standard multiplication
+	>>> q3 = q2 * q1 # Composite rotation of q1 then q2 expressed as standard multiplication (note quaternions are multiplied in reverse order of rotation)
 	>>> v_prime = q3.rotate(v)
 	>>> v_prime
-		array([ 1., 0., 0.])
+		array([ -1., 0., 0.])
 	>>>
+> Note: pyquaternion assumes a right-handed coordinate system compatible with East-North-Up and North-East-Down conventions.
+
 
 Quaternions are used extensively in animation to describe smooth transitions between known orientations. This is known as interpolation. This is an example of an area where quaternions are preferred to rotation matrices as smooth interpolation is not possible with the latter. Here's quaternion interpolation in action:
 

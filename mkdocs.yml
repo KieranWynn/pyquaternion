@@ -3,4 +3,4 @@ site_description: A fully featured python module for quaternion representation, 
 site_author: Kieran Wynn
 repo_url: https://github.com/KieranWynn/pyquaternion
 site_url: http://kieranwynn.github.io/pyquaternion/
-theme: simplex
+theme: readthedocs

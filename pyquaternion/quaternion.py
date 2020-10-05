@@ -71,7 +71,7 @@ class Quaternion:
                         scalar = float(scalar)
 
                     vector = kwargs.get("vector", [])
-                    vector = self._validate_number_sequence(vector, 3)
+                    vector = self.validate_number_sequence(vector, 3)
 
                     self.q = np.hstack((scalar, vector))
                 elif ("real" in kwargs) or ("imaginary" in kwargs):
@@ -82,12 +82,12 @@ class Quaternion:
                         real = float(real)
 
                     imaginary = kwargs.get("imaginary", [])
-                    imaginary = self._validate_number_sequence(imaginary, 3)
+                    imaginary = self.validate_number_sequence(imaginary, 3)
 
                     self.q = np.hstack((real, imaginary))
                 elif ("axis" in kwargs) or ("radians" in kwargs) or ("degrees" in kwargs) or ("angle" in kwargs):
                     try:
-                        axis = self._validate_number_sequence(kwargs["axis"], 3)
+                        axis = self.validate_number_sequence(kwargs["axis"], 3)
                     except KeyError:
                         raise ValueError(
                             "A valid rotation 'axis' parameter must be provided to describe a meaningful rotation."
@@ -95,7 +95,7 @@ class Quaternion:
                     angle = kwargs.get('radians') or self.to_radians(kwargs.get('degrees')) or kwargs.get('angle') or 0.0
                     self.q = Quaternion._from_axis_angle(axis, angle).q
                 elif "array" in kwargs:
-                    self.q = self._validate_number_sequence(kwargs["array"], 4)
+                    self.q = self.validate_number_sequence(kwargs["array"], 4)
                 elif "matrix" in kwargs:
                     optional_args = {key: kwargs[key] for key in kwargs if key in ['rtol', 'atol']}
                     self.q = Quaternion._from_matrix(kwargs["matrix"], **optional_args).q
@@ -106,7 +106,7 @@ class Quaternion:
                         r = float(elements[0])
                         self.q = np.array([r, 0.0, 0.0, 0.0])
                     else:
-                        self.q = self._validate_number_sequence(elements, 4)
+                        self.q = self.validate_number_sequence(elements, 4)
 
             else:
                 # Default initialisation
@@ -125,35 +125,15 @@ class Quaternion:
             except TypeError:
                 pass  # If the single argument is not scalar, it should be a sequence
 
-            self.q = self._validate_number_sequence(args[0], 4)
+            self.q = self.validate_number_sequence(args[0], 4)
             return
 
         else:
             # More than one positional argument supplied
-            self.q = self._validate_number_sequence(args, 4)
+            self.q = self.validate_number_sequence(args, 4)
 
     def __hash__(self):
         return hash(tuple(self.q))
-
-    def _validate_number_sequence(self, seq, n):
-        """Validate a sequence to be of a certain length and ensure it's a numpy array of floats.
-
-        Raises:
-            ValueError: Invalid length or non-numeric value
-        """
-        if seq is None:
-            return np.zeros(n)
-        if len(seq) == n:
-            try:
-                l = [float(e) for e in seq]
-            except ValueError:
-                raise ValueError("One or more elements in sequence <{!r}> cannot be interpreted as a real number".format(seq))
-            else:
-                return np.asarray(l)
-        elif len(seq) == 0:
-            return np.zeros(n)
-        else:
-            raise ValueError("Unexpected number of elements in sequence. Got: {}, Expected: {}.".format(len(seq), n))
 
     # Initialise from matrix
     @classmethod
@@ -502,22 +482,30 @@ class Quaternion:
         return self.norm
 
     def _normalise(self):
-        """Object is guaranteed to be a unit quaternion after calling this
+        """
+        Mutates self to normalise the stored quaternion to a unit vector.
+
+        Object is guaranteed to be a unit quaternion after calling this
         operation UNLESS the object is equivalent to Quaternion(0)
+
+        Note: Due to mutation, it is advisable to use the self.normalised property to make a copy instead
         """
         if not self.is_unit():
-            n = self.norm
-            if n > 0:
-                self.q = self.q / n
+            mag = self.norm
+            if mag > 0:
+                self.q = self.q / mag
 
     def _fast_normalise(self):
-        """Normalise the object to a unit quaternion using a fast approximation method if appropriate.
+        """
+        Mutates self to normalise the stored quaternion to a unit vector using a fast approximation method if appropriate.
 
         Object is guaranteed to be a quaternion of approximately unit length
         after calling this operation UNLESS the object is equivalent to Quaternion(0)
+
+        Note: Due to mutation, it is advisable to use the self.fast_normalised property to make a copy instead
         """
         if not self.is_unit():
-            mag_squared = np.dot(self.q, self.q)
+            mag_squared = self._sum_of_squares()
             if (mag_squared == 0):
                 return
             if (abs(1.0 - mag_squared) < 2.107342e-08):
@@ -541,6 +529,18 @@ class Quaternion:
         return q
 
     @property
+    def fast_normalised(self):
+        """Get an approximated unit quaternion (versor) copy of this Quaternion object.
+
+
+        Returns:
+            A new Quaternion object clone that has a norm of approximately 1.0
+        """
+        q = Quaternion(self)
+        q._fast_normalise()
+        return q
+
+    @property
     def polar_unit_vector(self):
         vector_length = np.linalg.norm(self.vector)
         if vector_length <= 0.0:
@@ -549,7 +549,7 @@ class Quaternion:
 
     @property
     def polar_angle(self):
-         return acos(self.scalar / self.norm)
+        return acos(self.scalar / self.norm)
 
     @property
     def polar_decomposition(self):
@@ -603,9 +603,13 @@ class Quaternion:
 
         Returns:
             A Quaternion object representing the rotated vector in quaternion from (0 + xi + yj + kz)
+
+        Note:
+            This feature only makes sense when referring to a unit quaternion.
+            Calling this method will use a normalised copy of the stored quaternion to perform the operation
         """
-        self._normalise()
-        return self * q * self.conjugate
+        copy = self.fast_normalised
+        return copy * q * copy.conjugate
 
     def rotate(self, vector):
         """Rotate a 3D vector by the rotation stored in the Quaternion object.
@@ -629,11 +633,9 @@ class Quaternion:
         q = Quaternion(vector=vector)
         a = self._rotate_quaternion(q).vector
         if isinstance(vector, list):
-            l = [x for x in a]
-            return l
+            return list(a)
         elif isinstance(vector, tuple):
-            l = [x for x in a]
-            return tuple(l)
+            return tuple(a)
         else:
             return a
 
@@ -866,27 +868,26 @@ class Quaternion:
 
         Note:
             This feature only makes sense when interpolating between unit quaternions (those lying on the unit radius hypersphere).
-                Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
+            Calling this method will use normalised copies of the the endpoints quaternions to perform the operation
         """
         # Ensure quaternion inputs are unit quaternions and 0 <= amount <=1
-        q0._fast_normalise()
-        q1._fast_normalise()
+        q0_unit = q0.fast_normalised
+        q1_unit = q1.fast_normalised
         amount = np.clip(amount, 0, 1)
 
-        dot = np.dot(q0.q, q1.q)
+        dot = np.dot(q0_unit.q, q1_unit.q)
 
         # If the dot product is negative, slerp won't take the shorter path.
         # Note that v1 and -v1 are equivalent when the negation is applied to all four components.
         # Fix by reversing one quaternion
         if dot < 0.0:
-            q0.q = -q0.q
+            q0_unit = -q0_unit
             dot = -dot
 
         # sin_theta_0 can not be zero
         if dot > 0.9995:
-            qr = Quaternion(q0.q + amount * (q1.q - q0.q))
-            qr._fast_normalise()
-            return qr
+            qr = Quaternion(q0_unit.q + amount * (q1_unit.q - q0_unit.q))
+            return qr.fast_normalised
 
         theta_0 = np.arccos(dot)  # Since dot is in range [0, 0.9995], np.arccos() is safe
         sin_theta_0 = np.sin(theta_0)
@@ -896,9 +897,8 @@ class Quaternion:
 
         s0 = np.cos(theta) - dot * sin_theta / sin_theta_0
         s1 = sin_theta / sin_theta_0
-        qr = Quaternion((s0 * q0.q) + (s1 * q1.q))
-        qr._fast_normalise()
-        return qr
+        qr = Quaternion((s0 * q0_unit.q) + (s1 * q1_unit.q))
+        return qr.fast_normalised
 
     @classmethod
     def intermediates(cls, q0, q1, n, include_endpoints=False):
@@ -942,14 +942,12 @@ class Quaternion:
         Returns:
             A unit quaternion describing the rotation rate
         """
-        rate = self._validate_number_sequence(rate, 3)
+        rate = self.validate_number_sequence(rate, 3)
         return 0.5 * self * Quaternion(vector=rate)
 
     def integrate(self, rate, timestep):
-        """Advance a time varying quaternion to its value at a time `timestep` in the future.
-
-        The Quaternion object will be modified to its future value.
-        It is guaranteed to remain a unit quaternion.
+        """
+        Return a copy of a time varying quaternion at its value at a time `timestep` in the future.
 
         Params:
 
@@ -960,12 +958,14 @@ class Quaternion:
             `T=0` to `T=timestep`. Smaller intervals are more accurate when
             `rate` changes over time.
 
+        return: A unit Quaternion object describing the rotation at a time `timestep` in the future.
+
         Note:
             The solution is closed form given the assumption that `rate` is constant
             over the interval of length `timestep`.
         """
-        self._fast_normalise()
-        rate = self._validate_number_sequence(rate, 3)
+        copy = self.fast_normalised
+        rate = self.validate_number_sequence(rate, 3)
 
         rotation_vector = rate * timestep
         rotation_norm = np.linalg.norm(rotation_vector)
@@ -973,9 +973,10 @@ class Quaternion:
             axis = rotation_vector / rotation_norm
             angle = rotation_norm
             q2 = Quaternion(axis=axis, angle=angle)
-            self.q = (self * q2).q
-            self._fast_normalise()
+            result = copy * q2
+            return result.fast_normalised
 
+        return Quaternion(copy.q)
 
     @property
     def rotation_matrix(self):
@@ -985,11 +986,11 @@ class Quaternion:
             A 3x3 orthogonal rotation matrix as a 3x3 Numpy array
 
         Note:
-            This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
-
+            This feature only makes sense when referring to a unit quaternion.
+            Calling this method will use a normalised copy of the stored quaternion to perform the operation
         """
-        self._normalise()
-        product_matrix = np.dot(self._q_matrix(), self._q_bar_matrix().conj().transpose())
+        copy = self.unit
+        product_matrix = np.dot(copy._q_matrix(), copy._q_bar_matrix().conj().transpose())
         return product_matrix[1:][:, 1:]
 
     @property
@@ -1018,29 +1019,20 @@ class Quaternion:
         The resulting rotation_matrix would be R = R_x(roll) R_y(pitch) R_z(yaw)
 
         Note:
-            This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+            This feature only makes sense when referring to a unit quaternion.
+            Calling this method will use a normalised copy of the stored quaternion to perform the operation
         """
 
-        self._normalise()
-        yaw = np.arctan2(2 * (self.q[0] * self.q[3] - self.q[1] * self.q[2]),
-            1 - 2 * (self.q[2] ** 2 + self.q[3] ** 2))
-        pitch = np.arcsin(2 * (self.q[0] * self.q[2] + self.q[3] * self.q[1]))
-        roll = np.arctan2(2 * (self.q[0] * self.q[1] - self.q[2] * self.q[3]),
-            1 - 2 * (self.q[1] ** 2 + self.q[2] ** 2))
+        copy = self.unit
+        yaw = np.arctan2(2 * (copy.q[0] * copy.q[3] - copy.q[1] * copy.q[2]),
+            1 - 2 * (copy.q[2] ** 2 + copy.q[3] ** 2))
+        pitch = np.arcsin(2 * (copy.q[0] * copy.q[2] + copy.q[3] * copy.q[1]))
+        roll = np.arctan2(2 * (copy.q[0] * copy.q[1] - copy.q[2] * copy.q[3]),
+            1 - 2 * (copy.q[1] ** 2 + copy.q[2] ** 2))
 
         return yaw, pitch, roll
 
-    def _wrap_angle(self, theta):
-        """Helper method: Wrap any angle to lie between -pi and pi
-
-        Odd multiples of pi are wrapped to +pi (as opposed to -pi)
-        """
-        result = ((theta + pi) % (2 * pi)) - pi
-        if result == -pi:
-            result = pi
-        return result
-
-    def get_axis(self, undefined=np.zeros(3)):
+    def get_axis(self, undefined=np.zeros(3), tolerance=1e-17):
         """Get the axis or vector about which the quaternion rotation occurs
 
         For a null rotation (a purely real quaternion), the rotation angle will
@@ -1057,16 +1049,15 @@ class Quaternion:
 
         Note:
             This feature only makes sense when referring to a unit quaternion.
-            Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+            Calling this method will use a normalised copy of the stored quaternion to perform the operation
         """
-        tolerance = 1e-17
-        self._normalise()
-        norm = np.linalg.norm(self.vector)
+        copy = self.unit
+        norm = np.linalg.norm(copy.vector)
         if norm < tolerance:
             # Here there are an infinite set of possible axes, use what has been specified as an undefined axis.
             return undefined
         else:
-            return self.vector / norm
+            return copy.vector / norm
 
     @property
     def axis(self):
@@ -1090,11 +1081,11 @@ class Quaternion:
 
         Note:
             This feature only makes sense when referring to a unit quaternion.
-            Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+            Calling this method will use a normalised copy of the stored quaternion to perform the operation
         """
-        self._normalise()
-        norm = np.linalg.norm(self.vector)
-        return self._wrap_angle(2.0 * atan2(norm, self.scalar))
+        copy = self.unit
+        norm = np.linalg.norm(copy.vector)
+        return self.wrap_angle(2.0 * atan2(norm, copy.scalar))
 
     @property
     def degrees(self):
@@ -1170,6 +1161,39 @@ class Quaternion:
     def __deepcopy__(self, memo):
         result = self.__class__(deepcopy(self.q, memo))
         memo[id(self)] = result
+        return result
+
+    @staticmethod
+    def validate_number_sequence(seq, n):
+        """Validate a sequence to be of a certain length and ensure it's a numpy array of floats.
+
+        Raises:
+            ValueError: Invalid length or non-numeric value
+        """
+        if seq is None:
+            return np.zeros(n)
+        if len(seq) == n:
+            try:
+                l = [float(e) for e in seq]
+            except ValueError:
+                raise ValueError(
+                    "One or more elements in sequence <{!r}> cannot be interpreted as a real number".format(seq))
+            else:
+                return np.asarray(l)
+        elif len(seq) == 0:
+            return np.zeros(n)
+        else:
+            raise ValueError("Unexpected number of elements in sequence. Got: {}, Expected: {}.".format(len(seq), n))
+
+    @staticmethod
+    def wrap_angle(theta):
+        """Helper method: Wrap any angle to lie between -pi and pi
+
+        Odd multiples of pi are wrapped to +pi (as opposed to -pi)
+        """
+        result = ((theta + pi) % (2 * pi)) - pi
+        if result == -pi:
+            result = pi
         return result
 
     @staticmethod

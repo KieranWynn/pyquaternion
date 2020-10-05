@@ -55,7 +55,7 @@ class Quaternion:
 
         See Object Initialisation docs for complete behaviour:
 
-        http://kieranwynn.github.io/pyquaternion/initialisation/
+        https://kieranwynn.github.io/pyquaternion/#object-initialisation
 
         """
         s = len(args)

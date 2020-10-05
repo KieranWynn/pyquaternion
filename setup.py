@@ -7,10 +7,12 @@ https://github.com/KieranWynn/pyquaternion
 from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
-from os import path
+import os
 
-here = path.abspath(path.dirname(__file__))
-
+version = '0.0.0'
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, 'VERSION.txt')) as version_file:
+    version = version_file.read().strip()
 
 setup(
     name='pyquaternion',
@@ -18,13 +20,13 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.9.5',
+    version=version,
 
     description='A fully featured, pythonic library for representing and using quaternions.',
     long_description="A fully featured, pythonic library for quaternion representation, manipulation, 3D animation and geometry.",
 
     # The project's main homepage.
-    download_url='https://github.com/KieranWynn/pyquaternion/tarball/0.9.0',
+    download_url='https://github.com/KieranWynn/pyquaternion/releases/latest',
     url='http://kieranwynn.github.io/pyquaternion/',
 
     # Author details
@@ -58,12 +60,10 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.1',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5'
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8'
     ],
         
         

@@ -14,7 +14,7 @@ Please visit the **[pyquaternion homepage](http://kieranwynn.github.io/pyquatern
 
 ## Quickstart
 
-Install from [PyPI](https://pypi.python.org/pypi/pyquaternion/0.9.0)
+Install from [PyPI](https://pypi.python.org/pypi/pyquaternion/)
 
 ```$ pip install pyquaternion```
 

@@ -7,10 +7,10 @@ https://github.com/KieranWynn/pyquaternion
 from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
-from os import path
+import os
 
 version = '0.0.0'
-here = path.abspath(path.dirname(__file__))
+here = os.path.abspath(path.dirname(__file__))
 with open(os.path.join(here, 'VERSION.txt')) as version_file:
     version = version_file.read().strip()
 

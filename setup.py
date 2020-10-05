@@ -10,7 +10,7 @@ from codecs import open
 import os
 
 version = '0.0.0'
-here = os.path.abspath(path.dirname(__file__))
+here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'VERSION.txt')) as version_file:
     version = version_file.read().strip()
 

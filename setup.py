@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-version = 0.0.0
+version = '0.0.0'
 here = path.abspath(path.dirname(__file__))
 with open(os.path.join(here, 'VERSION.txt')) as version_file:
     version = version_file.read().strip()

@@ -1,6 +1,8 @@
 # pyquaternion
 
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/kieranwynn/pyquaternion?color=green&sort=semver)](https://github.com/KieranWynn/pyquaternion/releases)
 [![Build Status](https://travis-ci.org/KieranWynn/pyquaternion.svg?branch=master)](https://travis-ci.org/KieranWynn/pyquaternion)
+[![PyPI - Downloads](https://img.shields.io/pypi/dd/pyquaternion)](https://pypi.python.org/pypi/pyquaternion/)
 
 A fully featured, pythonic library for quaternion representation, manipulation, 3D animation and geometry.
 

@@ -868,6 +868,43 @@ class TestQuaternionFeatures(unittest.TestCase):
         np.testing.assert_almost_equal(p_q , p_ypr, decimal=ALMOST_EQUAL_TOLERANCE)
         np.testing.assert_almost_equal(R_q , R_ypr, decimal=ALMOST_EQUAL_TOLERANCE)
 
+    def test_euler_angles(self):
+        """
+        values from https://www.andre-gaschler.com/rotationconverter/
+        """
+        q = Quaternion(w=-0.755, x=-0.132, y=-0.074, z=0.638)
+
+        z, y, x = q.euler_angles("XYZ")
+        np.testing.assert_almost_equal(x , 0.2986459, decimal=7)
+        np.testing.assert_almost_equal(y , -0.0567242, decimal=7)
+        np.testing.assert_almost_equal(z , -1.3946709, decimal=7)
+
+        z, y, x = q.euler_angles("XZY")
+        np.testing.assert_almost_equal(x , 0.6070411, decimal=7)
+        np.testing.assert_almost_equal(y , -0.3134048, decimal=7)
+        np.testing.assert_almost_equal(z , -1.3858518, decimal=7)
+
+        z, y, x = q.euler_angles("YXZ")
+        np.testing.assert_almost_equal(x , 0.2981508, decimal=7)
+        np.testing.assert_almost_equal(y , -0.0593453, decimal=7)
+        np.testing.assert_almost_equal(z , -1.4121225, decimal=7)
+
+        z, y, x = q.euler_angles("YZX")
+        np.testing.assert_almost_equal(x , 1.0958808, decimal=7)
+        np.testing.assert_almost_equal(y , 1.0126553, decimal=7)
+        np.testing.assert_almost_equal(z , -1.2341667, decimal=7)
+
+        z, y, x = q.euler_angles("ZXY")
+        np.testing.assert_almost_equal(x , 0.1050926, decimal=7)
+        np.testing.assert_almost_equal(y , 0.2856019, decimal=7)
+        np.testing.assert_almost_equal(z , -1.4183307, decimal=7)
+
+        z, y, x = q.euler_angles("ZYX")
+        np.testing.assert_almost_equal(x , 0.1094947, decimal=7)
+        np.testing.assert_almost_equal(y , 0.2839823, decimal=7)
+        np.testing.assert_almost_equal(z , -1.387539, decimal=7)
+
+
     def test_matrix_io(self):
         v = np.random.uniform(-100, 100, 3)
 

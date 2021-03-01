@@ -307,7 +307,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
 
             np.testing.assert_almost_equal(v_prime_q2, v_prime_r, decimal=ALMOST_EQUAL_TOLERANCE)
 
-        R = np.matrix(np.eye(3))
+        R = np.eye(3)
         q3 = Quaternion(matrix=R)
         v_prime_q3 = q3.rotate(v)
         np.testing.assert_almost_equal(v, v_prime_q3, decimal=ALMOST_EQUAL_TOLERANCE)
@@ -331,7 +331,7 @@ class TestQuaternionInitialisation(unittest.TestCase):
              [ 0.13108627,  0.98617666, -0.10135052, -0.04878795],
              [ 0.66750896, -0.01221443,  0.74450167, -0.05474513],
              [ 0,          0,          0,          1,        ]]
-        npm = np.matrix(m)
+        npm = np.array(m)
 
         with self.assertRaises(ValueError):
             Quaternion(matrix=npm)

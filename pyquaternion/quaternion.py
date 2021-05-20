@@ -396,6 +396,7 @@ class Quaternion:
             raise ZeroDivisionError("a zero quaternion (0 + 0i + 0j + 0k) cannot be inverted")
 
     @property
+    @jit
     def norm(self):
         """L2 norm of the quaternion 4-vector.
 
@@ -405,10 +406,10 @@ class Quaternion:
         Returns:
             A scalar real number representing the square root of the sum of the squares of the elements of the quaternion.
         """
-        mag_squared = self._sum_of_squares()
-        return sqrt(mag_squared)
+        return _norm(self.q)
 
     @property
+    @jit
     def magnitude(self):
         """L2 norm of the quaternion 4-vector.
 
@@ -418,17 +419,18 @@ class Quaternion:
         Returns:
             A scalar real number representing the square root of the sum of the squares of the elements of the quaternion.
         """
-        mag_squared = self._sum_of_squares()
-        return sqrt(mag_squared)
+        return _norm(self.q)
 
+    @jit
     def _normalise(self):
         """Object is guaranteed to be a unit quaternion after calling this
         operation UNLESS the object is equivalent to Quaternion(0)
         """
-        n = self.norm
+        n = _norm(self.q)
         if n > 0:
             self.q = self.q / n
 
+    @jit
     def _fast_normalise(self):
         """Normalise the object to a unit quaternion using a fast approximation method if appropriate.
 
@@ -446,6 +448,7 @@ class Quaternion:
         self.q = self.q / mag
 
     @property
+    @jit
     def normalised(self):
         """Get a unit quaternion (versor) copy of this Quaternion object.
 
@@ -459,6 +462,7 @@ class Quaternion:
         return q
 
     @property
+    @jit
     def polar_unit_vector(self):
         vector_length = _norm(self.vector)
         if vector_length <= 0.0:
@@ -466,6 +470,7 @@ class Quaternion:
         return self.vector / vector_length
 
     @property
+    @jit
     def polar_angle(self):
         return acos(self.scalar / self.norm)
 
@@ -481,6 +486,7 @@ class Quaternion:
         return self.polar_unit_vector, self.polar_angle
 
     @property
+    @jit
     def unit(self):
         return self.normalised
 
@@ -530,6 +536,7 @@ class Quaternion:
         self._normalise()
         return self * q * self.conjugate
 
+    @jit
     def rotate(self, vector):
         """Rotate a 3D vector by the rotation stored in the Quaternion object.
 
@@ -561,6 +568,7 @@ class Quaternion:
             return a
 
     @staticmethod
+    @jit
     def exp(q, tolerance=_EPS):
         """Quaternion Exponential.
 
@@ -584,6 +592,7 @@ class Quaternion:
         return Quaternion(scalar=magnitude * cos(v_norm), vector=magnitude * sin(v_norm) * vec)
 
     @staticmethod
+    @jit
     def log(q, tolerance=_EPS):
         """Quaternion Logarithm.
 
@@ -633,6 +642,7 @@ class Quaternion:
         return q * Quaternion.exp(eta)
 
     @staticmethod
+    @jit
     def sym_exp_map(q, eta):
         """Quaternion symmetrized exponential map.
 
@@ -655,6 +665,7 @@ class Quaternion:
         return sqrt_q * Quaternion.exp(eta) * sqrt_q
 
     @staticmethod
+    @jit
     def log_map(q, p):
         """Quaternion logarithm map.
 
@@ -672,6 +683,7 @@ class Quaternion:
         return Quaternion.log(q.inverse * p)
 
     @staticmethod
+    @jit
     def sym_log_map(q, p):
         """Quaternion symmetrized logarithm map.
 
@@ -692,6 +704,7 @@ class Quaternion:
         return Quaternion.log(inv_sqrt_q * p * inv_sqrt_q)
 
     @staticmethod
+    @jit
     def absolute_distance(q0, q1):
         """Quaternion absolute distance.
 
@@ -720,6 +733,7 @@ class Quaternion:
             return d_plus
 
     @staticmethod
+    @jit
     def distance(q0, q1):
         """Quaternion intrinsic distance.
 
@@ -742,6 +756,7 @@ class Quaternion:
         return q.norm
 
     @staticmethod
+    @jit
     def sym_distance(q0, q1):
         """Quaternion symmetrized distance.
 
@@ -767,6 +782,7 @@ class Quaternion:
         return q.norm
 
     @staticmethod
+    @jit
     def slerp(q0, q1, amount=0.5):
         """Spherical Linear Interpolation between quaternions.
         Implemented as described in https://en.wikipedia.org/wiki/Slerp
@@ -824,6 +840,7 @@ class Quaternion:
         return qr
 
     @staticmethod
+    @jit
     def intermediates(q0, q1, n, include_endpoints=False):
         """Generator method to get an iterable sequence of `n` evenly spaced quaternion
         rotations between any two existing quaternion endpoints lying on the unit
@@ -856,6 +873,7 @@ class Quaternion:
         for step in steps:
             yield Quaternion.slerp(q0, q1, step)
 
+    @jit
     def derivative(self, rate):
         """Get the instantaneous quaternion derivative representing a quaternion rotating at a 3D rate vector `rate`
 
@@ -901,6 +919,7 @@ class Quaternion:
             self._fast_normalise()
 
     @property
+    @jit
     def rotation_matrix(self):
         """Get the 3x3 rotation matrix equivalent of the quaternion rotation.
 
@@ -916,6 +935,7 @@ class Quaternion:
         return product_matrix[1:][:, 1:]
 
     @property
+    @jit
     def transformation_matrix(self):
         """Get the 4x4 homogeneous transformation matrix equivalent of the quaternion rotation.
 
@@ -954,6 +974,7 @@ class Quaternion:
 
         return yaw, pitch, roll
 
+    @jit
     def get_axis(self, undefined=np.zeros(3)):
         """Get the axis or vector about which the quaternion rotation occurs
 
@@ -983,10 +1004,12 @@ class Quaternion:
             return self.vector / norm
 
     @property
+    @jit
     def axis(self):
         return self.get_axis()
 
     @property
+    @jit
     def angle(self):
         """Get the angle (in radians) describing the magnitude of the quaternion rotation about its rotation axis.
 
@@ -1011,14 +1034,17 @@ class Quaternion:
         return _wrap_angle(2.0 * atan2(norm, self.scalar))
 
     @property
+    @jit
     def degrees(self):
         return np.rad2deg(self.angle)
 
     @property
+    @jit
     def radians(self):
         return self.angle
 
     @property
+    @jit
     def scalar(self):
         """ Return the real or scalar component of the quaternion object.
 
@@ -1028,6 +1054,7 @@ class Quaternion:
         return self.q[0]
 
     @property
+    @jit
     def vector(self):
         """ Return the imaginary or vector component of the quaternion object.
 
@@ -1037,30 +1064,37 @@ class Quaternion:
         return self.q[1:4]
 
     @property
+    @jit
     def real(self):
         return self.scalar
 
     @property
+    @jit
     def imaginary(self):
         return self.vector
 
     @property
+    @jit
     def w(self):
         return self.q[0]
 
     @property
+    @jit
     def x(self):
         return self.q[1]
 
     @property
+    @jit
     def y(self):
         return self.q[2]
 
     @property
+    @jit
     def z(self):
         return self.q[3]
 
     @property
+    @jit
     def elements(self):
         """ Return all the elements of the quaternion object.
 
@@ -1069,18 +1103,22 @@ class Quaternion:
         """
         return self.q
 
+    @jit
     def __getitem__(self, index):
         index = int(index)
         return self.q[index]
 
+    @jit
     def __setitem__(self, index, value):
         index = int(index)
         self.q[index] = float(value)
 
+    @jit
     def __copy__(self):
         result = self.__class__(self.q)
         return result
 
+    @jit
     def __deepcopy__(self, memo):
         result = self.__class__(np.copy(self.q))
         memo[id(self)] = result
@@ -1119,6 +1157,7 @@ class Quaternion:
         # And Swing
         swing = self * twist.conjugate
         return swing, twist
+
 
 @jit_hardcore
 def _wrap_angle(theta):

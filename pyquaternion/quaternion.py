@@ -1098,6 +1098,27 @@ class Quaternion:
         if angle_deg is not None:
             return np.deg2rad(angle_deg)
 
+    @jit
+    def swing_twist_decomp(self, axis):
+        """Perform a Swing*Twist decomposition of a Quaternion. This splits the
+        quaternion in two: one containing the rotation around axis (Twist), the
+        other containing the rotation around a vector parallel to axis (Swing).
+        Returns two quaternions: Swing, Twist.
+        source: https://github.com/CCP-NC/soprano/blob/master/soprano/utils.py
+        """
+
+        # Current rotation axis
+        ra = self.q[1:]
+        # Ensure that axis is normalised
+        axis_norm = axis / np.linalg.norm(axis)
+        # Projection of ra along the given axis
+        p = np.dot(ra, axis_norm) * axis_norm
+        # Create Twist
+        qin = np.array((self.q[0], p[0], p[1], p[2]))
+        twist = Quaternion(qin / _norm(qin))
+        # And Swing
+        swing = self * twist.conjugate
+        return swing, twist
 
 @jit_hardcore
 def _wrap_angle(theta):

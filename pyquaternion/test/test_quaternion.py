@@ -1091,6 +1091,39 @@ class TestQuaternionHashing(unittest.TestCase):
 
         self.assertNotEqual(hash(q1), hash(q2))
 
+class TestSwingTwist(unittest.TestCase):
+    """
+    tests the swing-twist decomposition
+    source: https://github.com/CCP-NC/soprano/blob/master/tests/utils_tests.py
+    """
+    def test_swing_twist(self):
+
+        test_n = 10
+
+        for t_i in range(test_n):
+
+            # Create two quaternions with random rotations
+            theta1, theta2 = np.random.random(2)*2*np.pi
+            ax1 = np.random.random(3)
+            ax2 = np.cross(np.random.random(3), ax1)
+            ax1 /= np.linalg.norm(ax1)
+            ax2 /= np.linalg.norm(ax2)
+
+            q1 = Quaternion([np.cos(theta1/2)] + list(ax1*np.sin(theta1/2)))
+            q2 = Quaternion([np.cos(theta2/2)] + list(ax2*np.sin(theta2/2)))
+
+            qT = q1*q2
+
+            # Now decompose
+            qsw, qtw = qT.swing_twist_decomp(ax2)
+            # And check
+            q1.q *= np.sign(q1.q[0])
+            q2.q *= np.sign(q2.q[0])
+            qsw.q *= np.sign(qsw.q[0])
+            qtw.q *= np.sign(qtw.q[0])
+
+            self.assertTrue(np.allclose(q1.q, qsw.q))
+            self.assertTrue(np.allclose(q2.q, qtw.q))
 
 if __name__ == '__main__':
     unittest.main()

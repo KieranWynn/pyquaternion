@@ -1109,7 +1109,7 @@ class TestSwingTwist(unittest.TestCase):
             ax1 /= np.linalg.norm(ax1)
             ax2 /= np.linalg.norm(ax2)
 
-            q1 = Quaternion([np.cos(theta1/2)] + list(ax1*np.sin(theta1/2)))
+            q1 = Quaternion(np.array([np.cos(theta1/2)] + list(ax1*np.sin(theta1/2))))
             q2 = Quaternion([np.cos(theta2/2)] + list(ax2*np.sin(theta2/2)))
 
             qT = q1*q2

@@ -191,7 +191,14 @@ class Quaternion:
 
     # Multiplication
     def mul(self, other: Quaternion):
-        return Quaternion(np.dot(self._q_matrix(), other.q))
+        #return Quaternion(np.dot(self._q_matrix(), other.q))
+        w0, x0, y0, z0 = self.q
+        w1, x1, y1, z1 = other.q
+        r = np.array([-x1 * x0 - y1 * y0 - z1 * z0 + w1 * w0,
+                      x1 * w0 + y1 * z0 - z1 * y0 + w1 * x0,
+                      -x1 * z0 + y1 * w0 + z1 * x0 + w1 * y0,
+                      x1 * y0 - y1 * x0 + z1 * w0 + w1 * z0], dtype=double)
+        return Quaternion(r)
 
     def matmul(self, other: Quaternion):
         return self.q.__matmul__(other.q)
@@ -916,6 +923,54 @@ class Quaternion:
         if angle_deg is not None:
             return np.deg2rad(angle_deg)
 
+    @staticmethod
+    def from_euler(ai: float, aj: float, ak: float, axes_tuple: tuple = (0, 0, 0, 0)) -> Quaternion:
+        """Return quaternion from Euler angles and axis sequence.
+
+        ai, aj, ak : Euler's roll, pitch and yaw angles
+        axes : One of 24 axis sequences as encoded tuple
+        """
+        firstaxis, parity, repetition, frame = axes_tuple
+        _NEXT_AXIS = (1, 2, 0, 1)
+        i = firstaxis + 1
+        j = _NEXT_AXIS[i + parity - 1] + 1
+        k = _NEXT_AXIS[i - parity] + 1
+
+        if frame:
+            ai, ak = ak, ai
+        if parity:
+            aj = -aj
+
+        ai /= 2.0
+        aj /= 2.0
+        ak /= 2.0
+        ci = cos(ai)
+        si = sin(ai)
+        cj = cos(aj)
+        sj = sin(aj)
+        ck = cos(ak)
+        sk = sin(ak)
+        cc = ci * ck
+        cs = ci * sk
+        sc = si * ck
+        ss = si * sk
+
+        q = np.empty((4,))
+        if repetition:
+            q[0] = cj * (cc - ss)
+            q[i] = cj * (cs + sc)
+            q[j] = sj * (cc + ss)
+            q[k] = sj * (cs - sc)
+        else:
+            q[0] = cj * cc + sj * ss
+            q[i] = cj * sc - sj * cs
+            q[j] = cj * ss + sj * cc
+            q[k] = cj * cs - sj * sc
+        if parity:
+            q[j] *= -1.0
+
+        return Quaternion(array=q)
+
     def swing_twist_decomp(self, axis):
         """Perform a Swing*Twist decomposition of a Quaternion. This splits the
         quaternion in two: one containing the rotation around axis (Twist), the
@@ -1067,6 +1122,7 @@ def _from_matrix(matrix: np.ndarray, rtol: float = 1e-05, atol: float = 1e-08):
 
     return Quaternion(_trace_method(R))
 
+
 @jit_hardcore
 def norm(v: np.ndarray) -> float:
     """
@@ -1086,6 +1142,7 @@ def norm(v: np.ndarray) -> float:
     # assert v.dtype != np.complex128
     return sqrt((v * v).sum())
 
+
 _Q0 = Quaternion.from_scalar_and_vector(scalar=0.0)
 Quaternion_type = deferred_type()
 Quaternion_type.define(Quaternion.class_type.instance_type)
@@ -1102,3 +1159,16 @@ print(Q1.str(), Q3.str())
 print(Q1.rotate(np.array([1, 2, 3], dtype=float)))
 
 
+
+# map axes strings to/from tuples of inner axis, parity, repetition, frame
+AXES2TUPLE = {
+    'sxyz': (0, 0, 0, 0), 'sxyx': (0, 0, 1, 0), 'sxzy': (0, 1, 0, 0),
+    'sxzx': (0, 1, 1, 0), 'syzx': (1, 0, 0, 0), 'syzy': (1, 0, 1, 0),
+    'syxz': (1, 1, 0, 0), 'syxy': (1, 1, 1, 0), 'szxy': (2, 0, 0, 0),
+    'szxz': (2, 0, 1, 0), 'szyx': (2, 1, 0, 0), 'szyz': (2, 1, 1, 0),
+    'rzyx': (0, 0, 0, 1), 'rxyx': (0, 0, 1, 1), 'ryzx': (0, 1, 0, 1),
+    'rxzx': (0, 1, 1, 1), 'rxzy': (1, 0, 0, 1), 'ryzy': (1, 0, 1, 1),
+    'rzxy': (1, 1, 0, 1), 'ryxy': (1, 1, 1, 1), 'ryxz': (2, 0, 0, 1),
+    'rzxz': (2, 0, 1, 1), 'rxyz': (2, 1, 0, 1), 'rzyz': (2, 1, 1, 1)}
+
+TUPLE2AXES = dict((v, k) for k, v in AXES2TUPLE.items())

@@ -39,8 +39,11 @@ from math import pi, sin, cos
 from random import random
 
 import numpy as np
+import pytest
 
 import pyquaternion
+from pyquaternion.numba_opt import TypingError
+from pyquaternion.quaternion import z_axis, x_axis, to_str
 
 Quaternion = pyquaternion.Quaternion
 
@@ -51,602 +54,429 @@ def randomElements():
     return tuple(np.random.uniform(-1, 1, 4))
 
 
-class TestQuaternionInitialisation(unittest.TestCase):
+def test_init_default():
+    q = Quaternion()
+    assert isinstance(q, Quaternion)
+    assert q.eq(Quaternion(np.array((1., 0., 0., 0.))))
 
-    def test_init_default(self):
-        q = Quaternion()
-        self.assertIsInstance(q, Quaternion)
-        self.assertEqual(q, Quaternion(1., 0., 0., 0.))
 
-    def test_init_copy(self):
-        q1 = Quaternion.random()
-        q2 = Quaternion(q1)
-        self.assertIsInstance(q2, Quaternion)
-        self.assertEqual(q2, q1)
-        with self.assertRaises(TypeError):
-            q3 = Quaternion(None)
-        with self.assertRaises(ValueError):
-            q4 = Quaternion("String")
+def test_init_junk():
+    with pytest.raises(TypingError):
+        q = Quaternion("blaaa")
+    with pytest.raises(TypingError):
+        q = Quaternion(None)
 
-    def test_init_random(self):
-        r1 = Quaternion.random()
-        r2 = Quaternion.random()
-        self.assertAlmostEqual(r1.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
-        self.assertIsInstance(r1, Quaternion)
-        # self.assertNotEqual(r1, r2) #TODO, this *may* fail at random
 
-    def test_init_from_scalar(self):
-        s = random()
-        q1 = Quaternion(s)
-        self.assertIsInstance(q1, Quaternion)
-        self.assertEqual(q1, Quaternion(s, 0.0, 0.0, 0.0))
-        with self.assertRaises(TypeError):
-            q = Quaternion(None)
-        with self.assertRaises(ValueError):
-            q = Quaternion("String")
+def test_init_copy(self):
+    q1 = Quaternion.random()
+    q2 = q1.copy()
+    self.assertIsInstance(q2, Quaternion)
+    self.assertTrue(q2.eq(q1))
 
-    def test_init_from_elements(self):
-        a, b, c, d = randomElements()
-        q1 = Quaternion(a, b, c, d)
-        q2 = Quaternion(repr(a), repr(b), repr(c), repr(d))
-        q3 = Quaternion(a, repr(b), c, d)
-        self.assertIsInstance(q1, Quaternion)
-        self.assertIsInstance(q2, Quaternion)
-        self.assertIsInstance(q3, Quaternion)
-        self.assertTrue(np.array_equal(q1.q, [a, b, c, d]))
-        self.assertEqual(q1, q2)
-        self.assertEqual(q2, q3)
-        with self.assertRaises(ValueError):
-            q = Quaternion(None, b, c, d)
-        with self.assertRaises(ValueError):
-            q = Quaternion(a, b, "String", d)
-        with self.assertRaises(ValueError):
-            q = Quaternion(a, b, c)
-        with self.assertRaises(ValueError):
-            q = Quaternion(a, b, c, d, random())
 
-    def test_init_from_array(self):
-        r = randomElements()
-        a = np.array(r)
-        q = Quaternion(a)
-        self.assertIsInstance(q, Quaternion)
-        self.assertEqual(q, Quaternion(*r))
-        with self.assertRaises(ValueError):
-            q = Quaternion(a[1:4])  # 3-vector
-        with self.assertRaises(ValueError):
-            q = Quaternion(np.hstack((a, a)))  # 8-vector
-        with self.assertRaises(ValueError):
-            q = Quaternion(np.array([a, a]))  # 2x4-
-        with self.assertRaises(ValueError):
-            q = Quaternion(np.array([None, None, None, None]))
+def test_init_random(self):
+    r1 = Quaternion.random()
+    r2 = Quaternion.random()
+    self.assertAlmostEqual(r1.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
+    self.assertIsInstance(r1, Quaternion)
+    self.assertNotEqual(r1, r2)  # TODO, this *may* fail at random
 
-    def test_init_from_tuple(self):
-        t = randomElements()
-        q = Quaternion(t)
-        self.assertIsInstance(q, Quaternion)
-        self.assertEqual(q, Quaternion(*t))
-        with self.assertRaises(ValueError):
-            q = Quaternion(t[1:4])  # 3-tuple
-        with self.assertRaises(ValueError):
-            q = Quaternion(t + t)  # 8-tuple
-        with self.assertRaises(ValueError):
-            q = Quaternion((t, t))  # 2x4-tuple
-        with self.assertRaises(ValueError):
-            q = Quaternion((None, None, None, None))
 
-    def test_init_from_list(self):
-        r = randomElements()
-        l = list(r)
-        q = Quaternion(l)
-        self.assertIsInstance(q, Quaternion)
-        self.assertEqual(q, Quaternion(*l))
-        with self.assertRaises(ValueError):
-            q = Quaternion(l[1:4])  # 3-list
-        with self.assertRaises(ValueError):
-            q = Quaternion(l + l)  # 8-list
-        with self.assertRaises(ValueError):
-            q = Quaternion((l, l))  # 2x4-list
-        with self.assertRaises(ValueError):
-            q = Quaternion([None, None, None, None])
+def test_init_from_scalar(self):
+    s = random()
+    q1 = Quaternion.from_scalar_and_vector(s)
+    self.assertIsInstance(q1, Quaternion)
+    self.assertEqual(q1, Quaternion(np.array((s, 0.0, 0.0, 0.0))))
+    with self.assertRaises(TypeError):
+        q = Quaternion.from_scalar_and_vector(None)
+    with self.assertRaises(TypeError):
+        q = Quaternion.from_scalar_and_vector(13, "String")
 
-    def test_init_from_explicit_elements(self):
-        e1, e2, e3, e4 = randomElements()
-        q1 = Quaternion(w=e1, x=e2, y=e3, z=e4)
-        q2 = Quaternion(a=e1, b=repr(e2), c=e3, d=e4)
-        q3 = Quaternion(a=e1, i=e2, j=e3, k=e4)
-        q4 = Quaternion(a=e1)
-        self.assertIsInstance(q1, Quaternion)
-        self.assertIsInstance(q2, Quaternion)
-        self.assertIsInstance(q3, Quaternion)
-        self.assertIsInstance(q4, Quaternion)
-        self.assertEqual(q1, Quaternion(e1, e2, e3, e4))
-        self.assertEqual(q1, q2)
-        self.assertEqual(q2, q3)
-        self.assertEqual(q4, Quaternion(e1))
-        with self.assertRaises(ValueError):
-            q = Quaternion(a=None, b=e2, c=e3, d=e4)
-        with self.assertRaises(ValueError):
-            q = Quaternion(a=e1, b=e2, c="String", d=e4)
-        with self.assertRaises(ValueError):
-            q = Quaternion(w=e1, x=e2)
-        with self.assertRaises(ValueError):
-            q = Quaternion(a=e1, b=e2, c=e3, d=e4, e=e1)
 
-    def test_init_from_explicit_component(self):
-        a, b, c, d = randomElements()
+def test_init_from_elements():
+    a, b, c, d = randomElements()
+    q1 = Quaternion(np.array([a, b, c, d], dtype=float))
 
-        # Using 'real' & 'imaginary' notation
-        q1 = Quaternion(real=a, imaginary=(b, c, d))
-        q2 = Quaternion(real=a, imaginary=[b, c, d])
-        q3 = Quaternion(real=a, imaginary=np.array([b, c, d]))
-        q4 = Quaternion(real=a)
-        q5 = Quaternion(imaginary=np.array([b, c, d]))
-        q6 = Quaternion(real=None, imaginary=np.array([b, c, d]))
-        self.assertIsInstance(q1, Quaternion)
-        self.assertIsInstance(q2, Quaternion)
-        self.assertIsInstance(q3, Quaternion)
-        self.assertIsInstance(q4, Quaternion)
-        self.assertIsInstance(q5, Quaternion)
-        self.assertIsInstance(q6, Quaternion)
-        self.assertEqual(q1, Quaternion(a, b, c, d))
-        self.assertEqual(q1, q2)
-        self.assertEqual(q2, q3)
-        self.assertEqual(q4, Quaternion(a, 0, 0, 0))
-        self.assertEqual(q5, Quaternion(0, b, c, d))
-        self.assertEqual(q5, q6)
-        with self.assertRaises(ValueError):
-            q = Quaternion(real=a, imaginary=[b, c])
-        with self.assertRaises(ValueError):
-            q = Quaternion(real=a, imaginary=(b, c, d, d))
+    # assert np.array_equal(q1.q, [a, b, c, d], dtype=float)
+    with pytest.raises(ValueError):
+        q = Quaternion(np.zeros(3))
 
-        # Using 'scalar' & 'vector' notation
-        q1 = Quaternion(scalar=a, vector=(b, c, d))
-        q2 = Quaternion(scalar=a, vector=[b, c, d])
-        q3 = Quaternion(scalar=a, vector=np.array([b, c, d]))
-        q4 = Quaternion(scalar=a)
-        q5 = Quaternion(vector=np.array([b, c, d]))
-        q6 = Quaternion(scalar=None, vector=np.array([b, c, d]))
-        self.assertIsInstance(q1, Quaternion)
-        self.assertIsInstance(q2, Quaternion)
-        self.assertIsInstance(q3, Quaternion)
-        self.assertIsInstance(q4, Quaternion)
-        self.assertIsInstance(q5, Quaternion)
-        self.assertIsInstance(q6, Quaternion)
-        self.assertEqual(q1, Quaternion(a, b, c, d))
-        self.assertEqual(q1, q2)
-        self.assertEqual(q2, q3)
-        self.assertEqual(q4, Quaternion(a, 0, 0, 0))
-        self.assertEqual(q5, Quaternion(0, b, c, d))
-        self.assertEqual(q5, q6)
-        with self.assertRaises(ValueError):
-            q = Quaternion(scalar=a, vector=[b, c])
-        with self.assertRaises(ValueError):
-            q = Quaternion(scalar=a, vector=(b, c, d, d))
+    with pytest.raises(ValueError):
+        q = Quaternion.from_scalar_and_vector(None, np.array(b, c, d))
 
-    def test_init_from_explicit_rotation_params(self):
-        vx = random()
-        vy = random()
-        vz = random()
-        theta = random() * 2.0 * pi
 
-        v1 = (vx, vy, vz)  # tuple format
-        v2 = [vx, vy, vz]  # list format
-        v3 = np.array(v2)  # array format
+def test_init_from_array(self):
+    r = randomElements()
+    a = np.array(r)
+    q = Quaternion(a)
+    self.assertIsInstance(q, Quaternion)
+    self.assertTrue(np.allclose(q.q, a))
+    with self.assertRaises(ValueError):
+        q = Quaternion(a[1:4])  # 3-vector
+    with self.assertRaises(ValueError):
+        q = Quaternion(np.hstack((a, a)))  # 8-vector
+    with self.assertRaises(ValueError):
+        q = Quaternion(np.array([a, a]))  # 2x4-
 
-        q1 = Quaternion(axis=v1, angle=theta)
-        q2 = Quaternion(axis=v2, radians=theta)
-        q3 = Quaternion(axis=v3, degrees=theta / pi * 180)
 
-        # normalise v to a unit vector
-        v3 = v3 / np.linalg.norm(v3)
+def test_init_from_explicit_rotation_params():
+    vx = random()
+    vy = random()
+    vz = random()
+    theta = random() * 2.0 * pi
 
-        q4 = Quaternion(angle=theta, axis=v3)
+    v1 = np.array([vx, vy, vz], dtype=float)
+    v3 = np.copy(v1)
 
-        # Construct the true quaternion
-        t = theta / 2.0
+    q1 = Quaternion.from_axis_angle(axis=v1, angle=theta)
 
-        a = cos(t)
-        b = v3[0] * sin(t)
-        c = v3[1] * sin(t)
-        d = v3[2] * sin(t)
+    with pytest.raises(ValueError):
+        q1 = Quaternion.from_axis_angle(axis=np.zeros(3), angle=theta)
+    # normalise v to a unit vector
+    v3 = v3 / np.linalg.norm(v3)
 
-        truth = Quaternion(a, b, c, d)
+    q4 = Quaternion.from_axis_angle(angle=theta, axis=v3)
 
-        self.assertEqual(q1, truth)
-        self.assertEqual(q2, truth)
-        self.assertEqual(q3, truth)
-        self.assertEqual(q4, truth)
-        self.assertEqual(Quaternion(axis=v3, angle=0), Quaternion())
-        self.assertEqual(Quaternion(axis=v3, radians=0), Quaternion())
-        self.assertEqual(Quaternion(axis=v3, degrees=0), Quaternion())
-        self.assertEqual(Quaternion(axis=v3), Quaternion())
+    # Construct the true quaternion
+    t = theta / 2.0
 
-        # Result should be a versor (Unit Quaternion)
-        self.assertAlmostEqual(q1.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(q2.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(q3.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
-        self.assertAlmostEqual(q4.norm, 1.0, ALMOST_EQUAL_TOLERANCE)
+    a = cos(t)
+    b = v3[0] * sin(t)
+    c = v3[1] * sin(t)
+    d = v3[2] * sin(t)
 
-        with self.assertRaises(ValueError):
-            q = Quaternion(angle=theta)
-        with self.assertRaises(ValueError):
-            q = Quaternion(axis=[b, c], angle=theta)
-        with self.assertRaises(ValueError):
-            q = Quaternion(axis=(b, c, d, d), angle=theta)
-        with self.assertRaises(ZeroDivisionError):
-            q = Quaternion(axis=[0., 0., 0.], angle=theta)
+    truth = Quaternion(np.array([a, b, c, d]))
 
-    def test_init_from_explicit_matrix(self):
+    assert q1.eq(truth)
 
-        def R_z(theta):
-            """
-            Generate a rotation matrix describing a rotation of theta degrees about the z-axis
-            """
-            c = cos(theta)
-            s = sin(theta)
-            return np.array([
-                [c, -s, 0],
-                [s, c, 0],
-                [0, 0, 1]])
+    assert q4.eq(truth)
 
-        v = np.array([1, 0, 0])
-        for angle in [0, pi / 6, pi / 4, pi / 2, pi, 4 * pi / 3, 3 * pi / 2, 2 * pi]:
-            R = R_z(angle)  # rotation matrix describing rotation of 90 about +z
-            v_prime_r = np.dot(R, v)
+    assert Quaternion.from_axis_angle(np.array([1, 0, 0], dtype=float)).eq(Quaternion())
 
-            q1 = Quaternion(axis=[0, 0, 1], angle=angle)
-            v_prime_q1 = q1.rotate(v)
+    # Result should be a versor (Unit Quaternion)
+    assert abs(q1.norm - 1.0) < ALMOST_EQUAL_TOLERANCE
 
-            np.testing.assert_almost_equal(v_prime_r, v_prime_q1, decimal=ALMOST_EQUAL_TOLERANCE)
+    with pytest.raises(Exception):
+        q = Quaternion.from_axis_angle(angle=theta)
+    with pytest.raises(TypingError):
+        q = Quaternion.from_axis_angle(axis=[b, c], angle=theta)
+    with pytest.raises(TypingError):
+        q = Quaternion.from_axis_angle(axis=np.array([1, 2, 3], dtype=int), angle=theta)
+    with pytest.raises(TypingError):
+        q = Quaternion.from_axis_angle(axis=[b, c], angle=None)
 
-            q2 = Quaternion(matrix=R)
-            v_prime_q2 = q2.rotate(v)
 
-            np.testing.assert_almost_equal(v_prime_q2, v_prime_r, decimal=ALMOST_EQUAL_TOLERANCE)
-
-        R = np.matrix(np.eye(3))
-        q3 = Quaternion(matrix=R)
-        v_prime_q3 = q3.rotate(v)
-        np.testing.assert_almost_equal(v, v_prime_q3, decimal=ALMOST_EQUAL_TOLERANCE)
-        self.assertEqual(q3, Quaternion())
-
-        R[0, 1] += 3  # introduce error to make matrix non-orthogonal
-        with self.assertRaises(ValueError):
-            q4 = Quaternion(matrix=R)
-
-    def test_init_from_explicit_matrix_with_optional_tolerance_arguments(self):
+def test_init_from_explicit_matrix():
+    def R_z(theta):
         """
-            The matrix defined in this test is orthogonal was carefully crafted
-            such that it's orthogonal to a precision of 1e-07, but not to a precision
-            of 1e-08. The default value for numpy's atol function is 1e-08, but
-            developers should have the option to use a lower precision if they choose
-            to.
-
-            Reference: https://docs.scipy.org/doc/numpy/reference/generated/numpy.allclose.html
+        Generate a rotation matrix describing a rotation of theta degrees about the z-axis
         """
-        m = [[0.73297226, -0.16524626, -0.65988294, -0.07654548],
-             [0.13108627, 0.98617666, -0.10135052, -0.04878795],
-             [0.66750896, -0.01221443, 0.74450167, -0.05474513],
-             [0, 0, 0, 1, ]]
-        npm = np.matrix(m)
+        c = cos(theta)
+        s = sin(theta)
+        return np.array([
+            [c, -s, 0],
+            [s, c, 0],
+            [0, 0, 1]])
 
-        with self.assertRaises(ValueError):
-            Quaternion(matrix=npm)
+    v = np.copy(x_axis)
+    for angle in [0, pi / 6, pi / 4, pi / 2, pi, 4 * pi / 3, 3 * pi / 2, 2 * pi]:
+        R = R_z(angle)  # rotation matrix describing rotation of 90 about +z
+        v_prime_r = np.dot(R, v)
 
-        try:
-            Quaternion(matrix=npm, atol=1e-07)
-        except ValueError:
-            self.fail("Quaternion() raised ValueError unexpectedly!")
+        q1 = Quaternion.from_axis_angle(axis=z_axis, angle=angle)
+        v_prime_q1 = q1.rotate(v)
+        print("=====" + str(angle))
+        # assert np.allclose(v_prime_r, v_prime_q1)
 
-    def test_init_from_explicit_arrray(self):
-        r = randomElements()
-        a = np.array(r)
-        q = Quaternion(array=a)
-        self.assertIsInstance(q, Quaternion)
-        self.assertEqual(q, Quaternion(*r))
-        with self.assertRaises(ValueError):
-            q = Quaternion(array=a[1:4])  # 3-vector
-        with self.assertRaises(ValueError):
-            q = Quaternion(array=np.hstack((a, a)))  # 8-vector
-        with self.assertRaises(ValueError):
-            q = Quaternion(array=np.array([a, a]))  # 2x4-matrix
-        with self.assertRaises(ValueError):
-            q = Quaternion(array=np.array([None, None, None, None]))
+        q2 = Quaternion.from_matrix(matrix=R)
 
-    def test_equivalent_initialisations(self):
-        a, b, c, d = randomElements()
-        q = Quaternion(a, b, c, d)
-        self.assertEqual(q, Quaternion(q))
-        self.assertEqual(q, Quaternion(np.array([a, b, c, d])))
-        self.assertEqual(q, Quaternion((a, b, c, d)))
-        self.assertEqual(q, Quaternion([a, b, c, d]))
-        self.assertEqual(q, Quaternion(w=a, x=b, y=c, z=d))
-        self.assertEqual(q, Quaternion(array=np.array([a, b, c, d])))
+        v_prime_q2 = q2.rotate(v)
+        print(v_prime_q1)
+        print(v_prime_q2)
+        print(v_prime_r)
+        # assert np.allclose(v_prime_q2, v_prime_r)
+
+    R = np.matrix(np.eye(3))
+    q3 = Quaternion.from_matrix(matrix=R)
+    v_prime_q3 = q3.rotate(v)
+    assert np.allclose(v, v_prime_q3)
+    assert q3.eq(Quaternion())
+
+    R[0, 1] += 3  # introduce error to make matrix non-orthogonal
+    with pytest.raises(ValueError):
+        q4 = Quaternion.from_matrix(matrix=R)
 
 
-class TestQuaternionRepresentation(unittest.TestCase):
+def test_init_from_explicit_matrix_with_optional_tolerance_arguments():
+    """
+        The matrix defined in this test is orthogonal was carefully crafted
+        such that it's orthogonal to a precision of 1e-06, but not to a precision
+        of 1e-08.
 
-    def test_str(self):
-        a, b, c, d = randomElements()
-        q = Quaternion(a, b, c, d)
-        string = "{:.3f} {:+.3f}i {:+.3f}j {:+.3f}k".format(a, b, c, d)
-        self.assertEqual(string, str(q))
+        Reference: https://docs.scipy.org/doc/numpy/reference/generated/numpy.allclose.html
+    """
+    m = [[0.73297226, -0.16524626, -0.65988294, -0.07654548],
+         [0.13108627, 0.98617666, -0.10135052, -0.04878795],
+         [0.66750896, -0.01221443, 0.74450167, -0.05474513],
+         [0, 0, 0, 1, ]]
+    npm = np.matrix(m)
 
-    def test_format(self):
-        a, b, c, d = randomElements()
-        q = Quaternion(a, b, c, d)
-        for s in ['.3f', '+.14f', '.6e', 'g']:
-            individual_fmt = '{:' + s + '} {:' + s + '}i {:' + s + '}j {:' + s + '}k'
-            quaternion_fmt = '{:' + s + '}'
-            self.assertEqual(individual_fmt.format(a, b, c, d), quaternion_fmt.format(q))
+    with pytest.raises(ValueError):
+        Quaternion.from_matrix(matrix=npm)
 
-    def test_repr(self):
-        a, b, c, d = np.array(randomElements())  # Numpy seems to increase precision of floats (C magic?)
-        q = Quaternion(a, b, c, d)
-        string = "Quaternion(" + repr(a) + ", " + repr(b) + ", " + repr(c) + ", " + repr(d) + ")"
-        self.assertEqual(string, repr(q))
+    q1 = Quaternion.from_matrix(matrix=npm, atol=1e-6)
 
 
-class TestQuaternionTypeConversions(unittest.TestCase):
-
-    def test_bool(self):
-        self.assertTrue(Quaternion())
-        self.assertFalse(Quaternion(scalar=0.0))
-        self.assertTrue(~Quaternion(scalar=0.0))
-        self.assertFalse(~Quaternion())
-
-    def test_float(self):
-        a, b, c, d = randomElements()
-        q = Quaternion(a, b, c, d)
-        self.assertEqual(float(q), a)
-
-    def test_int(self):
-        a, b, c, d = randomElements()
-        q = Quaternion(a, b, c, d)
-        self.assertEqual(int(q), int(a))
-        self.assertEqual(int(Quaternion(6.28)), 6)
-        self.assertEqual(int(Quaternion(6.78)), 6)
-        self.assertEqual(int(Quaternion(-4.87)), -4)
-        self.assertEqual(int(round(float(Quaternion(-4.87)))), -5)
-
-    def test_complex(self):
-        a, b, c, d = randomElements()
-        q = Quaternion(a, b, c, d)
-        self.assertEqual(complex(q), complex(a, b))
+def test_str():
+    a, b, c, d = randomElements()
+    q = Quaternion(np.array([a, b, c, d], dtype=float))
+    string = "{:.3f} {:+.3f}i {:+.3f}j {:+.3f}k".format(a, b, c, d)
+    assert string == to_str(q)
 
 
-class TestQuaternionArithmetic(unittest.TestCase):
+def test_equality(self):
+    r = randomElements()
+    self.assertEqual(Quaternion(*r), Quaternion(*r))
+    q = Quaternion(*r)
+    self.assertEqual(q, q)
+    # Equality should work with other types, if they can be interpreted as quaternions
+    self.assertEqual(q, r)
+    self.assertEqual(Quaternion(1., 0., 0., 0.), 1.0)
+    with self.assertRaises(ValueError):
+        Quaternion("1.32")
+    self.assertNotEqual(q, q + Quaternion(0.0, 0.002, 0.0, 0.0))
 
-    def test_equality(self):
-        r = randomElements()
-        self.assertEqual(Quaternion(*r), Quaternion(*r))
-        q = Quaternion(*r)
-        self.assertEqual(q, q)
-        # Equality should work with other types, if they can be interpreted as quaternions
-        self.assertEqual(q, r)
-        self.assertEqual(Quaternion(1., 0., 0., 0.), 1.0)
-        with self.assertRaises(ValueError):
-            Quaternion("1.32")
-        self.assertNotEqual(q, q + Quaternion(0.0, 0.002, 0.0, 0.0))
+    # Equality should also cover small rounding and floating point errors
+    self.assertEqual(Quaternion(1., 0., 0., 0.), Quaternion(1.0 - 1e-14, 0., 0., 0.))
+    self.assertNotEqual(Quaternion(1., 0., 0., 0.), Quaternion(1.0 - 1e-12, 0., 0., 0.))
+    self.assertNotEqual(Quaternion(160., 0., 0., 0.), Quaternion(160.0 - 1e-10, 0., 0., 0.))
+    self.assertNotEqual(Quaternion(1600., 0., 0., 0.), Quaternion(1600.0 - 1e-9, 0., 0., 0.))
 
-        # Equality should also cover small rounding and floating point errors
-        self.assertEqual(Quaternion(1., 0., 0., 0.), Quaternion(1.0 - 1e-14, 0., 0., 0.))
-        self.assertNotEqual(Quaternion(1., 0., 0., 0.), Quaternion(1.0 - 1e-12, 0., 0., 0.))
-        self.assertNotEqual(Quaternion(160., 0., 0., 0.), Quaternion(160.0 - 1e-10, 0., 0., 0.))
-        self.assertNotEqual(Quaternion(1600., 0., 0., 0.), Quaternion(1600.0 - 1e-9, 0., 0., 0.))
+    with self.assertRaises(TypeError):
+        q == None
+    with self.assertRaises(ValueError):
+        q == 's'
 
-        with self.assertRaises(TypeError):
-            q == None
-        with self.assertRaises(ValueError):
-            q == 's'
 
-    def test_assignment(self):
-        a, b, c, d = randomElements()
-        q1 = Quaternion(a, b, c, d)
-        q2 = Quaternion(a, b * 0.1, c + 0.3, d)
-        self.assertNotEqual(q1, q2)
-        q2 = q1
-        self.assertEqual(q1, q2)
+def test_assignment(self):
+    a, b, c, d = randomElements()
+    q1 = Quaternion(a, b, c, d)
+    q2 = Quaternion(a, b * 0.1, c + 0.3, d)
+    self.assertNotEqual(q1, q2)
+    q2 = q1
+    self.assertEqual(q1, q2)
 
-    def test_unary_minus(self):
-        a, b, c, d = randomElements()
-        q = Quaternion(a, b, c, d)
-        self.assertEqual(-q, Quaternion(-a, -b, -c, -d))
 
-    def test_add(self):
-        r1 = randomElements()
-        r2 = randomElements()
-        r = random()
-        n = None
+def test_unary_minus(self):
+    a, b, c, d = randomElements()
+    q = Quaternion(a, b, c, d)
+    self.assertEqual(-q, Quaternion(-a, -b, -c, -d))
 
-        q1 = Quaternion(*r1)
-        q2 = Quaternion(*r2)
-        q3 = Quaternion(array=np.array(r1) + np.array(r2))
-        q4 = Quaternion(array=np.array(r2) + np.array([r, 0.0, 0.0, 0.0]))
-        self.assertEqual(q1 + q2, q3)
-        q1 += q2
-        self.assertEqual(q1, q3)
-        self.assertEqual(q2 + r, q4)
-        self.assertEqual(r + q2, q4)
 
-        with self.assertRaises(TypeError):
-            q1 += n
-        with self.assertRaises(TypeError):
-            n += q1
+def test_add(self):
+    r1 = randomElements()
+    r2 = randomElements()
+    r = random()
+    n = None
 
-    def test_subtract(self):
-        r1 = randomElements()
-        r2 = randomElements()
-        r = random()
-        n = None
+    q1 = Quaternion(*r1)
+    q2 = Quaternion(*r2)
+    q3 = Quaternion(array=np.array(r1) + np.array(r2))
+    q4 = Quaternion(array=np.array(r2) + np.array([r, 0.0, 0.0, 0.0]))
+    self.assertEqual(q1 + q2, q3)
+    q1 += q2
+    self.assertEqual(q1, q3)
+    self.assertEqual(q2 + r, q4)
+    self.assertEqual(r + q2, q4)
 
-        q1 = Quaternion(*r1)
-        q2 = Quaternion(*r2)
-        q3 = Quaternion(array=np.array(r1) - np.array(r2))
-        q4 = Quaternion(array=np.array(r2) - np.array([r, 0.0, 0.0, 0.0]))
-        self.assertEqual(q1 - q2, q3)
-        q1 -= q2
-        self.assertEqual(q1, q3)
-        self.assertEqual(q2 - r, q4)
-        self.assertEqual(r - q2, -q4)
+    with self.assertRaises(TypeError):
+        q1 += n
+    with self.assertRaises(TypeError):
+        n += q1
 
-        with self.assertRaises(TypeError):
-            q1 -= n
-        with self.assertRaises(TypeError):
-            n -= q1
 
-    def test_multiplication_of_bases(self):
-        one = Quaternion(1.0, 0.0, 0.0, 0.0)
-        i = Quaternion(0.0, 1.0, 0.0, 0.0)
-        j = Quaternion(0.0, 0.0, 1.0, 0.0)
-        k = Quaternion(0.0, 0.0, 0.0, 1.0)
+def test_subtract(self):
+    r1 = randomElements()
+    r2 = randomElements()
+    r = random()
+    n = None
 
-        self.assertEqual(i * i, j * j)
-        self.assertEqual(j * j, k * k)
-        self.assertEqual(k * k, i * j * k)
-        self.assertEqual(i * j * k, -one)
+    q1 = Quaternion(*r1)
+    q2 = Quaternion(*r2)
+    q3 = Quaternion(array=np.array(r1) - np.array(r2))
+    q4 = Quaternion(array=np.array(r2) - np.array([r, 0.0, 0.0, 0.0]))
+    self.assertEqual(q1 - q2, q3)
+    q1 -= q2
+    self.assertEqual(q1, q3)
+    self.assertEqual(q2 - r, q4)
+    self.assertEqual(r - q2, -q4)
 
-        self.assertEqual(i * j, k)
-        self.assertEqual(i * i, -one)
-        self.assertEqual(i * k, -j)
-        self.assertEqual(j * i, -k)
-        self.assertEqual(j * j, -one)
-        self.assertEqual(j * k, i)
-        self.assertEqual(k * i, j)
-        self.assertEqual(k * j, -i)
-        self.assertEqual(k * k, -one)
-        self.assertEqual(i * j * k, -one)
+    with self.assertRaises(TypeError):
+        q1 -= n
+    with self.assertRaises(TypeError):
+        n -= q1
 
-    def test_multiply_by_scalar(self):
-        a, b, c, d = randomElements()
-        q1 = Quaternion(a, b, c, d)
-        for s in [30.0, 0.3, -2, -4.7, 0]:
-            q2 = Quaternion(s * a, s * b, s * c, s * d)
-            q3 = q1
-            self.assertEqual(q1 * s, q2)  # post-multiply by scalar
-            self.assertEqual(s * q1, q2)  # pre-multiply by scalar
-            q3 *= s
-            self.assertEqual(q3, q2)
 
-    def test_multiply_incorrect_type(self):
-        q = Quaternion()
-        with self.assertRaises(TypeError):
-            a = q * None
-        with self.assertRaises(ValueError):
-            b = q * [1, 1, 1, 1, 1]
-        with self.assertRaises(ValueError):
-            c = q * np.array([[1, 2, 3], [4, 5, 6]])
-        with self.assertRaises(ValueError):
-            d = q * 's'
+def test_multiplication_of_bases():
+    one = Quaternion(np.array([1.0, 0.0, 0.0, 0.0]))
+    i = Quaternion(np.array([0.0, 1.0, 0.0, 0.0]))
+    j = Quaternion(np.array([0.0, 0.0, 1.0, 0.0]))
+    k = Quaternion(np.array([0.0, 0.0, 0.0, 1.0]))
 
-    def test_divide(self):
-        r = randomElements()
-        q = Quaternion(*r)
-        if q:
-            self.assertEqual(q / q, Quaternion())
-            self.assertEqual(q / r, Quaternion())
+    assert i.mul(i).eq(j.mul(j))
+    assert j.mul(j).eq(k.mul(k))
+
+    assert k.mul(k).eq(i.mul(j).mul(k))
+
+    assert i.mul(j.mul(k)).eq(one.neg())
+
+    assert i.mul(j).eq(k)
+    assert i.mul(i).eq(one.neg())
+    assert i.mul(k).eq(j.neg())
+    assert j.mul(i).eq(k.neg())
+    assert j.mul(j).eq(one.neg())
+    assert j.mul(k).eq(i)
+    assert k.mul(i).eq(j)
+    assert k.mul(j).eq(i.neg())
+    assert k.mul(k).eq(one.neg())
+    assert i.mul(j).mul(k).eq(one.neg())
+
+    # self.assertEqual(i * i, j * j)
+    # self.assertEqual(j * j, k * k)
+    # self.assertEqual(k * k, i * j * k)
+    # self.assertEqual(i * j * k, -one)
+    #
+    # self.assertEqual(i * j, k)
+    # self.assertEqual(i * i, -one)
+    # self.assertEqual(i * k, -j)
+    # self.assertEqual(j * i, -k)
+    # self.assertEqual(j * j, -one)
+    # self.assertEqual(j * k, i)
+    # self.assertEqual(k * i, j)
+    # self.assertEqual(k * j, -i)
+    # self.assertEqual(k * k, -one)
+    # self.assertEqual(i * j * k, -one)
+
+
+def test_multiply_by_scalar():
+    a, b, c, d = randomElements()
+    q1 = Quaternion(np.array((a, b, c, d)))
+    for s in [30.0, 0.3, -2, -4.7, 0]:
+
+        q2 = Quaternion(s * a, s * b, s * c, s * d)
+        S = Quaternion.from_scalar_and_vector(s)
+        q3 = q1
+        assert q1.mul(S).eq(q2)  # post-multiply by scalar
+        assert S.mul(q1).eq(q2)  # pre-multiply by scalar
+        q3 = q3.mul(S)
+        assert q3.eq(q2)
+
+
+def test_divide():
+    r = np.random.rand(4)
+    q = Quaternion(r)
+    if q:
+        assert q.div(q).eq(Quaternion())
+    else:
+        with pytest.raises(ZeroDivisionError):
+            q.div(q)
+
+    with pytest.raises(ZeroDivisionError):
+        q.div(Quaternion.from_scalar_and_vector(0.0))
+
+
+def test_division_of_bases():
+    one = Quaternion(np.array([1.0, 0.0, 0.0, 0.0]))
+    i = Quaternion(np.array([0.0, 1.0, 0.0, 0.0]))
+    j = Quaternion(np.array([0.0, 0.0, 1.0, 0.0]))
+    k = Quaternion(np.array([0.0, 0.0, 0.0, 1.0]))
+
+    assert i.div(i).eq(j.div(j))
+    # self.assertEqual(j / j, k / k)
+    # self.assertEqual(k / k, one)
+    # self.assertEqual(k / -k, -one)
+    #
+    # self.assertEqual(i / j, -k)
+    # self.assertEqual(i / i, one)
+    # self.assertEqual(i / k, j)
+    # self.assertEqual(j / i, k)
+    # self.assertEqual(j / j, one)
+    # self.assertEqual(j / k, -i)
+    # self.assertEqual(k / i, -j)
+    # self.assertEqual(k / j, i)
+    # self.assertEqual(k / k, one)
+    # self.assertEqual(i / -j, k)
+
+
+def test_divide_by_scalar():
+    a, b, c, d = randomElements()
+    q1 = Quaternion(a, b, c, d)
+    for s in [30.0, 0.3, -2, -4.7]:
+        q2 = Quaternion(a / s, b / s, c / s, d / s)
+        q3 = q1
+        self.assertEqual(q1 / s, q2)
+        if q1:
+            self.assertEqual(s / q1, q2.inverse)
         else:
             with self.assertRaises(ZeroDivisionError):
-                q / q
+                s / q1
 
-        with self.assertRaises(ZeroDivisionError):
-            q / Quaternion(0.0)
-        with self.assertRaises(TypeError):
-            q / None
-        with self.assertRaises(ValueError):
-            q / [1, 1, 1, 1, 1]
-        with self.assertRaises(ValueError):
-            q / np.array([[1, 2, 3], [4, 5, 6]])
-        with self.assertRaises(ValueError):
-            q / 's'
+        q3 /= s
+        self.assertEqual(q3, q2)
 
-    def test_division_of_bases(self):
-        one = Quaternion(1.0, 0.0, 0.0, 0.0)
-        i = Quaternion(0.0, 1.0, 0.0, 0.0)
-        j = Quaternion(0.0, 0.0, 1.0, 0.0)
-        k = Quaternion(0.0, 0.0, 0.0, 1.0)
+    with self.assertRaises(ZeroDivisionError):
+        q4 = q1 / 0.0
+    with self.assertRaises(TypeError):
+        q4 = q1 / None
+    with self.assertRaises(ValueError):
+        q4 = q1 / 's'
 
-        self.assertEqual(i / i, j / j)
-        self.assertEqual(j / j, k / k)
-        self.assertEqual(k / k, one)
-        self.assertEqual(k / -k, -one)
 
-        self.assertEqual(i / j, -k)
-        self.assertEqual(i / i, one)
-        self.assertEqual(i / k, j)
-        self.assertEqual(j / i, k)
-        self.assertEqual(j / j, one)
-        self.assertEqual(j / k, -i)
-        self.assertEqual(k / i, -j)
-        self.assertEqual(k / j, i)
-        self.assertEqual(k / k, one)
-        self.assertEqual(i / -j, k)
+def test_squared():
+    one = Quaternion(1.0, 0.0, 0.0, 0.0)
+    i = Quaternion(0.0, 1.0, 0.0, 0.0)
+    j = Quaternion(0.0, 0.0, 1.0, 0.0)
+    k = Quaternion(0.0, 0.0, 0.0, 1.0)
 
-    def test_divide_by_scalar(self):
-        a, b, c, d = randomElements()
-        q1 = Quaternion(a, b, c, d)
-        for s in [30.0, 0.3, -2, -4.7]:
-            q2 = Quaternion(a / s, b / s, c / s, d / s)
-            q3 = q1
-            self.assertEqual(q1 / s, q2)
-            if q1:
-                self.assertEqual(s / q1, q2.inverse)
-            else:
-                with self.assertRaises(ZeroDivisionError):
-                    s / q1
+    self.assertEqual(i ** 2, j ** 2)
+    self.assertEqual(j ** 2, k ** 2)
+    self.assertEqual(k ** 2, -one)
 
-            q3 /= s
-            self.assertEqual(q3, q2)
 
-        with self.assertRaises(ZeroDivisionError):
-            q4 = q1 / 0.0
-        with self.assertRaises(TypeError):
-            q4 = q1 / None
-        with self.assertRaises(ValueError):
-            q4 = q1 / 's'
+def test_power():
+    q1 = Quaternion.random()
+    q2 = Quaternion(q1)
+    self.assertEqual(q1 ** 0, Quaternion())
+    self.assertEqual(q1 ** 1, q1)
+    q2 **= 4
+    self.assertEqual(q2, q1 * q1 * q1 * q1)
+    self.assertEqual((q1 ** 0.5) * (q1 ** 0.5), q1)
+    self.assertEqual(q1 ** -1, q1.inverse)
+    self.assertEqual(4 ** Quaternion(2), Quaternion(16))
+    with self.assertRaises(TypeError):
+        q1 ** None
+    with self.assertRaises(ValueError):
+        q1 ** 's'
+    q3 = Quaternion()
+    self.assertEqual(q3 ** 0.5, q3)  # Identity behaves as an identity
+    self.assertEqual(q3 ** 5, q3)
+    self.assertEqual(q3 ** 3.4, q3)
+    q4 = Quaternion(scalar=5)  # real number behaves as any other real number would
+    self.assertEqual(q4 ** 4, Quaternion(scalar=5 ** 4))
 
-    def test_squared(self):
-        one = Quaternion(1.0, 0.0, 0.0, 0.0)
-        i = Quaternion(0.0, 1.0, 0.0, 0.0)
-        j = Quaternion(0.0, 0.0, 1.0, 0.0)
-        k = Quaternion(0.0, 0.0, 0.0, 1.0)
 
-        self.assertEqual(i ** 2, j ** 2)
-        self.assertEqual(j ** 2, k ** 2)
-        self.assertEqual(k ** 2, -one)
+def test_distributive():
+    q1 = Quaternion.random()
+    q2 = Quaternion.random()
+    q3 = Quaternion.random()
+    self.assertEqual(q1 * (q2 + q3), q1 * q2 + q1 * q3)
 
-    def test_power(self):
-        q1 = Quaternion.random()
-        q2 = Quaternion(q1)
-        self.assertEqual(q1 ** 0, Quaternion())
-        self.assertEqual(q1 ** 1, q1)
-        q2 **= 4
-        self.assertEqual(q2, q1 * q1 * q1 * q1)
-        self.assertEqual((q1 ** 0.5) * (q1 ** 0.5), q1)
-        self.assertEqual(q1 ** -1, q1.inverse)
-        self.assertEqual(4 ** Quaternion(2), Quaternion(16))
-        with self.assertRaises(TypeError):
-            q1 ** None
-        with self.assertRaises(ValueError):
-            q1 ** 's'
-        q3 = Quaternion()
-        self.assertEqual(q3 ** 0.5, q3)  # Identity behaves as an identity
-        self.assertEqual(q3 ** 5, q3)
-        self.assertEqual(q3 ** 3.4, q3)
-        q4 = Quaternion(scalar=5)  # real number behaves as any other real number would
-        self.assertEqual(q4 ** 4, Quaternion(scalar=5 ** 4))
 
-    def test_distributive(self):
-        q1 = Quaternion.random()
-        q2 = Quaternion.random()
-        q3 = Quaternion.random()
-        self.assertEqual(q1 * (q2 + q3), q1 * q2 + q1 * q3)
-
-    def test_noncommutative(self):
-        q1 = Quaternion.random()
-        q2 = Quaternion.random()
-        if not q1 == q2:  # Small chance of this happening with random initialisation
-            self.assertNotEqual(q1 * q2, q2 * q1)
+def test_noncommutative():
+    q1 = Quaternion.random()
+    q2 = Quaternion.random()
+    if not q1 == q2:  # Small chance of this happening with random initialisation
+        self.assertNotEqual(q1 * q2, q2 * q1)
 
 
 class TestQuaternionFeatures(unittest.TestCase):
@@ -1080,39 +910,39 @@ class TestQuaternionUtilities(unittest.TestCase):
 
 class TestQuaternionHashing(unittest.TestCase):
     def test_equal_quaternions(self):
-        q1 = Quaternion(1, 0, 0, 0)
-        q2 = Quaternion(1, 0, 0, 0)
+        q1 = Quaternion(np.array([1, 0, 0, 0]))
+        q2 = Quaternion(np.array([1, 0, 0, 0]))
 
         self.assertEqual(hash(q1), hash(q2))
 
     def test_unequal_quaternions(self):
-        q1 = Quaternion(1, 0, 0, 0)
-        q2 = Quaternion(0, 1, 0, 0)
+        q1 = Quaternion(np.array([1, 0, 0, 0]))
+        q2 = Quaternion(np.array([0, 1, 0, 0]))
 
         self.assertNotEqual(hash(q1), hash(q2))
+
 
 class TestSwingTwist(unittest.TestCase):
     """
     tests the swing-twist decomposition
     source: https://github.com/CCP-NC/soprano/blob/master/tests/utils_tests.py
     """
-    def test_swing_twist(self):
 
+    def test_swing_twist(self):
         test_n = 10
 
         for t_i in range(test_n):
-
             # Create two quaternions with random rotations
-            theta1, theta2 = np.random.random(2)*2*np.pi
+            theta1, theta2 = np.random.random(2) * 2 * np.pi
             ax1 = np.random.random(3)
             ax2 = np.cross(np.random.random(3), ax1)
             ax1 /= np.linalg.norm(ax1)
             ax2 /= np.linalg.norm(ax2)
 
-            q1 = Quaternion(np.array([np.cos(theta1/2)] + list(ax1*np.sin(theta1/2))))
-            q2 = Quaternion([np.cos(theta2/2)] + list(ax2*np.sin(theta2/2)))
+            q1 = Quaternion(np.array([np.cos(theta1 / 2)] + list(ax1 * np.sin(theta1 / 2))))
+            q2 = Quaternion(np.array([np.cos(theta2 / 2)] + list(ax2 * np.sin(theta2 / 2))))
 
-            qT = q1*q2
+            qT = q1 * q2
 
             # Now decompose
             qsw, qtw = qT.swing_twist_decomp(ax2)
@@ -1124,6 +954,7 @@ class TestSwingTwist(unittest.TestCase):
 
             self.assertTrue(np.allclose(q1.q, qsw.q))
             self.assertTrue(np.allclose(q2.q, qtw.q))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,7 +1,7 @@
 import functools
 __author__ = 'Alex Pyattaev'
 import os
-
+import numba.core.errors
 try:
 
     if 'NO_NUMBA' in os.environ:
@@ -17,9 +17,11 @@ try:
     int16 = numba.int16
     double = numba.double
     complex128 = numba.complex128
+    TypingError = numba.core.errors.TypingError
 except ImportError:
     numba = None
     numba_available = False
+    TypingError = TypeError
     int64 = int
     int16 = int
     double = float

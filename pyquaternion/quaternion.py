@@ -48,7 +48,7 @@ _EPS: float = np.finfo(float).eps * 4.0
 
 if numba_available:
     _spec_Quaternion = [
-        ('q', double[:]),  # array field spec for numba
+        ('q', double[::1]),  # array field spec for numba
     ]
 else:
     _spec_Quaternion = []

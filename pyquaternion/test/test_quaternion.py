@@ -67,11 +67,11 @@ def test_init_junk():
         q = Quaternion(None)
 
 
-def test_init_copy(self):
+def test_init_copy():
     q1 = Quaternion.random()
     q2 = q1.copy()
-    self.assertIsInstance(q2, Quaternion)
-    self.assertTrue(q2.eq(q1))
+
+    assert q2.eq(q1)
 
 
 def test_init_random(self):
@@ -82,15 +82,6 @@ def test_init_random(self):
     self.assertNotEqual(r1, r2)  # TODO, this *may* fail at random
 
 
-def test_init_from_scalar(self):
-    s = random()
-    q1 = Quaternion.from_scalar_and_vector(s)
-    self.assertIsInstance(q1, Quaternion)
-    self.assertEqual(q1, Quaternion(np.array((s, 0.0, 0.0, 0.0))))
-    with self.assertRaises(TypeError):
-        q = Quaternion.from_scalar_and_vector(None)
-    with self.assertRaises(TypeError):
-        q = Quaternion.from_scalar_and_vector(13, "String")
 
 
 def test_init_from_elements():
@@ -101,8 +92,8 @@ def test_init_from_elements():
     with pytest.raises(ValueError):
         q = Quaternion(np.zeros(3))
 
-    with pytest.raises(ValueError):
-        q = Quaternion.from_scalar_and_vector(None, np.array(b, c, d))
+    with pytest.raises(TypingError):
+        q = Quaternion.from_scalar_and_vector(None, np.array([b, c, d]))
 
 
 def test_init_from_array(self):

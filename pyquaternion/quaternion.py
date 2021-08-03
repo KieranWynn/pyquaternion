@@ -1007,7 +1007,7 @@ class Quaternion:
         """
         self._normalise()
         product_matrix = np.dot(self._q_matrix(), self._q_bar_matrix().conj().transpose())
-        return product_matrix[1:][:, 1:]
+        return product_matrix[1:][:, 1:].T # added the required transposition in order to correct the Trace method for Quaternion calculation
 
     @property
     def transformation_matrix(self):

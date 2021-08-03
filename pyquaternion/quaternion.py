@@ -643,8 +643,8 @@ class Quaternion:
         """
         if isinstance(vector, Quaternion):
             return self._rotate_quaternion(vector)
-        q = Quaternion(vector=vector)
-        a = self._rotate_quaternion_fast(q)
+#         q = Quaternion(vector=vector)
+        a = self._rotate_quaternion_fast(vector)
         if isinstance(vector, list):
             l = [x for x in a]
             return l

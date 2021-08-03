@@ -211,7 +211,9 @@ class Quaternion:
 
             Altered to work with the column vector convention instead of row vectors
             """
-            m = matrix.conj().transpose() # This method assumes row-vector and postmultiplication of that vector
+            # m = matrix.conj().transpose() # This method assumes row-vector and postmultiplication of that vector
+            m = matrix # the transpose is not required in python
+            # based on https://math.stackexchange.com/questions/893984/conversion-of-rotation-matrix-to-quaternion
             if m[2, 2] < 0:
                 if m[0, 0] > m[1, 1]:
                     t = 1 + m[0, 0] - m[1, 1] - m[2, 2]
@@ -606,6 +608,21 @@ class Quaternion:
         """
         self._normalise()
         return self * q * self.conjugate
+    
+    def _rotate_quaternion_fast(self, v):
+        """Rotate a quaternion vector using the stored rotation.
+
+        Params:
+            v: The vector to be rotated, in vect form [x, y, z]
+
+        Returns:
+            A Quaternion object representing the rotated vector in quaternion from (0 + xi + yj + kz)
+        """
+        
+        self._normalise()
+        u = self.elements[1:]
+        s = self.w
+        return 2 *np.dot(u,v)*u +(s*s - np.dot(u,u)) * v + 2 * s * np.cross(u,v)
 
     def rotate(self, vector):
         """Rotate a 3D vector by the rotation stored in the Quaternion object.
@@ -626,8 +643,8 @@ class Quaternion:
         """
         if isinstance(vector, Quaternion):
             return self._rotate_quaternion(vector)
-        q = Quaternion(vector=vector)
-        a = self._rotate_quaternion(q).vector
+#         q = Quaternion(vector=vector)
+        a = self._rotate_quaternion_fast(vector)
         if isinstance(vector, list):
             l = [x for x in a]
             return l
@@ -990,7 +1007,7 @@ class Quaternion:
         """
         self._normalise()
         product_matrix = np.dot(self._q_matrix(), self._q_bar_matrix().conj().transpose())
-        return product_matrix[1:][:, 1:]
+        return product_matrix[1:][:, 1:].T # added the required transposition in order to correct the Trace method for Quaternion calculation
 
     @property
     def transformation_matrix(self):

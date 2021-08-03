@@ -211,7 +211,9 @@ class Quaternion:
 
             Altered to work with the column vector convention instead of row vectors
             """
-            m = matrix.conj().transpose() # This method assumes row-vector and postmultiplication of that vector
+            # m = matrix.conj().transpose() # This method assumes row-vector and postmultiplication of that vector
+            m = matrix # the transpose is not required in python
+            # based on https://math.stackexchange.com/questions/893984/conversion-of-rotation-matrix-to-quaternion
             if m[2, 2] < 0:
                 if m[0, 0] > m[1, 1]:
                     t = 1 + m[0, 0] - m[1, 1] - m[2, 2]

@@ -85,8 +85,8 @@ ax.view_init(30, 0)
 # initialization function: plot the background of each frame
 def init():
     for line in lines:
-        line.set_data([], [])
-        line.set_3d_properties([])
+        line.set_data(np.array([]), np.array([]))
+        line.set_3d_properties(np.array([]))
 
     return lines
 
@@ -103,8 +103,8 @@ def animate(i):
         start = q.rotate(start)
         end = q.rotate(end)
 
-        line.set_data([start[0], end[0]], [start[1], end[1]])
-        line.set_3d_properties([start[2], end[2]])
+        line.set_data(np.array([start[0], end[0]]), np.array([start[1], end[1]]))
+        line.set_3d_properties(np.array([start[2], end[2]]))
 
         #pt.set_data(x[-1:], y[-1:])
         #pt.set_3d_properties(z[-1:])

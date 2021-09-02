@@ -6,3 +6,6 @@ dist/
 *.egg*
 
 .idea*
+
+.vs-code
+*.code-workspace

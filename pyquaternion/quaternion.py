@@ -93,6 +93,7 @@ class Quaternion:
                             "A valid rotation 'axis' parameter must be provided to describe a meaningful rotation."
                         )
                     angle = kwargs.get('radians') or self.to_radians(kwargs.get('degrees')) or kwargs.get('angle') or 0.0
+                    angle = self._wrap_angle(angle)
                     self.q = Quaternion._from_axis_angle(axis, angle).q
                 elif "array" in kwargs:
                     self.q = self._validate_number_sequence(kwargs["array"], 4)

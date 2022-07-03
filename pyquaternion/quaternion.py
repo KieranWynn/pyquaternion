@@ -926,12 +926,14 @@ class Quaternion:
             Calling this method will implicitly normalise the endpoints to unit quaternions if they are not already unit length.
         """
         step_size = 1.0 / (n + 1)
-        if include_endpoints:
-            steps = [i * step_size for i in range(0, n + 2)]
-        else:
-            steps = [i * step_size for i in range(1, n + 1)]
-        for step in steps:
-            yield cls.slerp(q0, q1, step)
+        q0._fast_normalise()
+        q1._fast_normalise()
+        inc = Quaternion.exp(step_size*Quaternion.log(q1))
+        rotator = q0
+        for step in range(n+2*include_endpoints):
+            if step!=0 or not include_endpoints:
+                rotator *= inc
+            yield rotator
 
     def derivative(self, rate):
         """Get the instantaneous quaternion derivative representing a quaternion rotating at a 3D rate vector `rate`

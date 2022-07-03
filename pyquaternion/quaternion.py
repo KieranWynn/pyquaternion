@@ -928,7 +928,7 @@ class Quaternion:
         step_size = 1.0 / (n + 1)
         q0._fast_normalise()
         q1._fast_normalise()
-        inc = Quaternion.exp(step_size*Quaternion.log(q1))
+        inc = q1**step_size
         rotator = q0
         for step in range(n+2*include_endpoints):
             if step!=0 or not include_endpoints:

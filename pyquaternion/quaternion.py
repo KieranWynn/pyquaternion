@@ -63,41 +63,30 @@ class Quaternion:
             # No positional arguments supplied
             if kwargs:
                 # Keyword arguments provided
-                if ("scalar" in kwargs) or ("vector" in kwargs):
-                    scalar = kwargs.get("scalar", 0.0)
-                    scalar = 0.0 if scalar is None else float(scalar)
-
-                    vector = kwargs.get("vector", [])
-                    vector = self._validate_number_sequence(vector, 3)
-
-                    self.q = np.hstack((scalar, vector))
-                elif ("real" in kwargs) or ("imaginary" in kwargs):
-                    real = kwargs.get("real", 0.0)
-                    real = 0.0 if real is None else float(scalar)
-
-                    imaginary = kwargs.get("imaginary", [])
-                    imaginary = self._validate_number_sequence(imaginary, 3)
-
-                    self.q = np.hstack((real, imaginary))
-                elif ("axis" in kwargs) or ("radians" in kwargs) or ("degrees" in kwargs) or ("angle" in kwargs):
-                    try:
-                        axis = self._validate_number_sequence(kwargs["axis"], 3)
-                    except KeyError:
-                        raise ValueError(
-                            "A valid rotation 'axis' parameter must be provided to describe a meaningful rotation."
-                        )
-                    angle = kwargs.get('radians') or self.to_radians(kwargs.get('degrees')) or kwargs.get('angle') or 0.0
-                    self.q = Quaternion._from_axis_angle(axis, angle).q
-                elif "array" in kwargs:
-                    self.q = self._validate_number_sequence(kwargs["array"], 4)
-                elif "matrix" in kwargs:
-                    optional_args = {key: kwargs[key] for key in kwargs if key in ['rtol', 'atol']}
-                    self.q = Quaternion._from_matrix(kwargs["matrix"], **optional_args).q
-                else:
-                    keys = sorted(kwargs.keys())
-                    elements = [kwargs[kw] for kw in keys]
-                    self.q =  np.array([r := float(elements[0]), 0.0, 0.0, 0.0]) if len(elements) == 1 else self._validate_number_sequence(elements, 4)
-
+                try:
+                    self.q = ( np.hstack((0.0 if (scalar := kwargs.get("scalar", 0.0)) is None else float(scalar), #scalar
+                                        self._validate_number_sequence(kwargs.get("vector", []), 3)) #vector
+                                        )
+                              if ("scalar" in kwargs) or ("vector" in kwargs) else
+                               np.hstack(((0.0 if (real := kwargs.get("real", 0.0)) is None else float(real)), #real
+                                        self._validate_number_sequence(kwargs.get("imaginary", []), 3)) #imaginary
+                                        )
+                              if ("real" in kwargs) or ("imaginary" in kwargs) else
+                               Quaternion._from_axis_angle(self._validate_number_sequence(kwargs["axis"], 3), #axis
+                                      (kwargs.get('radians') or self.to_radians(kwargs.get('degrees')) or kwargs.get('angle') or 0.0) #angle
+                                      ).q
+                              if ("axis" in kwargs) or ("radians" in kwargs) or ("degrees" in kwargs) or ("angle" in kwargs) else
+                               self._validate_number_sequence(kwargs["array"], 4)
+                              if "array" in kwargs else
+                               Quaternion._from_matrix(kwargs["matrix"], **(optional_args := {key:kwargs[key] for key in kwargs if key in ['rtol', 'atol']})).q
+                              if "matrix" in kwargs else
+                               np.array([r := float(elements[0]), 0.0, 0.0, 0.0])
+                              if len(elements := [kwargs[kw] for kw in (keys := sorted(kwargs.keys()))]) == 1 else
+                               self._validate_number_sequence(elements, 4))
+                except KeyError:
+                    raise ValueError(
+                        "A valid rotation 'axis' parameter must be provided to describe a meaningful rotation."
+                    )
             else:
                 # Default initialisation
                 self.q = np.array([1.0, 0.0, 0.0, 0.0])
@@ -217,7 +206,7 @@ class Quaternion:
                     t = 1 + m[0, 0] + m[1, 1] + m[2, 2]
                     q = [t,  m[1, 2]-m[2, 1],  m[2, 0]-m[0, 2],  m[0, 1]-m[1, 0]]
 
-            return q := (np.array(q).astype('float64')) * 0.5 / sqrt(t)
+            return (q := (np.array(q).astype('float64')) * 0.5 / sqrt(t))
 
         return cls(array=trace_method(R))
 
@@ -854,10 +843,6 @@ class Quaternion:
 
         # If the dot product is negative, slerp won't take the shorter path.
         # Note that v1 and -v1 are equivalent when the negation is applied to all four components.
-        # Fix by reversing one quaternion
-        if dot < 0.0:
-            q0.q *= -1
-            dot *= -1
 
         # sin_theta_0 can not be zero
         if dot > 0.9995:
@@ -865,17 +850,11 @@ class Quaternion:
             qr._fast_normalise()
             return qr
 
-        theta_0 = np.arccos(dot)  # Since dot is in range [0, 0.9995], np.arccos() is safe
-        sin_theta_0 = np.sin(theta_0)
-
-        theta = theta_0 * amount
-        sin_theta = np.sin(theta)
-
-        s0 = np.cos(theta) - dot * sin_theta / sin_theta_0
-        s1 = sin_theta / sin_theta_0
-        qr = Quaternion((s0 * q0.q) + (s1 * q1.q))
-        qr._fast_normalise()
-        return qr
+        dot = np.dot(q0.q, q1.q)
+        theta = amount*np.arccos(dot)
+        s0=np.sin(theta)*np.sign(dot)/np.sqrt(1-np.power(dot,2))
+        s1=np.cos(theta)-coeff*dot #dot's negativeness will cancel out b's if it (the dot product) is negative, thus no negation necessary
+        return Quaternion((s0 * q0.q) + (s1 * q1.q))
 
     @classmethod
     def intermediates(cls, q0, q1, n, include_endpoints=False):

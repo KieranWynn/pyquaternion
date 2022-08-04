@@ -607,6 +607,20 @@ class Quaternion:
         self._normalise()
         return self * q * self.conjugate
 
+    def _rotate_vector_fast(self, v):
+        """Rotate a vector using the stored quaternion. Based on the algorithm posted on the following link
+            https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
+        Params:
+            v: The vector to be rotated, in vect form [x, y, z]
+        Returns:
+            A vector rotate by the quaternion
+        """
+
+        self._normalise()
+        u = self.elements[1:]
+        s = self.w
+        return 2 *np.dot(u,v)*u +(s*s - np.dot(u,u)) * v + 2 * s * np.cross(u,v)
+
     def rotate(self, vector):
         """Rotate a 3D vector by the rotation stored in the Quaternion object.
 
@@ -626,8 +640,9 @@ class Quaternion:
         """
         if isinstance(vector, Quaternion):
             return self._rotate_quaternion(vector)
-        q = Quaternion(vector=vector)
-        a = self._rotate_quaternion(q).vector
+        # q = Quaternion(vector=vector)
+        # a = self._rotate_quaternion(q).vector
+        a = self._rotate_vector_fast(vector)
         if isinstance(vector, list):
             l = [x for x in a]
             return l

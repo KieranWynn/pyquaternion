@@ -642,7 +642,7 @@ class Quaternion:
             return self._rotate_quaternion(vector)
         # q = Quaternion(vector=vector)
         # a = self._rotate_quaternion(q).vector
-        a = self._rotate_vector_fast(q)
+        a = self._rotate_vector_fast(vector)
         if isinstance(vector, list):
             l = [x for x in a]
             return l

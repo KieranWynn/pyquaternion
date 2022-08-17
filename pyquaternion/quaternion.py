@@ -258,13 +258,13 @@ class Quaternion:
         return cls(r, i[0], i[1], i[2])
 
     @classmethod
-    def random(cls):
+    def random(cls, np_random=np.random):
         """Generate a random unit quaternion.
 
         Uniformly distributed across the rotation space
         As per: http://planning.cs.uiuc.edu/node198.html
         """
-        r1, r2, r3 = np.random.random(3)
+        r1, r2, r3 = np_random.random(3)
 
         q1 = sqrt(1.0 - r1) * (sin(2 * pi * r2))
         q2 = sqrt(1.0 - r1) * (cos(2 * pi * r2))

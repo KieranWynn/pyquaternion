@@ -505,7 +505,12 @@ class Quaternion:
         """Object is guaranteed to be a unit quaternion after calling this
         operation UNLESS the object is equivalent to Quaternion(0)
         """
-        if not self.is_unit():
+        scale = np.max(np.abs(self.q))
+        if np.isfinite(scale) and scale > 0 and (scale < 0.25 or scale > 2.0):
+            # Scaling first keeps the squared norm between 1 and 4.
+            scaled = self.q / scale
+            self.q = scaled / sqrt(np.dot(scaled, scaled))
+        elif not self.is_unit():
             n = self.norm
             if n > 0:
                 self.q = self.q / n
@@ -516,6 +521,10 @@ class Quaternion:
         Object is guaranteed to be a quaternion of approximately unit length
         after calling this operation UNLESS the object is equivalent to Quaternion(0)
         """
+        scale = np.max(np.abs(self.q))
+        if np.isfinite(scale) and scale > 0 and (scale < 0.25 or scale > 2.0):
+            self._normalise()
+            return
         if not self.is_unit():
             mag_squared = np.dot(self.q, self.q)
             if (mag_squared == 0):

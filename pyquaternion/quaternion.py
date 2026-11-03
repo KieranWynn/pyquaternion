@@ -114,7 +114,7 @@ class Quaternion:
         elif s == 1:
             # Single positional argument supplied
             if isinstance(args[0], Quaternion):
-                self.q = args[0].q
+                self.q = args[0].q.copy()
                 return
             if args[0] is None:
                 raise TypeError("Object cannot be initialised from {}".format(type(args[0])))

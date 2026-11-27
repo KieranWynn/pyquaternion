@@ -937,7 +937,7 @@ class Quaternion:
         """Get the instantaneous quaternion derivative representing a quaternion rotating at a 3D rate vector `rate`
 
         Params:
-            rate: numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.
+            rate: numpy 3-array (or array-like) describing rotation rates about the local (body) x, y and z axes respectively.
 
         Returns:
             A unit quaternion describing the rotation rate
@@ -954,7 +954,7 @@ class Quaternion:
         Params:
 
         rate: numpy 3-array (or array-like) describing rotation rates about the
-            global x, y and z axes respectively.
+            local (body) x, y and z axes respectively.
         timestep: interval over which to integrate into the future.
             Assuming *now* is `T=0`, the integration occurs over the interval
             `T=0` to `T=timestep`. Smaller intervals are more accurate when

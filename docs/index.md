@@ -603,11 +603,11 @@ Get the instantaneous quaternion derivative representing a quaternion rotating a
 
 **Params:**
 
-* `rate` - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.
+* `rate` - numpy 3-array (or array-like) describing rotation rates about the local (body) x, y and z axes respectively.
 
 **Returns:** A unit quaternion describing the rotation rate
 
-	q_dot = my_quaternion.derivative([0, 0, 3.14159]) # Rotate about z at 0.5 rotation per second
+	q_dot = my_quaternion.derivative([0, 0, 3.14159]) # Rotate about local z at 0.5 rotation per second
 
 **Raises:**
 
@@ -625,7 +625,7 @@ The Quaternion object will be modified to its future value. It is guaranteed to 
 
 **Params:**
 
-* `rate` - numpy 3-array (or array-like) describing rotation rates about the global x, y and z axes respectively.
+* `rate` - numpy 3-array (or array-like) describing rotation rates about the local (body) x, y and z axes respectively.
 * `timestep` - interval over which to integrate into the future. Assuming *now* is `T=0`, the integration occurs over the interval `T=0` to `T=timestep`. Smaller intervals are more accurate when `rate` changes over time.
 
 **Note 1:** This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one. Many quaternion integration algorithms will have unwanted scaling effects leading a quaternion object to become non-unit over time, thus the object is re-normalised with each call to `integrate()`. Because this method is often called very frequently (every `timestep` for realtime simulation) an optimised re-normalisation is performed. See `_fast_normalise()` for more info.

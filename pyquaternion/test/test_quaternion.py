@@ -1059,6 +1059,22 @@ class TestQuaternionFeatures(unittest.TestCase):
             q.integrate([pi, 0, 0], 0.001)
         self.assertTrue(q.is_unit())
 
+    def test_integration_local_frame_and_docstrings(self):
+        q = Quaternion(axis=[1, 0, 0], degrees=80)
+        body_rate = [0.0, np.deg2rad(30.0), 0.0]
+        q_expected = q * Quaternion(axis=[0, 1, 0], degrees=30)
+        q.integrate(body_rate, 1.0)
+        self.assertEqual(q, q_expected)
+        np.testing.assert_almost_equal(
+            np.rad2deg(q.yaw_pitch_roll),
+            [0.0, 30.0, 80.0],
+            decimal=ALMOST_EQUAL_TOLERANCE,
+        )
+        self.assertNotIn("global x, y and z axes", Quaternion.integrate.__doc__)
+        self.assertNotIn("global x, y and z axes", Quaternion.derivative.__doc__)
+        self.assertIn("local", Quaternion.integrate.__doc__.lower())
+        self.assertIn("local", Quaternion.derivative.__doc__.lower())
+
 
 class TestQuaternionUtilities(unittest.TestCase):
     def test_copy(self):

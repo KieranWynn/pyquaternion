@@ -861,12 +861,26 @@ class TestQuaternionFeatures(unittest.TestCase):
         p_q = q.rotate(p)
         R_q = q.rotation_matrix
 
-        # build rotation matrix, R = R_z(yaw)*R_y(pitch)*R_x(roll)
+        # build rotation matrix, R = R_x(roll)*R_y(pitch)*R_z(yaw)
         R_ypr = np.dot(R_x(roll), np.dot(R_y(pitch), R_z(yaw)))
         p_ypr = np.dot(R_ypr, p)
 
         np.testing.assert_almost_equal(p_q , p_ypr, decimal=ALMOST_EQUAL_TOLERANCE)
         np.testing.assert_almost_equal(R_q , R_ypr, decimal=ALMOST_EQUAL_TOLERANCE)
+
+    def test_yaw_pitch_roll_extrinsic_zyx_and_docstring(self):
+        yaw, pitch, roll = 0.25, 0.4, -0.3
+        q = (
+            Quaternion(axis=[1, 0, 0], angle=roll)
+            * Quaternion(axis=[0, 1, 0], angle=pitch)
+            * Quaternion(axis=[0, 0, 1], angle=yaw)
+        )
+        np.testing.assert_almost_equal(q.yaw_pitch_roll, (yaw, pitch, roll), decimal=ALMOST_EQUAL_TOLERANCE)
+
+        doc = Quaternion.yaw_pitch_roll.__doc__
+        self.assertIn("extrinsic", doc.lower())
+        self.assertIn("[-pi/2, pi/2]", doc)
+        self.assertNotIn("intrinsic Tait-Bryan angles following the z-y'-x''", doc)
 
     def test_matrix_io(self):
         v = np.random.uniform(-100, 100, 3)

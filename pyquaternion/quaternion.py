@@ -1008,12 +1008,12 @@ class Quaternion:
 
     @property
     def yaw_pitch_roll(self):
-        """Get the equivalent yaw-pitch-roll angles aka. intrinsic Tait-Bryan angles following the z-y'-x'' convention
+        """Get the equivalent yaw-pitch-roll angles aka. extrinsic Tait-Bryan angles following the z-y-x convention (equivalent to intrinsic x-y'-z'').
 
         Returns:
-            yaw:    rotation angle around the z-axis in radians, in the range `[-pi, pi]`
-            pitch:  rotation angle around the y'-axis in radians, in the range `[-pi/2, -pi/2]`
-            roll:   rotation angle around the x''-axis in radians, in the range `[-pi, pi]`
+            yaw:    rotation angle around the static z-axis in radians, in the range `[-pi, pi]`
+            pitch:  rotation angle around the static y-axis in radians, in the range `[-pi/2, pi/2]`
+            roll:   rotation angle around the static x-axis in radians, in the range `[-pi, pi]`
 
         The resulting rotation_matrix would be R = R_x(roll) R_y(pitch) R_z(yaw)
 
